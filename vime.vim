@@ -55,6 +55,7 @@ let s:last_found = 0
 let s:last_candidate = ''
 let s:last_candidate_str = ''
 let s:last_candidate_num = 0
+let s:is_katuyo = 0
 
 " 辞書から未確定文字列を検索
 function! s:CandidateSearch(keyword)
@@ -402,10 +403,25 @@ endfunction
 "
 
 function! s:InputConvert()
+  let s:is_katuyo = 0
   let status = s:StatusGet()
   let len = strlen(status)
   if len > 0
     call s:CandidateSearch(status)
+  else
+    let s:last_keyword = ''
+    call s:StatusReset()
+  endif
+endfunction
+
+" 活用のある単語の変換を行う。
+" 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
+function! s:InputConvertKatuyo()
+  let status = s:StatusGet()
+  let len = strlen(status)
+  if len > 0
+    let s:is_katuyo = 1
+    call s:CandidateSearch(status . "―")
   else
     let s:last_keyword = ''
     call s:StatusReset()
@@ -419,8 +435,14 @@ function! s:InputCR()
     let str = s:StatusGet()
     let len = strlen(str)
     if len > 0
-      if s:last_keyword ==# str
-	call s:CandidateSelect(len)
+      if s:is_katuyo
+	if s:last_keyword ==# str . "―"
+	  call s:CandidateSelect(len)
+	endif
+      else
+	if s:last_keyword ==# str
+	  call s:CandidateSelect(len)
+	endif
       endif
     else
       execute "normal! gi\<CR>\<ESC>"
@@ -470,7 +492,40 @@ endfunction
 function! s:ConvertCount(count)
   if a:count < 1
     call s:StatusReset()
-    execute "normal! 1 "
+  else
+    let s:is_katuyo = 0
+    let s:status_line = line(".")
+    let save_col = col(".")
+    execute "normal! a\<ESC>"
+    let cnt = a:count - 1
+    if cnt > 0
+      execute "normal! " . cnt . "h"
+    endif
+    let s:status_column = col(".")
+    execute "normal! " . save_col . "|"
+    if !s:StatusIsEnable()
+      call s:StatusReset()
+    else
+      let status = s:StatusGet()
+      let len = strlen(status)
+      if len > 0
+	let s:save_cmdheight = &cmdheight
+	if &cmdheight < 2
+	  let &cmdheight = 2
+	endif
+	call s:CandidateSearch(status)
+      else
+	let s:last_keyword = ''
+	call s:StatusReset()
+      endif
+    endif
+  endif
+endfunction
+
+" 今の位置以前のcount文字を活用のある語として変換する
+function! s:ConvertKatuyo(count)
+  if a:count < 1
+    call s:StatusReset()
   else
     let s:status_line = line(".")
     let save_col = col(".")
@@ -487,7 +542,12 @@ function! s:ConvertCount(count)
       let status = s:StatusGet()
       let len = strlen(status)
       if len > 0
-	call s:CandidateSearch(status)
+	let s:save_cmdheight = &cmdheight
+	if &cmdheight < 2
+	  let &cmdheight = 2
+	endif
+	let s:is_katuyo = 1
+	call s:CandidateSearch(status . "―")
       else
 	let s:last_keyword = ''
 	call s:StatusReset()
@@ -505,9 +565,16 @@ function! s:FixCandidate()
     let str = s:StatusGet()
     let len = strlen(str)
     if len > 0
-      if s:last_keyword ==# str
-	call s:CandidateSelect(len)
-	execute "normal! " . (s:status_column - 1) . "|"
+      if s:is_katuyo
+	if s:last_keyword ==# str . "―"
+	  call s:CandidateSelect(len)
+	  execute "normal! " . (s:status_column - 1) . "|"
+	endif
+      else
+	if s:last_keyword ==# str
+	  call s:CandidateSelect(len)
+	  execute "normal! " . (s:status_column - 1) . "|"
+	endif
       endif
     else
       execute "normal! \<CR>"
@@ -525,9 +592,11 @@ function! s:MappingOn()
   inoremap <buffer> <CR> <C-O>:call <SID>InputCR()<CR>
   inoremap <buffer> <C-L> <C-O>:call <SID>InputStart()<CR>
   inoremap <buffer> <Nul> <C-O>:call <SID>InputConvert()<CR>
+  inoremap <buffer> <C-Q> <C-O>:call <SID>InputConvertKatuyo()<CR>
   inoremap <buffer> <C-S> <C-O>:call <SID>InputConvertBushu()<CR>
   nnoremap <buffer> <CR> :<C-U>call <SID>FixCandidate()<CR>
   nnoremap <buffer> <Nul> :<C-U>call <SID>ConvertCount(v:count)<CR>
+  nnoremap <buffer> <C-Q> :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
   nnoremap <buffer> <C-S> :<C-U>call <SID>ConvertBushu()<CR>
 endfunction
 
