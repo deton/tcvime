@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 21-Apr-2003.
+" Last Change: 23-Apr-2003.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -261,11 +261,14 @@ endfunction
 function! s:InputConvertBushu()
   let col3 = col("'^")
   if col3 > 3
-    execute "normal! h"
+    let save_ve = &ve
+    let &ve = 'all'
+    execute "normal! " . col3 . "|h"
     let col2 = col(".")
     execute "normal! h"
     let col1 = col(".")
     execute "normal! " . col3 . "|"
+    let &ve = save_ve
     let str = getline('.')
     let char1 = strpart(str, col1 - 1, col2 - col1)
     let char2 = strpart(str, col2 - 1, col3 - col2)
@@ -280,21 +283,7 @@ endfunction
 " 今の位置以前の2文字を部首合成変換する
 function! s:ConvertBushu()
   execute "normal! a\<ESC>"
-  let col3 = col("'^")
-  if col3 > 3
-    let col2 = col(".")
-    execute "normal! h"
-    let col1 = col(".")
-    execute "normal! " . col3 . "|"
-    let str = getline('.')
-    let char1 = strpart(str, col1 - 1, col2 - col1)
-    let char2 = strpart(str, col2 - 1, col3 - col2)
-    let retchar = s:BushuSearch(char1, char2)
-    let len = strlen(retchar)
-    if len > 0
-      call s:BushuReplace(line("."), col1, col3, retchar)
-    endif
-  endif
+  call s:InputConvertBushu()
 endfunction
 
 " 今の位置以前のcount文字を変換する
