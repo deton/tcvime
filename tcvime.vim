@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/20 13:10:55 $
+" Last Change: $Date: 2003/05/20 13:47:52 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -218,6 +218,7 @@ function! s:Candidate_FileOpen()
   endif
   if s:SelectWindowByName(s:candidate_file) < 0
     execute 'silent normal! :sv '.s:candidate_file."\<CR>"
+    set nobuflisted
   endif
   return 1
 endfunction
@@ -311,10 +312,8 @@ function! s:CandidateSelect(len)
   endif
 endfunction
 
-"
-" SelectWindowByName(name) [global function]
+" SelectWindowByName(name)
 "   Acitvate selected window by a:name.
-"
 function! s:SelectWindowByName(name)
   let num = bufwinnr(a:name)
   if num >= 0 && num != winnr()
@@ -330,6 +329,7 @@ function! s:Bushu_FileOpen()
   endif
   if s:SelectWindowByName(s:bushu_file) < 0
     execute 'silent normal! :sv '.s:bushu_file."\<CR>"
+    set nobuflisted
   endif
   return 1
 endfunction
@@ -760,7 +760,9 @@ function! s:OpenHelpBuffer()
     set buftype=nofile
     set bufhidden=delete
     set noswapfile
+    set nobuflisted
   endif
+  set winfixheight
   execute "normal! :%d\<CR>4\<C-W>\<C-_>"
 endfunction
 
@@ -853,6 +855,7 @@ function! s:SearchKeymap(ch)
     endif
   endif
   execute "silent normal! :sv " . kmfile . "\<CR>"
+  set nobuflisted
   let v:errmsg = ""
   execute "normal! /loadkeymap/\<CR>"
   silent! execute 'normal! /^[^"].*[^ 	]\+[ 	]\+' . a:ch . "/\<CR>"
