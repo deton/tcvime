@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 17-Apr-2003.
+" Last Change: 18-Apr-2003.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -140,7 +140,7 @@ endfunction
 
 function! s:InputConvert()
   if !s:StatusIsEnable()
-    execute "normal! a\<Space>\<ESC>"
+    execute "normal! gi \<ESC>`^"
     call s:StatusReset()
   else
     let status = s:StatusGet()
@@ -149,7 +149,7 @@ function! s:InputConvert()
       call s:CandidateSearch(status)
     else
       let s:last_keyword = ''
-      execute "normal! a\<Space>\<ESC>"
+      execute "normal! gi \<ESC>`^"
       call s:StatusReset()
     endif
   endif
@@ -172,6 +172,10 @@ function! s:InputCR()
   call s:StatusReset()
 endfunction
 
+function! s:InputStart()
+  call s:StatusSet()
+endfunction
+
 " 今の位置以前のcount文字を変換する
 function! s:ConvertCount(count)
   if a:count < 1
@@ -179,14 +183,14 @@ function! s:ConvertCount(count)
     execute "normal! 1 "
   else
     let s:status_line = line(".")
-    let s:save_col = col(".")
+    let save_col = col(".")
     execute "normal! a\<ESC>"
-    let s:count = a:count - 1
-    if s:count > 0
-      execute "normal! " . s:count . "h"
+    let count = a:count - 1
+    if count > 0
+      execute "normal! " . count . "h"
     endif
     let s:status_column = col(".")
-    execute "normal! " . s:save_col . "|"
+    execute "normal! " . save_col . "|"
     if !s:StatusIsEnable()
       call s:StatusReset()
     else
@@ -222,10 +226,6 @@ function! s:FixCandidate()
   call s:StatusReset()
 endfunction
 
-function! s:InputStart()
-  call s:StatusSet()
-endfunction
-
 "==============================================================================
 "				  キートラップ
 "
@@ -235,7 +235,6 @@ function! s:MappingOn()
   inoremap <buffer> <CR> <C-O>:call <SID>InputCR()<CR>
   inoremap <buffer> M <C-O>:call <SID>InputStart()<CR>
   inoremap <buffer> <Space> <C-O>:call <SID>InputConvert()<CR>
-  inoremap <buffer> <S-Space> <Space><C-O>:call <SID>InputNullSpace()<CR>
   nnoremap <buffer> <CR> :<C-U>call <SID>FixCandidate()<CR>
   nnoremap <buffer> <Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
 endfunction
