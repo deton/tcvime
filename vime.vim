@@ -183,24 +183,181 @@ function! s:BushuSearchCompose(char1, char2)
   return retchar
 endfunction
 
+" 指定された文字を2つの部首に分解する。
+" 分解した部首をs:decomp1, s:decomp2にセットする。
+" @return 1: 分解に成功した場合、0: 分解できなかった場合
+function! s:BushuDecompose(ch)
+  if !s:Bushu_FileOpen()
+    return 0
+  endif
+  execute "silent normal! gg/^" . a:ch . "..\<CR>"
+  let found_num = line('.')
+  if found_num > 1
+    let save_ve = &ve
+    let &ve = 'all'
+    execute "normal! l"
+    let pos1 = col('.') - 1
+    execute "normal! l"
+    let pos2 = col('.') - 1
+    execute "normal! l"
+    let pos3 = col('.') - 1
+    let &ve = save_ve
+    let str = getline('.')
+    let s:decomp1 = strpart(str, pos1, pos2 - pos1)
+    let s:decomp2 = strpart(str, pos2, pos3 - pos2)
+    let ret = 1
+  else
+    let ret = 0
+  endif
+  execute "normal! \<C-w>p"
+  return ret
+endfunction
+
 " 部首合成変換辞書を検索
 function! s:BushuSearch(char1, char2)
-  " そのまま合成できる?
-  let retchar = s:BushuSearchCompose(a:char1, a:char2)
-  if retchar !=# '' && retchar !=# a:char1 && retchar !=# a:char2
-    return retchar
-  endif
+  let char1 = a:char1
+  let char2 = a:char2
+  let i = 0
+  while i < 2
+    " そのまま合成できる?
+    let retchar = s:BushuSearchCompose(char1, char2)
+    if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      return retchar
+    endif
 
-  " 等価文字どうしで合成できる?
-  let ch1alt = s:BushuAlternative(a:char1)
-  let ch2alt = s:BushuAlternative(a:char2)
-  let retchar = s:BushuSearchCompose(ch1alt, ch2alt)
-  if retchar !=# '' && retchar !=# a:char1 && retchar !=# a:char2
-    return retchar
-  endif
+    " 等価文字どうしで合成できる?
+    if !exists("ch1alt")
+      let ch1alt = s:BushuAlternative(char1)
+    endif
+    if !exists("ch2alt")
+      let ch2alt = s:BushuAlternative(char2)
+    endif
+    let retchar = s:BushuSearchCompose(ch1alt, ch2alt)
+    if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      return retchar
+    endif
 
-  " 引き算
-  " XXX:
+    " 等価文字を部首に分解
+    if !exists("ch1a1")
+      if s:BushuDecompose(ch1alt) == 1
+	let ch1a1 = s:decomp1
+	let ch1a2 = s:decomp2
+      else
+	let ch1a1 = ''
+	let ch1a2 = ''
+      endif
+    endif
+    if !exists("ch2a1")
+      if s:BushuDecompose(ch2alt) == 1
+	let ch2a1 = s:decomp1
+	let ch2a2 = s:decomp2
+      else
+	let ch2a1 = ''
+	let ch2a2 = ''
+      endif
+    endif
+
+    " 引き算
+    if ch1a1 !=# '' && ch1a2 !=# '' && ch1a2 ==# ch2alt
+      let retchar = ch1a1
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1a1 !=# '' && ch1a2 !=# '' && ch1a1 ==# ch2alt
+      let retchar = ch1a2
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+
+    " 一方が部品による足し算
+    if ch1alt !=# '' && ch2a1 !=# ''
+      let retchar = s:BushuSearchCompose(ch1alt, ch2a1)
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1alt !=# '' && ch2a2 !=# ''
+      let retchar = s:BushuSearchCompose(ch1alt, ch2a2)
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1a1 !=# '' && ch2alt !=# ''
+      let retchar = s:BushuSearchCompose(ch1a1, ch2alt)
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1a2 !=# '' && ch2alt !=# ''
+      let retchar = s:BushuSearchCompose(ch1a2, ch2alt)
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+
+    " 両方が部品による足し算
+    if ch1a1 !=# '' && ch2a1 !=# ''
+      let retchar = s:BushuSearchCompose(ch1a1, ch2a1)
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1a1 !=# '' && ch2a2 !=# ''
+      let retchar = s:BushuSearchCompose(ch1a1, ch2a2)
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1a2 !=# '' && ch2a1 !=# ''
+      let retchar = s:BushuSearchCompose(ch1a2, ch2a1)
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1a2 !=# '' && ch2a2 !=# ''
+      let retchar = s:BushuSearchCompose(ch1a2, ch2a2)
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+
+    " 部品による引き算
+    if ch1a2 !=# '' && ch2a1 !=# '' && ch1a2 ==# ch2a1
+      let retchar = ch1a1
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1a2 !=# '' && ch2a2 !=# '' && ch1a2 ==# ch2a2
+      let retchar = ch1a1
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1a1 !=# '' && ch2a1 !=# '' && ch1a1 ==# ch2a1
+      let retchar = ch1a2
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+    if ch1a1 !=# '' && ch2a2 !=# '' && ch1a1 ==# ch2a2
+      let retchar = ch1a2
+      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+	return retchar
+      endif
+    endif
+
+    " 文字の順を逆にしてやってみる
+    let t = char1  | let char1  = char2  | let char2 = t
+    let t = ch1alt | let ch1alt = ch2alt | let ch2alt = t
+    let t = ch1a1  | let ch1a1  = ch2a1  | let ch2a1 = t
+    let t = ch1a2  | let ch1a2  = ch2a2  | let ch2a2 = t
+    let i = i + 1
+  endwhile
+
+  " 合成できなかった
   return ''
 endfunction
 
