@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/19 14:57:25 $
+" Last Change: $Date: 2003/05/20 12:31:21 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -123,16 +123,19 @@ command! TcvimeOff :call <SID>MappingOff()
 " keymapを設定して、TcvimeOnする
 " 引数: keymap名
 command! -nargs=1 TcvimeInit :call <SID>TcvimeInit(<f-args>)
+" 指定された文字の打鍵を表示する
+" 引数: 打鍵を表示する文字
+command! -nargs=1 TcvimeHelp :call <SID>ShowHelp(<args>)
 
 "   マッピングを有効化
 function! s:MappingOn()
   let set_mapleader = 0
   if !exists('g:mapleader')
-    let g:mapleader = "\<C-J>"
+    let g:mapleader = "\<C-K>"
     let set_mapleader = 1
   endif
   let s:mapleader = g:mapleader
-  inoremap <silent> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
+  inoremap <silent> <Leader><CR> <C-O>:call <SID>InputFix(1)<CR>
   inoremap <silent> <Leader>q <C-O>:call <SID>InputStart()<CR>
   inoremap <silent> <Leader><Space> <C-O>:call <SID>InputConvert(0)<CR>
   inoremap <silent> <Leader>o <C-O>:call <SID>InputConvert(1)<CR>
@@ -158,7 +161,7 @@ endfunction
 function! s:MappingOff()
   let set_mapleader = 0
   if !exists('g:mapleader')
-    let g:mapleader = "\<C-J>"
+    let g:mapleader = "\<C-K>"
     let set_mapleader = 1
   else
     let save_mapleader = g:mapleader
@@ -592,7 +595,7 @@ function! s:InputConvert(katuyo)
     if found == 2
       echo 'CANDIDATE: ' . s:last_candidate
     elseif found == 1
-      call s:InputFix()
+      call s:InputFix(1)
     elseif found == 0
       echo 'Not found: ' . status
     elseif found == -1
@@ -611,12 +614,17 @@ function! s:IsCandidateOK(str)
   return 0
 endfunction
 
-function! s:InputFix()
+" 候補を確定する
+function! s:InputFix(is_insert_mode)
   let str = s:StatusGet()
   if s:IsCandidateOK(str)
     let len = strlen(str)
     call s:CandidateSelect(len)
-    execute "normal! " . s:status_column . "|"
+    let col = s:status_column
+    if !a:is_insert_mode
+      let col = col - 1
+    endif
+    execute "normal! " . col . "|"
   endif
   call s:StatusReset()
   let &cmdheight = s:save_cmdheight
@@ -666,7 +674,7 @@ function! s:InputConvertBushu(is_insert_mode)
       else
 	execute "normal! " . col2 . "|"
       endif
-      echo '部首合成変換ができませんでした: ' . char1 . ', ' . char2
+      echo '部首合成変換ができませんでした: <' . char1 . '>, <' . char2 . '>'
     endif
     let &ve = save_ve
   endif
@@ -734,16 +742,8 @@ endfunction
 " ConvertCount()で変換を開始した候補を確定する
 function! s:FixCandidate()
   execute "normal! a\<ESC>"
-  let str = s:StatusGet()
-  if s:IsCandidateOK(str)
-    let len = strlen(str)
-    call s:CandidateSelect(len)
-    execute "normal! " . (s:status_column - 1) . "|"
-  endif
+  call s:InputFix(0)
   let s:last_count = 0
-  call s:StatusReset()
-  let &cmdheight = s:save_cmdheight
-  unlet s:save_cmdheight
 endfunction
 
 "==============================================================================
@@ -751,16 +751,15 @@ endfunction
 
 " 空のヘルプ用バッファを作る
 function! s:Help_BufReadCmd()
-  set ft=
-  set buftype=nofile
-  set bufhidden=delete
-  set noswapfile
 endfunction
 
 " ヘルプ用バッファを開く
 function! s:OpenHelpBuffer()
   if s:SelectWindowByName(s:helpbufname) < 0
     execute "silent normal! :sp " . s:helpbufname . "\<CR>"
+    set buftype=nofile
+    set bufhidden=delete
+    set noswapfile
   endif
   execute "normal! :%d\<CR>4\<C-W>\<C-_>"
 endfunction
