@@ -1,6 +1,5 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプトの説明書
 					KIHARA, Hideto <deton@m1.interq.or.jp>
-					$Id: README_j.txt,v 1.3 2003/05/24 14:30:35 deton Exp $
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -24,7 +23,7 @@ UNIXでの使用上の注意
 
   あるいは、これらのファイルのエンコーディングを
   euc-jpなどに変換しておいてください。
-  (この場合、スクリプト(*.vim)中のscriptencoding cp932の変更もお忘れなく。)
+  (その場合、スクリプト(*.vim)中のscriptencoding cp932の変更もお忘れなく。)
 
 準備
   アーカイブに含まれるファイルを次の場所に置いてください。
@@ -52,3 +51,5 @@ UNIXでの使用上の注意
 
   - mazegaki.dic, bushu.revはEmacs用のTコード入力環境tc2(tc-2.3.1)に
     含まれているものです。
+
+$Id: README_j.txt,v 1.4 2003/05/25 03:30:45 deton Exp $
