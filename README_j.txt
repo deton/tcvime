@@ -1,79 +1,54 @@
-VIme - SKK-IMEの説明書
-					    Muraoka Taro <koron@tka.att.ne.jp>
-						     Last Change: 07-Aug-2001.
+tcvime - 漢字直接入力補助機能プラグインスクリプトの説明書
+					KIHARA, Hideto <deton@m1.interq.or.jp>
+					$Id: README_j.txt,v 1.3 2003/05/24 14:30:35 deton Exp $
 
 解説
-  vim6 + skk辞書 だけで日本語入力を行なおうというスクリプトです。日本語仮名入
-  力はローマ字keymapで、漢字の変換は今回のスクリプト+skk辞書で行ないます。公開
-  以来ほとんどいじってないのでα版ということでお願いします。今版は要望により
-  SKK-JISYO.Lは同梱していません。別途入手してください。
+  tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
+  プラグインスクリプトです。
+  次の3つの機能を提供します: 交ぜ書き変換、部首合成変換、文字ヘルプ表表示。
 
-  SKK-JISYO.Lは$VIMか'runtimepath'で示されるディレクトリに、japanese_cp932.vim
-  はruntime/keymapに、vime.vimはruntime/pluginに置いてください。そしてvimを起
-  動します。あとは下記の使用例に従ってください。
+必要条件
+  Vim 6.1以降。
+  日本語の表示ができることと、tcode/tutcode keymapでの入力ができること。
+  tcode/tutcodeのkeymapファイルは、香り屋版Vim<http://www.kaoriya.net/#VIM>
+  に含まれています。
 
 UNIXでの使用上の注意
-  keymap、辞書、及びvime.vimの漢字コード、改行コードの変換を忘れないで下さい。
-  またデフォルトでkeymap機能は無効になっています。
-    ./configure --with-features=big
-  でコンパイルし直してください。
+  keymapを使うために、configure時に--with-features=bigを指定して
+  コンパイルしておいてください。
 
-使用例
-  お試し用バッファで、なにも考えずに次のコマンドを実行します。
-    :VImeOn
-    :set cmdheight=2
-    :set keymap=japanese
-  コレで準備完了。
+  tcvime.vimやmazegaki.dic, bushu.revはcp932エンコーディングになっています。
+  これらをそのまま使うには、Vimがiconv入りで作られており、
+  かつ、(香り屋版に含まれているvimrcで設定されているように)、fileencodingsに
+  cp932が含まれている必要があります。
 
-  インサートモードで、次に示すようにキータイプしてください。各行の先頭の「:」
-  は打たないで下さい。<Space>と<Enter>はそれぞれスペースキーとエンターキーを意
-  味します。複数行に渡っていますが、行と行の間でエンターキーを押す必要はありま
-  せん。
-    :<Space>ai<Space><Enter>wo<Enter>kudasai<Space><Enter><Enter>
-    :<Space>hosi<Space><Enter>no<Enter>ouji<Space>sama<Space><Enter><Enter>
-    :<Space>ik<Space><Space><Space><Space>tte<Enter>yos<Space><Space><Enter>si!!<Enter><Enter>
-  なお空白を挿入するのはShift+Spaceに割当ててあります。
+  あるいは、これらのファイルのエンコーディングを
+  euc-jpなどに変換しておいてください。
+  (この場合、スクリプト(*.vim)中のscriptencoding cp932の変更もお忘れなく。)
 
-参考
-  村岡の連絡先はこのファイルの先頭と最後に書いてあります。
-  質問はVim掲示板でも受け付けます。
+準備
+  アーカイブに含まれるファイルを次の場所に置いてください。
 
-  - SKK-JISYO.L(sjis)
-      http://ixeris.bios.ics.saitama-u.ac.jp/~koron/software/vim/SKK-JISYO.L.bz2
-  - Vim掲示板
-      http://ixeris.bios.ics.saitama-u.ac.jp/~koron/bbs/bbs.cgi
-  - Vim日本語版情報
-      http://ixeris.bios.ics.saitama-u.ac.jp/~koron/
+    ファイル            置く場所              ファイルの説明
+  tcvime.vim          'runtimepath'/plugin  プラグインスクリプト本体
+  tcvime.txt          'runtimepath'/doc     スクリプトの説明書
+  mazegaki.dic        'runtimepath'か$VIM   交ぜ書き変換用辞書
+  bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
+  tutcodek_cp932.vim  'runtimepath'/keymap  'でひらがな/カタカナモード切り替え
+					    ができるようにしたtutcodeのkeymap
 
--------------------------------------------------------------------------------
-vime-1.0a(旧版)に向けての文章
-凄いものが出来ちまったかもしれません。Vim 6+SKKの辞書だけで日本語入力をしち
-まおう、というものです。日本語かな入力はローマ字lmapで、漢字への変換は今回の
-スクリプト+SKK辞書で行ないます。つまり似非IMEです。出来たてホヤホヤのα版で
-すが公開します。あ、gvim6.0aj以外での動作保証はしません。
+  'runtimepath'や$VIMで示されるディレクトリは、Vim上で
+  :echo &runtimepath や :echo $VIM を実行することで確認できます。
 
-まず次のファイルをダウンロードして解凍してください。SKKのデカい辞書が付いて
-いるので結構あります(約974KB)。
-http://ixeris.bios.ics.saitama-u.ac.jp/~koron/software/vim/vime-1.0a.tar.bz2
-それから解凍したSKK-JISYO.Lをgvim.exeと同じディレクトリに置きます。次にgvim
-を起動してvime.vimをsourceします。runtime/pluginに置いておけば起動時に自動的
-にsourceされます。そしてお試し用バッファで、なにも考えずに次のコマンドを実行
-します。
-:VImeOn
-:set cmdheight=2
-:set keymap=japanese
-コレで準備完了。
+使い方
+  tcvime.txtを参照してください。
 
-いよいよ本番です。インサートモードで、次に示すようにキータイプしてください。
-各行の先頭の「:」は打たないで下さい。次のiはインサートモードに入るためのiで
-す。<Space>と<Enter>はそれぞれスペースキーとエンターキーを意味します。複数行
-に渡っていますが、行と行の間でエンターキーを押す必要はありません。
-:<Space>ai<Space><Enter>wo<Enter>kudasai<Space><Enter><Enter>
-:<Space>hosi<Space><Enter>no<Enter>ouji<Space>sama<Space><Enter><Enter>
-:<Space>ik<Space><Space><Space><Space>tte<Enter>yos<Space><Space><Enter>si!!<Enter><Enter>
-なお空白を挿入するのはShift+Spaceに割当ててあります。
+謝辞
+  - 村岡さんのvime.vimをベースにさせていただいています。
+    tcvime.vimの交ぜ書き変換部分はほとんどvime.vimそのものです。
 
--------------------------------------------------------------------------------
-                  生きる事への強い意志が同時に自分と異なる生命をも尊ぶ心となる
-                                    Muraoka Taro/村岡太郎<koron@tka.att.ne.jp>
- vi:set ts=8 sts=2 sw=2 tw=78:
+  - tservの部首合成アルゴリズムを使っています。
+    もともとはEmacs用のTコード入力環境tcで使われていたアルゴリズムのようです。
+
+  - mazegaki.dic, bushu.revはEmacs用のTコード入力環境tc2(tc-2.3.1)に
+    含まれているものです。
