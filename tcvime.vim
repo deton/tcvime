@@ -2,7 +2,7 @@
 "
 " vime.vim - ´Ê°×SKK-IME
 "
-" Last Change: $Date: 2003/05/13 14:22:27 $
+" Last Change: $Date: 2003/05/14 11:57:24 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
