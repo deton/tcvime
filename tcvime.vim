@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Revision: $Id: tcvime.vim,v 1.31 2004/06/19 13:03:41 deton Exp $
+" Revision: $Id: tcvime.vim,v 1.32 2004/06/20 14:31:18 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -396,10 +396,7 @@ endfunction
 
 " カーソル位置の文字のヘルプ表を表示する
 function! s:ShowStrokeHelp()
-  let col1 = col(".")
-  execute "normal! a\<ESC>"
-  let col2 = col("'^")
-  let ch = strpart(getline("."), col1 - 1, col2 - col1)
+  let ch = matchstr(getline('.'), '\%' . col('.') . 'c.')
   call s:ShowHelp(ch)
 endfunction
 
@@ -462,20 +459,12 @@ function! s:SearchBushuDic(ch)
     return ""
   endif
   let lines = ""
-  let v:errmsg = ""
-  silent! execute "normal! gg/" . a:ch . "\<CR>"
-  if strlen(v:errmsg) == 0
+  silent! normal! G$
+  if search(a:ch, 'w') != 0
     let lines = getline('.')
-    let save_wrapscan = &wrapscan
-    let &wrapscan = 0
-    while strlen(v:errmsg) == 0
-      let v:errmsg = ""
-      silent! execute "normal! n"
-      if strlen(v:errmsg) == 0
-	let lines = lines . "\<CR>" . getline('.')
-      endif
+    while search(a:ch, 'W') != 0
+      let lines = lines . "\<CR>" . getline('.')
     endwhile
-    let &wrapscan = save_wrapscan
   endif
   quit!
   return lines
@@ -494,10 +483,8 @@ function! s:SearchKeymap(ch)
   if !s:buflisted
     set nobuflisted
   endif
-  let v:errmsg = ""
-  execute "normal! /loadkeymap/\<CR>"
-  silent! execute 'normal! /^[^"].*[^ 	]\+[ 	]\+' . a:ch . "/\<CR>"
-  if strlen(v:errmsg) == 0
+  let dummy = search('loadkeymap', 'w')
+  if search('^[^"].*[^ 	]\+[ 	]\+' . a:ch, 'w') != 0
     let keyseq = substitute(getline('.'), '[ 	]\+.*$', '', '')
   else
     let keyseq = ""
@@ -557,9 +544,7 @@ function! s:CandidateSearch(keyword)
     endif
 
     " 実際の検索
-    let v:errmsg = ""
-    silent! execute "normal! gg/^" . a:keyword . " \<CR>"
-    if strlen(v:errmsg) > 0
+    if search('^' . a:keyword . ' ', 'w') == 0
       let found_num = 0
     else
       let s:last_candidate = ''
@@ -642,11 +627,8 @@ function! s:BushuAlternative(ch)
   if !s:Bushu_FileOpen()
     return a:ch
   endif
-  let v:errmsg = ""
-  silent! execute "normal! gg/^." . a:ch . "$\<CR>"
-  if strlen(v:errmsg) == 0
-    execute "normal! l"
-    let retchar = strpart(getline('.'), 0, col('.') - 1)
+  if search('^.' . a:ch . '$', 'w') != 0
+    let retchar = matchstr(getline('.'), '^.')
   else
     let retchar = a:ch
   endif
@@ -660,11 +642,8 @@ function! s:BushuSearchCompose(char1, char2)
   if !s:Bushu_FileOpen()
     return ''
   endif
-  let v:errmsg = ""
-  silent! execute "normal! gg/^." . a:char1 . a:char2 . "\<CR>"
-  if strlen(v:errmsg) == 0
-    execute "normal! l"
-    let retchar = strpart(getline('.'), 0, col('.') - 1)
+  if search('^.' . a:char1 . a:char2, 'w') != 0
+    let retchar = matchstr(getline('.'), '^.')
   else
     let retchar = ''
   endif
@@ -679,21 +658,10 @@ function! s:BushuDecompose(ch)
   if !s:Bushu_FileOpen()
     return 0
   endif
-  let v:errmsg = ""
-  silent! execute "normal! gg/^" . a:ch . "..\<CR>"
-  if strlen(v:errmsg) == 0
-    let save_ve = &ve
-    let &ve = 'all'
-    execute "normal! l"
-    let pos1 = col('.') - 1
-    execute "normal! l"
-    let pos2 = col('.') - 1
-    execute "normal! l"
-    let pos3 = col('.') - 1
-    let &ve = save_ve
-    let str = getline('.')
-    let s:decomp1 = strpart(str, pos1, pos2 - pos1)
-    let s:decomp2 = strpart(str, pos2, pos3 - pos2)
+  if search('^' . a:ch . '..', 'w') != 0
+    let chars = matchstr(getline('.'), '^...')
+    let s:decomp1 = substitute(chars, '^.\(.\).', '\1', '')
+    let s:decomp2 = matchstr(chars, '.$')
     let ret = 1
   else
     let ret = 0
