@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: $Date: 2003/05/10 15:59:13 $
+" Last Change: $Date: 2003/05/11 04:50:38 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -611,6 +611,15 @@ function! s:OpenHelpBuffer()
   execute "normal! 4\<C-W>\<C-_>"
 endfunction
 
+" カーソル位置の文字の打鍵を表示する
+function! s:ShowStrokeHelp()
+  let col1 = col(".")
+  execute "normal! a\<ESC>"
+  let col2 = col("'^")
+  let ch = strpart(getline("."), col1 - 1, col2 - col1)
+  call s:ShowHelp(ch)
+endfunction
+
 " 指定された文字を入力するための打鍵を表示する
 function! s:ShowHelp(ch)
   if &keymap == ""
@@ -648,8 +657,10 @@ endfunction
 " 部首合成辞書から、指定された文字を含む行を検索して表示する
 function! s:ShowHelpBushuDic(ch)
   let lines = s:SearchBushuDic(a:ch)
-  call s:OpenHelpBuffer()
-  execute "normal! a" . lines . "\<ESC>1G"
+  if strlen(lines) > 0
+    call s:OpenHelpBuffer()
+    execute "normal! a" . lines . "\<ESC>1G"
+  endif
 endfunction
 
 " 部首合成辞書から、指定された文字を含む行を検索する
@@ -657,23 +668,23 @@ function! s:SearchBushuDic(ch)
   if !s:Bushu_FileOpen()
     return ""
   endif
+  let lines = ""
   let v:errmsg = ""
   silent! execute "normal! gg/" . a:ch . "\<CR>"
-  if v:errmsg != ""
-    return ""
+  if v:errmsg == ""
+    let lines = getline('.')
+    let save_wrapscan = &wrapscan
+    let &wrapscan = 0
+    while v:errmsg == ""
+      let v:errmsg = ""
+      silent! execute "normal! n"
+      if v:errmsg == ""
+	let lines = lines . "\<CR>" . getline('.')
+      endif
+    endwhile
+    let &wrapscan = save_wrapscan
   endif
-  let lines = getline('.')
-  let save_wrapscan = &wrapscan
-  let &wrapscan = 0
-  while v:errmsg == ""
-    let v:errmsg = ""
-    silent! execute "normal! n"
-    if v:errmsg == ""
-      let lines = lines . "\<CR>" . getline('.')
-    endif
-  endwhile
   quit!
-  let &wrapscan = save_wrapscan
   return lines
 endfunction
 
@@ -688,9 +699,10 @@ function! s:SearchKeymap(ch)
   endif
   execute "silent normal! :sv " . kmfile . "\<CR>"
   let v:errmsg = ""
-  silent! execute "normal! gg/[^ 	][^ 	]*[ 	][ 	]*" . a:ch . "/\<CR>"
+  execute "normal! /loadkeymap/\<CR>"
+  silent! execute 'normal! /^[^"].*[^ 	]\+[ 	]\+' . a:ch . "/\<CR>"
   if v:errmsg == ""
-    let keyseq = substitute(getline('.'), '[ 	][ 	]*.*$', '', '')
+    let keyseq = substitute(getline('.'), '[ 	]\+.*$', '', '')
   else
     let keyseq = ""
   endif
@@ -719,6 +731,7 @@ function! s:MappingOn()
   nnoremap <buffer> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
   nnoremap <buffer> <Leader>o :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
   nnoremap <buffer> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
+  nnoremap <buffer> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
   if set_mapleader
     unlet g:mapleader
   endif
