@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 04-May-2003.
+" Last Change: $Date: 2003/05/06 13:50:05 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -583,18 +583,25 @@ function! s:MappingOn()
   inoremap <buffer> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
   inoremap <buffer> <Leader>q <C-O>:call <SID>InputStart()<CR>
   inoremap <buffer> <Leader><Space> <C-O>:call <SID>InputConvert()<CR>
-  inoremap <buffer> <Leader>n <C-O>:call <SID>InputConvertKatuyo()<CR>
+  inoremap <buffer> <Leader>o <C-O>:call <SID>InputConvertKatuyo()<CR>
   inoremap <buffer> <Leader>b <C-O>:call <SID>InputConvertBushu(1)<CR>
   nnoremap <buffer> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
   nnoremap <buffer> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
-  nnoremap <buffer> <Leader>n :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
+  nnoremap <buffer> <Leader>o :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
   nnoremap <buffer> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
 endfunction
 
 "   マッピングを無効化
 function! s:MappingOff()
-  imapclear <buffer>
-  nmapclear <buffer>
+  iunmap <buffer> <Leader><CR>
+  iunmap <buffer> <Leader>q
+  iunmap <buffer> <Leader><Space>
+  iunmap <buffer> <Leader>o
+  iunmap <buffer> <Leader>b
+  nunmap <buffer> <Leader><CR>
+  nunmap <buffer> <Leader><Space>
+  nunmap <buffer> <Leader>o
+  nunmap <buffer> <Leader>b
 endfunction
 
 " keymapが指定されたkeymapnameでない場合はkeymapを設定する。
