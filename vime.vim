@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: $Date: 2003/05/07 13:31:54 $
+" Last Change: $Date: 2003/05/07 13:53:31 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -592,20 +592,18 @@ endfunction
 " 指定された文字を入力するための打鍵を表示する
 function! s:ShowHelp(ch)
   call s:OpenHelpBuffer()
-  execute "normal! i" . a:ch . "\<ESC>"
   execute "normal! o" . s:SearchKeymap(a:ch) . "\<ESC>"
+  execute "normal! o" . a:ch . "\<ESC>"
 endfunction
 
 " 指定された文字を入力するための打鍵をkeymapファイルから検索する
 function! s:SearchKeymap(ch)
-  let tmpfile = tempname()
-  execute "redir! > " . tmpfile
-  silent lmap
-  redir END
-  execute "normal! :sv " . tmpfile . "\<CR>"
-  silent! execute "normal! gg/" . a:ch . "/\<CR>"
+  let kmfile = globpath(&rtp, "keymap/" . &keymap . "_" . &encoding . ".vim")
+  execute "normal! :sv " . kmfile . "\<CR>"
+  let v:errmsg = ""
+  silent! execute "normal! gg/[^ 	][^ 	]*[ 	][ 	]*" . a:ch . "/\<CR>"
   if v:errmsg == ""
-    let keyseq = substitute(getline('.'), '^.*l  \([^ 	][^ 	]*\)[ 	][ 	]*\*@' . a:ch . '.*$', '\1', '')
+    let keyseq = substitute(getline('.'), '[ 	][ 	]*.*$', '', '')
   else
     let keyseq = ""
   endif
