@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/19 12:51:42 $
+" Last Change: $Date: 2003/05/19 13:37:01 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -17,9 +17,9 @@ scriptencoding cp932
 "   :TcvimeOnコマンドでマッピングが有効になります。
 "   tcvimeの機能は'mapleader'で指定されたキーの後に
 "   'q'などのキーを入力することで実行されます。
-"   'mapleader'のデフォルトは"\<C-J>"(CTRLキーを押しながらj)です。
+"   'mapleader'のデフォルトは"\<C-K>"(CTRLキーを押しながらk)です。
 "   以降の説明中の<Leader>という文字列はmapleaderを表しています。
-"   つまり、mapleaderが"\<C-J>"の場合、<Leader>q は CTRL-Jの後にqを入力する、
+"   つまり、mapleaderが"\<C-K>"の場合、<Leader>q は CTRL-Jの後にqを入力する、
 "   ということです。
 "   また、<Space>はスペースキー、<CR>はエンターキーです。
 "
@@ -297,8 +297,6 @@ function! s:CandidateSelect(len)
     let s:status_column = s:status_column + strlen(s:last_candidate)
     let s:last_candidate = ''
     let s:last_candidate_num = 1
-    let &cmdheight = s:save_cmdheight
-    unlet s:save_cmdheight
   endif
 endfunction
 
@@ -576,7 +574,7 @@ function! s:InputConvert()
     let uniq = s:CandidateSearch(status)
   else
     let s:last_keyword = ''
-    call s:StatusReset()
+    call s:InputStart()
   endif
   execute "normal! " . col . "|"
   if uniq
@@ -596,7 +594,7 @@ function! s:InputConvertKatuyo()
     let uniq = s:CandidateSearch(status . '―')
   else
     let s:last_keyword = ''
-    call s:StatusReset()
+    call s:InputStart()
   endif
   execute "normal! " . col . "|"
   if uniq
@@ -622,13 +620,22 @@ function! s:InputFix()
     execute "normal! " . s:status_column . "|"
   endif
   call s:StatusReset()
+  let &cmdheight = s:save_cmdheight
+  unlet s:save_cmdheight
 endfunction
 
-function! s:InputStart()
-  let s:save_cmdheight = &cmdheight
+" &cmdheightが2より小さかったら2に設定する。CANDIDATE:表示のため。
+function! s:SetCmdheight()
+  if !exists('s:save_cmdheight')
+    let s:save_cmdheight = &cmdheight
+  endif
   if &cmdheight < 2
     let &cmdheight = 2
   endif
+endfunction
+
+function! s:InputStart()
+  call s:SetCmdheight()
   call s:StatusSet()
 endfunction
 
@@ -700,10 +707,7 @@ function! s:ConvertCount(count)
   let status = s:StatusGet()
   let len = strlen(status)
   if len > 0
-    let s:save_cmdheight = &cmdheight
-    if &cmdheight < 2
-      let &cmdheight = 2
-    endif
+    call s:SetCmdheight()
     let uniq = s:CandidateSearch(status)
     if uniq
       call s:FixCandidate()
@@ -739,10 +743,7 @@ function! s:ConvertKatuyo(count)
   let status = s:StatusGet()
   let len = strlen(status)
   if len > 0
-    let s:save_cmdheight = &cmdheight
-    if &cmdheight < 2
-      let &cmdheight = 2
-    endif
+    call s:SetCmdheight()
     let s:is_katuyo = 1
     let uniq = s:CandidateSearch(status . '―')
     if uniq
@@ -766,6 +767,8 @@ function! s:FixCandidate()
   endif
   let s:last_count = 0
   call s:StatusReset()
+  let &cmdheight = s:save_cmdheight
+  unlet s:save_cmdheight
 endfunction
 
 "==============================================================================
