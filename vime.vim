@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 02-Jul-2001.
+" Last Change: 17-Apr-2003.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -140,7 +140,8 @@ endfunction
 
 function! s:InputConvert()
   if !s:StatusIsEnable()
-    call s:StatusSet()
+    execute "normal! a\<Space>\<ESC>"
+    call s:StatusReset()
   else
     let status = s:StatusGet()
     let len = strlen(status)
@@ -148,7 +149,8 @@ function! s:InputConvert()
       call s:CandidateSearch(status)
     else
       let s:last_keyword = ''
-      call s:StatusSet()
+      execute "normal! a\<Space>\<ESC>"
+      call s:StatusReset()
     endif
   endif
 endfunction
@@ -156,16 +158,16 @@ endfunction
 function! s:InputCR()
   if !s:StatusIsEnable()
     execute "normal! a\<CR>\<ESC>"
-    call s:StatusSet()
+    call s:StatusReset()
   else
     let str = s:StatusGet()
     let len = strlen(str)
     if len > 0
       if s:last_keyword ==# str
 	call s:CandidateSelect(len)
+	call s:StatusReset()
       else
 	call s:StatusReset()
-	call s:StatusSet()
       endif
     else
       execute "normal! a\<CR>\<ESC>"
@@ -184,17 +186,18 @@ endfunction
 "   マッピングを有効化
 function! s:MappingOn()
   inoremap <buffer> <CR> <C-O>:call <SID>InputCR()<CR>
+  inoremap <buffer> M <C-O>:call <SID>InputStart()<CR>
   inoremap <buffer> <Space> <C-O>:call <SID>InputConvert()<CR>
   inoremap <buffer> <S-Space> <Space><C-O>:call <SID>InputNullSpace()<CR>
 
-  let normal_hook = 'iIaACRS'
-  let i = 0
-  let len = strlen(normal_hook)
-  while i < len
-    let char = normal_hook[i]
-    let i = i + 1
-    execute "nnoremap <buffer> ".char." ".char."\<C-O>:call <SID>InputStart()\<CR>"
-  endwhile
+"  let normal_hook = 'iIaACRS'
+"  let i = 0
+"  let len = strlen(normal_hook)
+"  while i < len
+"    let char = normal_hook[i]
+"    let i = i + 1
+"    execute "nnoremap <buffer> ".char." ".char."\<C-O>:call <SID>InputStart()\<CR>"
+"  endwhile
 endfunction
 
 "   マッピングを無効化
