@@ -3,16 +3,21 @@
 " tcvime.vim - tcode.vim“™‚ÌŠ¿š’¼Ú“ü—Íkeymap‚Å‚Ì“ü—Í•â•‹@”\:
 "              Œğ‚º‘‚«•ÏŠ·A•”ñ‡¬•ÏŠ·A‘ÅŒ®ƒwƒ‹ƒv•\¦‹@”\B
 "
-" Last Change: $Date: 2003/05/22 13:20:34 $
-" Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
+" Last Change: $Date: 2003/05/22 13:49:26 $
+" Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
 
 " Description:
+" ƒRƒ}ƒ“ƒh:
+"   :TcvimeOn    ƒL[ƒ}ƒbƒsƒ“ƒO‚ğ—LŒø‰»‚·‚é
+"   :TcvimeOff   ƒL[ƒ}ƒbƒsƒ“ƒO‚ğ–³Œø‰»‚·‚é
+"   :TcvimeHelp  w’è‚µ‚½•¶š‚Ì‘ÅŒ®•\‚ğ•\¦‚·‚é
+"
 " g—p–@:
-"   mazegaki.dic‚Æbushu.rev‚Í$VIM‚©'runtimepath'‚Å¦‚³‚ê‚éƒfƒBƒŒƒNƒgƒŠ‚É
-"   ’u‚¢‚Ä‚¨‚¢‚Ä‚­‚¾‚³‚¢B
+"   Œğ‚º‘‚«•ÏŠ·«‘(mazegaki.dic)‚Æ•”ñ‡¬•ÏŠ·«‘(bushu.rev)‚Í
+"   $VIM‚©'runtimepath'‚Å¦‚³‚ê‚éƒfƒBƒŒƒNƒgƒŠ‚É’u‚¢‚Ä‚¨‚¢‚Ä‚­‚¾‚³‚¢B
 "
 "   :TcvimeOnƒRƒ}ƒ“ƒh‚Åƒ}ƒbƒsƒ“ƒO‚ª—LŒø‚É‚È‚è‚Ü‚·B
 "   tcvime‚Ì‹@”\‚Í'mapleader'‚Åw’è‚³‚ê‚½ƒL[‚ÌŒã‚É
@@ -102,10 +107,13 @@ scriptencoding cp932
 "         let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 "
 "    'mapleader'
-"       |mapleader|
-
-" ‚±‚Ìƒvƒ‰ƒOƒCƒ“‚ğ“Ç‚İ‚½‚­‚È‚¢‚Í.vimrc‚ÉŸ‚Ì‚æ‚¤‚É‘‚­‚±‚Æ:
-"       :let plugin_tcvime_disable = 1
+"       ƒL[ƒ}ƒbƒsƒ“ƒO‚ÌƒvƒŒƒtƒBƒbƒNƒXB|mapleader|‚ğQÆBÈ—ª’l: CTRL-K
+"       CTRL-K‚ğw’è‚·‚éê‡‚Ì—á:
+"         let mapleader = "\<C-K>"
+"
+"    'plugin_tcvime_disable'
+"       ‚±‚Ìƒvƒ‰ƒOƒCƒ“‚ğ“Ç‚İ‚İ‚½‚­‚È‚¢ê‡‚ÉŸ‚Ì‚æ‚¤‚Éİ’è‚·‚éB
+"         let plugin_tcvime_disable = 1
 
 if exists('plugin_tcvime_disable')
   finish
@@ -116,6 +124,13 @@ if !exists("tcvime_keyboard")
   " ”šƒL[‚Ì’i‚ğ•\¦‚µ‚È‚¢ê‡‚ÍŸ‚Ì•¶š—ñ‚ğg‚¤‚æ‚¤‚É‚·‚é(qwerty)
 "  let tcvime_keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 endif
+
+" İ’è
+let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
+let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
+let s:helpbufname = '\[TcvimeHelp\]'
+" «‘ƒtƒ@ƒCƒ‹‚ª:ls“™‚Å•\¦‚³‚ê‚é‚æ‚¤‚É‚·‚é‚©‚Ç‚¤‚©B0:•\¦‚³‚ê‚È‚¢,1:•\¦‚·‚é
+let s:buflisted = 0
 
 " Mapping
 command! TcvimeOn call <SID>MappingOn()
@@ -151,7 +166,6 @@ function! s:MappingOn()
   execute "autocmd BufReadCmd ".s:helpbufname." call <SID>Help_BufReadCmd()"
   augroup END
 
-  call s:StatusReset()
   if !exists('s:save_cmdheight')
     let s:save_cmdheight = &cmdheight
   endif
@@ -189,20 +203,380 @@ function! s:MappingOff()
   unlet s:save_cmdheight
 endfunction
 
+TcvimeOn
 
-" İ’è
-let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
-let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
-"echo "candidate_file: ".s:candidate_file
-let s:helpbufname = '\[TcvimeHelp\]'
-" «‘ƒtƒ@ƒCƒ‹‚ª:ls“™‚Å•\¦‚³‚ê‚é‚æ‚¤‚É‚·‚é‚©‚Ç‚¤‚©B0:•\¦‚³‚ê‚È‚¢,1:•\¦‚·‚é
-let s:buflisted = 0
+"==============================================================================
+"				    “ü—Í§Œä
+
+" “Ç‚İ‚Ì“ü—Í‚ğŠJn
+function! s:InputStart()
+  call s:SetCmdheight()
+  call s:StatusSet()
+endfunction
+
+" Insert mode‚ÅŒğ‚º‘‚«•ÏŠ·‚ğs‚¤B
+" Šˆ—p‚Ì‚ ‚éŒê‚Ì•ÏŠ·‚Ìê‡‚ÍA
+" •ÏŠ·‘ÎÛ•¶š—ñ‚Ì––”ö‚Éu\v‚ğ’Ç‰Á‚µ‚ÄŒğ‚º‘‚««‘‚ğŒŸõ‚·‚éB
+" @param katuyo Šˆ—p‚Ì‚ ‚éŒê‚Ì•ÏŠ·‚©‚Ç‚¤‚©B0:Šˆ—p‚È‚µ, 1:Šˆ—p‚ ‚è
+function! s:InputConvert(katuyo)
+  let col = col("'^")
+  let s:is_katuyo = 0
+  let status = s:StatusGet()
+  let len = strlen(status)
+  if len > 0
+    let s:is_katuyo = a:katuyo
+    if s:is_katuyo
+      let status = status . '\'
+    endif
+    let found = s:CandidateSearch(status)
+  else
+    let s:last_keyword = ''
+    call s:InputStart()
+  endif
+  execute "normal! " . col . "|"
+  if exists('found')
+    if found == 2
+      echo 'CANDIDATE: ' . s:last_candidate
+      redraw
+    elseif found == 1
+      call s:InputFix(1)
+    elseif found == 0
+      echo 'Not found: <' . status . '>'
+    elseif found == -1
+      echo 'Œğ‚º‘‚«•ÏŠ·«‘ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½: ' . s:candidate_file
+    endif
+  endif
+endfunction
+
+" Šm’è‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚éŒó•â‚ª–â‘è‚È‚¢‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
+function! s:IsCandidateOK(str)
+  if strlen(a:str) > 0 && strlen(s:last_candidate) > 0
+    if s:is_katuyo && s:last_keyword ==# (a:str . '\') || s:last_keyword ==# a:str
+      return 1
+    endif
+  endif
+  return 0
+endfunction
+
+" Œó•â‚ğŠm’è‚·‚é
+function! s:InputFix(is_insert_mode)
+  let str = s:StatusGet()
+  if s:IsCandidateOK(str)
+    let len = strlen(str)
+    call s:CandidateSelect(len)
+    let col = s:status_column
+    if !a:is_insert_mode
+      let col = col - 1
+    endif
+    execute "normal! " . col . "|"
+  endif
+  call s:StatusReset()
+  let &cmdheight = s:save_cmdheight
+endfunction
+
+" &cmdheight‚ª2‚æ‚è¬‚³‚©‚Á‚½‚ç2‚Éİ’è‚·‚éBCANDIDATE:•\¦‚Ì‚½‚ßB
+function! s:SetCmdheight()
+  if &cmdheight < 2
+    let &cmdheight = 2
+  endif
+endfunction
+
+" ’¼‘O‚Ì2•¶š‚Ì•”ñ‡¬•ÏŠ·‚ğs‚¤
+function! s:InputConvertBushu(is_insert_mode)
+  let col3 = col("'^")
+  if col3 > 3
+    let save_ve = &ve
+    let &ve = 'all'
+    execute "normal! " . col3 . "|h"
+    let col2 = col(".")
+    execute "normal! h"
+    let col1 = col(".")
+    let str = getline('.')
+    let char1 = strpart(str, col1 - 1, col2 - col1)
+    let char2 = strpart(str, col2 - 1, col3 - col2)
+    let retchar = s:BushuSearch(char1, char2)
+    let len = strlen(retchar)
+    if len > 0
+      call s:BushuReplace(line("."), col1, col3, retchar)
+      if a:is_insert_mode
+	execute "normal! " . col2 . "|"
+      else
+	execute "normal! " . col1 . "|"
+      endif
+    else
+      if a:is_insert_mode
+	execute "normal! " . col3 . "|"
+      else
+	execute "normal! " . col2 . "|"
+      endif
+      echo '•”ñ‡¬•ÏŠ·‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½: <' . char1 . '>, <' . char2 . '>'
+    endif
+    let &ve = save_ve
+  endif
+endfunction
+
+" ˆÈ‘O‚ÌConvertCount()‚É“n‚³‚ê‚½countˆø”‚Ì’lB
+" count‚ª0‚ÅÀs‚³‚ê‚½ê‡‚ÉˆÈ‘O‚Ìcount’l‚ğg‚¤‚æ‚¤‚É‚·‚é‚½‚ßB
+let s:last_count = 0
+
+" ¡‚ÌˆÊ’uˆÈ‘O‚Ìcount•¶š‚ğ•ÏŠ·‚·‚é
+" @param count •ÏŠ·‚·‚é•¶š—ñ‚Ì’·‚³
+" @param katuyo Šˆ—p‚Ì‚ ‚éŒê‚Ì•ÏŠ·‚©‚Ç‚¤‚©B0:Šˆ—p‚È‚µ, 1:Šˆ—p‚ ‚è
+function! s:ConvertCount(count, katuyo)
+  let cnt = a:count
+  if cnt == 0
+    let cnt = s:last_count
+    if cnt == 0
+      let cnt = 1
+    endif
+  endif
+  let s:last_count = cnt
+
+  let s:is_katuyo = 0
+  let s:status_line = line(".")
+  let save_col = col(".")
+  execute "normal! a\<ESC>"
+  let cnt = cnt - 1
+  if cnt > 0
+    execute "normal! " . cnt . "h"
+  endif
+  let s:status_column = col(".")
+  execute "normal! " . save_col . "|"
+
+  let status = s:StatusGet()
+  let len = strlen(status)
+  if len > 0
+    "call s:SetCmdheight()
+    let s:is_katuyo = a:katuyo
+    if s:is_katuyo
+      let status = status . '\'
+    endif
+    let found = s:CandidateSearch(status)
+    if found == 2
+      echo 'CANDIDATE: ' . s:last_candidate
+      redraw
+    elseif found == 1
+      call s:FixCandidate()
+    elseif found == 0
+      echo 'Not found: <' . status . '>'
+    elseif found == -1
+      echo 'Œğ‚º‘‚«•ÏŠ·«‘ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½: ' . s:candidate_file
+    endif
+  else
+    let s:last_keyword = ''
+    let s:last_count = 0
+    call s:StatusReset()
+  endif
+endfunction
+
+" ConvertCount()‚Å•ÏŠ·‚ğŠJn‚µ‚½Œó•â‚ğŠm’è‚·‚é
+function! s:FixCandidate()
+  execute "normal! a\<ESC>"
+  call s:InputFix(0)
+  let s:last_count = 0
+endfunction
+
+" ¡‚ÌˆÊ’uˆÈ‘O‚Ì2•¶š‚ğ•”ñ‡¬•ÏŠ·‚·‚é
+function! s:ConvertBushu()
+  execute "normal! a\<ESC>"
+  call s:InputConvertBushu(0)
+endfunction
+
+"==============================================================================
+"			     –¢Šm’è•¶šŠÇ——pŠÖ”ŒQ
+
+"   –¢Šm’è•¶š—ñ‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é
+function! s:StatusIsEnable()
+  if s:status_line != line('.') || s:status_column <= 0 || s:status_column > col('.')
+    return 0
+  endif
+  return 1
+endfunction
+
+"   –¢Šm’è•¶š—ñ‚ğŠJn‚·‚é
+function! s:StatusSet()
+  let s:status_line = line("'^")
+  let s:status_column = col("'^")
+  call s:StatusEcho()
+endfunction
+
+"   –¢Šm’è•¶š—ñ‚ğƒŠƒZƒbƒg‚·‚é
+function! s:StatusReset()
+  let s:status_line = 0
+  let s:status_column = 0
+endfunction
+
+"   –¢Šm’è•¶š—ñ‚ğuó‘Ôv‚Æ‚µ‚Äæ“¾‚·‚é
+function! s:StatusGet()
+  if !s:StatusIsEnable()
+    return ''
+  endif
+
+  " •K—v‚Èƒpƒ‰ƒ[ƒ^‚ğûW
+  let stpos = s:status_column - 1
+  let ccl = col("'^")
+  let len = ccl - s:status_column
+  let str = getline('.')
+
+  return strpart(str, stpos, len)
+endfunction
+
+"   –¢Šm’è•¶š—ñ‚ÌŠJnˆÊ’u‚ÆI—¹ˆÊ’u‚ğ•\¦(ƒfƒoƒbƒO—p)
+function! s:StatusEcho(...)
+  echo "New conversion (line=".s:status_line." column=".s:status_column.")"
+endfunction
+
+" ó‘ÔƒŠƒZƒbƒg
+call s:StatusReset()
+
+"==============================================================================
+" ƒwƒ‹ƒv•\¦
+
+" ‹ó‚Ìƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğì‚é
+function! s:Help_BufReadCmd()
+endfunction
+
+" ƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğŠJ‚­
+function! s:OpenHelpBuffer()
+  if s:SelectWindowByName(s:helpbufname) < 0
+    execute "silent normal! :sp " . s:helpbufname . "\<CR>"
+    set buftype=nofile
+    set bufhidden=delete
+    set noswapfile
+    set winfixheight
+    if !s:buflisted
+      set nobuflisted
+    endif
+  endif
+  execute "normal! :%d\<CR>4\<C-W>\<C-_>"
+endfunction
+
+" ƒJ[ƒ\ƒ‹ˆÊ’u‚Ì•¶š‚Ì‘ÅŒ®‚ğ•\¦‚·‚é
+function! s:ShowStrokeHelp()
+  let col1 = col(".")
+  execute "normal! a\<ESC>"
+  let col2 = col("'^")
+  let ch = strpart(getline("."), col1 - 1, col2 - col1)
+  call s:ShowHelp(ch)
+endfunction
+
+" w’è‚³‚ê‚½•¶š‚ğ“ü—Í‚·‚é‚½‚ß‚Ì‘ÅŒ®‚ğ•\¦‚·‚é
+function! s:ShowHelp(ch)
+  if strlen(a:ch) == 0
+    echo '‘ÅŒ®ƒwƒ‹ƒv•\¦‚Éw’è‚³‚ê‚½•¶š‚ª‹ó‚Å‚·B–³‹‚µ‚Ü‚·'
+    return
+  endif
+  if strlen(&keymap) == 0
+    echo 'keymapƒIƒvƒVƒ‡ƒ“‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÅA‘ÅŒ®ƒwƒ‹ƒv•\¦‚ª‚Å‚«‚Ü‚¹‚ñ'
+    return
+  endif
+  let keyseq = s:SearchKeymap(a:ch)
+  if strlen(keyseq) > 0
+    call s:ShowHelpSequence(a:ch, keyseq)
+  else
+    call s:ShowHelpBushuDic(a:ch)
+  endif
+endfunction
+
+" w’è‚³‚ê‚½•¶š‚Æ‚»‚Ì‘ÅŒ®‚ğ•\‚É‚µ‚Ä•\¦‚·‚é
+function! s:ShowHelpSequence(ch, keyseq)
+  call s:OpenHelpBuffer()
+  execute "normal! ggO" . g:tcvime_keyboard . "\<ESC>"
+  let keyseq = a:keyseq
+  let i = 0
+  while strlen(keyseq) > 0
+    let i = i + 1
+    let key = strpart(keyseq, 0, 1)
+    let keyseq = strpart(keyseq, 1)
+    execute "normal! :%s@\\V" . key . " @" . i . "@\<CR>"
+  endwhile
+  execute "normal! :%s@^\\(....................\\). . @\\1@e\<CR>"
+  execute "normal! :%s@^\\(................\\). . @\\1@e\<CR>"
+  execute "normal! :%s@\\(.\\)\\(.\\)@\\1\\2@ge\<CR>"
+  execute "normal! :%s@\\(.\\). @\\1@ge\<CR>"
+  execute "normal! :%s@. . @E@g\<CR>"
+  execute "normal! :%s@@ @ge\<CR>"
+  execute "normal! 1GA    " . a:ch . "\<ESC>"
+  execute "normal! \<C-W>p"
+endfunction
+
+" •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚µ‚Ä•\¦‚·‚é
+function! s:ShowHelpBushuDic(ch)
+  let lines = s:SearchBushuDic(a:ch)
+  if strlen(lines) > 0
+    call s:OpenHelpBuffer()
+    execute "normal! a" . lines . "\<ESC>1G"
+    execute "normal! \<C-W>p"
+  else
+    redraw
+    echo '‘ÅŒ®ƒwƒ‹ƒv‚Å•\¦‚Å‚«‚éî•ñ‚ª‚ ‚è‚Ü‚¹‚ñ'
+  endif
+endfunction
+
+" •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚·‚é
+function! s:SearchBushuDic(ch)
+  if !s:Bushu_FileOpen()
+    return ""
+  endif
+  let lines = ""
+  let v:errmsg = ""
+  silent! execute "normal! gg/" . a:ch . "\<CR>"
+  if strlen(v:errmsg) == 0
+    let lines = getline('.')
+    let save_wrapscan = &wrapscan
+    let &wrapscan = 0
+    while strlen(v:errmsg) == 0
+      let v:errmsg = ""
+      silent! execute "normal! n"
+      if strlen(v:errmsg) == 0
+	let lines = lines . "\<CR>" . getline('.')
+      endif
+    endwhile
+    let &wrapscan = save_wrapscan
+  endif
+  quit!
+  return lines
+endfunction
+
+" w’è‚³‚ê‚½•¶š‚ğ“ü—Í‚·‚é‚½‚ß‚Ì‘ÅŒ®‚ğkeymapƒtƒ@ƒCƒ‹‚©‚çŒŸõ‚·‚é
+function! s:SearchKeymap(ch)
+  let kmfile = globpath(&rtp, "keymap/" . &keymap . "_" . &encoding . ".vim")
+  if filereadable(kmfile) != 1
+    let kmfile = globpath(&rtp, "keymap/" . &keymap . ".vim")
+    if filereadable(kmfile) != 1
+      return ""
+    endif
+  endif
+  execute "silent normal! :sv " . kmfile . "\<CR>"
+  if !s:buflisted
+    set nobuflisted
+  endif
+  let v:errmsg = ""
+  execute "normal! /loadkeymap/\<CR>"
+  silent! execute 'normal! /^[^"].*[^ 	]\+[ 	]\+' . a:ch . "/\<CR>"
+  if strlen(v:errmsg) == 0
+    let keyseq = substitute(getline('.'), '[ 	]\+.*$', '', '')
+  else
+    let keyseq = ""
+  endif
+  quit!
+  return keyseq
+endfunction
 
 "==============================================================================
 "				    «‘ŒŸõ
-"
 
-" «‘ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+" SelectWindowByName(name)
+"   Acitvate selected window by a:name.
+function! s:SelectWindowByName(name)
+  let num = bufwinnr(a:name)
+  if num >= 0 && num != winnr()
+    execute 'normal! ' . num . "\<C-W>\<C-W>"
+  endif
+  return num
+endfunction
+
+" Œğ‚º‘‚«•ÏŠ·«‘ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
 function! s:Candidate_FileOpen()
   if filereadable(s:candidate_file) != 1
     return 0
@@ -303,16 +677,6 @@ function! s:CandidateSelect(len)
     let s:last_candidate = ''
     let s:last_candidate_num = 1
   endif
-endfunction
-
-" SelectWindowByName(name)
-"   Acitvate selected window by a:name.
-function! s:SelectWindowByName(name)
-  let num = bufwinnr(a:name)
-  if num >= 0 && num != winnr()
-    execute 'normal! ' . num . "\<C-W>\<C-W>"
-  endif
-  return num
 endfunction
 
 " •”ñ‡¬«‘ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
@@ -572,363 +936,3 @@ function! s:BushuReplace(linenum, stcol, endcol, ch)
   let str = strpart(str, 0, a:stcol - 1) . a:ch . strpart(str, a:endcol - 1)
   call setline(a:linenum, str)
 endfunction
-
-"==============================================================================
-"				    “ü—Í§Œä
-"
-
-" Insert mode‚ÅŒğ‚º‘‚«•ÏŠ·‚ğs‚¤B
-" Šˆ—p‚Ì‚ ‚éŒê‚Ì•ÏŠ·‚Ìê‡‚ÍA
-" •ÏŠ·‘ÎÛ•¶š—ñ‚Ì––”ö‚Éu\v‚ğ’Ç‰Á‚µ‚ÄŒğ‚º‘‚««‘‚ğŒŸõ‚·‚éB
-" @param katuyo Šˆ—p‚Ì‚ ‚éŒê‚Ì•ÏŠ·‚©‚Ç‚¤‚©B0:Šˆ—p‚È‚µ, 1:Šˆ—p‚ ‚è
-function! s:InputConvert(katuyo)
-  let col = col("'^")
-  let s:is_katuyo = 0
-  let status = s:StatusGet()
-  let len = strlen(status)
-  if len > 0
-    let s:is_katuyo = a:katuyo
-    if s:is_katuyo
-      let status = status . '\'
-    endif
-    let found = s:CandidateSearch(status)
-  else
-    let s:last_keyword = ''
-    call s:InputStart()
-  endif
-  execute "normal! " . col . "|"
-  if exists('found')
-    if found == 2
-      echo 'CANDIDATE: ' . s:last_candidate
-      redraw
-    elseif found == 1
-      call s:InputFix(1)
-    elseif found == 0
-      echo 'Not found: <' . status . '>'
-    elseif found == -1
-      echo 'Œğ‚º‘‚«•ÏŠ·«‘ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½: ' . s:candidate_file
-    endif
-  endif
-endfunction
-
-" Šm’è‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚éŒó•â‚ª–â‘è‚È‚¢‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
-function! s:IsCandidateOK(str)
-  if strlen(a:str) > 0 && strlen(s:last_candidate) > 0
-    if s:is_katuyo && s:last_keyword ==# (a:str . '\') || s:last_keyword ==# a:str
-      return 1
-    endif
-  endif
-  return 0
-endfunction
-
-" Œó•â‚ğŠm’è‚·‚é
-function! s:InputFix(is_insert_mode)
-  let str = s:StatusGet()
-  if s:IsCandidateOK(str)
-    let len = strlen(str)
-    call s:CandidateSelect(len)
-    let col = s:status_column
-    if !a:is_insert_mode
-      let col = col - 1
-    endif
-    execute "normal! " . col . "|"
-  endif
-  call s:StatusReset()
-  let &cmdheight = s:save_cmdheight
-endfunction
-
-" &cmdheight‚ª2‚æ‚è¬‚³‚©‚Á‚½‚ç2‚Éİ’è‚·‚éBCANDIDATE:•\¦‚Ì‚½‚ßB
-function! s:SetCmdheight()
-  if &cmdheight < 2
-    let &cmdheight = 2
-  endif
-endfunction
-
-function! s:InputStart()
-  call s:SetCmdheight()
-  call s:StatusSet()
-endfunction
-
-" ’¼‘O‚Ì2•¶š‚Ì•”ñ‡¬•ÏŠ·‚ğs‚¤
-function! s:InputConvertBushu(is_insert_mode)
-  let col3 = col("'^")
-  if col3 > 3
-    let save_ve = &ve
-    let &ve = 'all'
-    execute "normal! " . col3 . "|h"
-    let col2 = col(".")
-    execute "normal! h"
-    let col1 = col(".")
-    let str = getline('.')
-    let char1 = strpart(str, col1 - 1, col2 - col1)
-    let char2 = strpart(str, col2 - 1, col3 - col2)
-    let retchar = s:BushuSearch(char1, char2)
-    let len = strlen(retchar)
-    if len > 0
-      call s:BushuReplace(line("."), col1, col3, retchar)
-      if a:is_insert_mode
-	execute "normal! " . col2 . "|"
-      else
-	execute "normal! " . col1 . "|"
-      endif
-    else
-      if a:is_insert_mode
-	execute "normal! " . col3 . "|"
-      else
-	execute "normal! " . col2 . "|"
-      endif
-      echo '•”ñ‡¬•ÏŠ·‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½: <' . char1 . '>, <' . char2 . '>'
-    endif
-    let &ve = save_ve
-  endif
-endfunction
-
-" ¡‚ÌˆÊ’uˆÈ‘O‚Ì2•¶š‚ğ•”ñ‡¬•ÏŠ·‚·‚é
-function! s:ConvertBushu()
-  execute "normal! a\<ESC>"
-  call s:InputConvertBushu(0)
-endfunction
-
-" ˆÈ‘O‚ÌConvertCount()‚É“n‚³‚ê‚½countˆø”‚Ì’lB
-" count‚ª0‚ÅÀs‚³‚ê‚½ê‡‚ÉˆÈ‘O‚Ìcount’l‚ğg‚¤‚æ‚¤‚É‚·‚é‚½‚ßB
-let s:last_count = 0
-
-" ¡‚ÌˆÊ’uˆÈ‘O‚Ìcount•¶š‚ğ•ÏŠ·‚·‚é
-" @param count •ÏŠ·‚·‚é•¶š—ñ‚Ì’·‚³
-" @param katuyo Šˆ—p‚Ì‚ ‚éŒê‚Ì•ÏŠ·‚©‚Ç‚¤‚©B0:Šˆ—p‚È‚µ, 1:Šˆ—p‚ ‚è
-function! s:ConvertCount(count, katuyo)
-  let cnt = a:count
-  if cnt == 0
-    let cnt = s:last_count
-    if cnt == 0
-      let cnt = 1
-    endif
-  endif
-  let s:last_count = cnt
-
-  let s:is_katuyo = 0
-  let s:status_line = line(".")
-  let save_col = col(".")
-  execute "normal! a\<ESC>"
-  let cnt = cnt - 1
-  if cnt > 0
-    execute "normal! " . cnt . "h"
-  endif
-  let s:status_column = col(".")
-  execute "normal! " . save_col . "|"
-
-  let status = s:StatusGet()
-  let len = strlen(status)
-  if len > 0
-    "call s:SetCmdheight()
-    let s:is_katuyo = a:katuyo
-    if s:is_katuyo
-      let status = status . '\'
-    endif
-    let found = s:CandidateSearch(status)
-    if found == 2
-      echo 'CANDIDATE: ' . s:last_candidate
-      redraw
-    elseif found == 1
-      call s:FixCandidate()
-    elseif found == 0
-      echo 'Not found: <' . status . '>'
-    elseif found == -1
-      echo 'Œğ‚º‘‚«•ÏŠ·«‘ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½: ' . s:candidate_file
-    endif
-  else
-    let s:last_keyword = ''
-    let s:last_count = 0
-    call s:StatusReset()
-  endif
-endfunction
-
-" ConvertCount()‚Å•ÏŠ·‚ğŠJn‚µ‚½Œó•â‚ğŠm’è‚·‚é
-function! s:FixCandidate()
-  execute "normal! a\<ESC>"
-  call s:InputFix(0)
-  let s:last_count = 0
-endfunction
-
-"==============================================================================
-" ƒwƒ‹ƒv•\¦
-
-" ‹ó‚Ìƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğì‚é
-function! s:Help_BufReadCmd()
-endfunction
-
-" ƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğŠJ‚­
-function! s:OpenHelpBuffer()
-  if s:SelectWindowByName(s:helpbufname) < 0
-    execute "silent normal! :sp " . s:helpbufname . "\<CR>"
-    set buftype=nofile
-    set bufhidden=delete
-    set noswapfile
-    set winfixheight
-    if !s:buflisted
-      set nobuflisted
-    endif
-  endif
-  execute "normal! :%d\<CR>4\<C-W>\<C-_>"
-endfunction
-
-" ƒJ[ƒ\ƒ‹ˆÊ’u‚Ì•¶š‚Ì‘ÅŒ®‚ğ•\¦‚·‚é
-function! s:ShowStrokeHelp()
-  let col1 = col(".")
-  execute "normal! a\<ESC>"
-  let col2 = col("'^")
-  let ch = strpart(getline("."), col1 - 1, col2 - col1)
-  call s:ShowHelp(ch)
-endfunction
-
-" w’è‚³‚ê‚½•¶š‚ğ“ü—Í‚·‚é‚½‚ß‚Ì‘ÅŒ®‚ğ•\¦‚·‚é
-function! s:ShowHelp(ch)
-  if strlen(a:ch) == 0
-    echo '‘ÅŒ®ƒwƒ‹ƒv•\¦‚Éw’è‚³‚ê‚½•¶š‚ª‹ó‚Å‚·B–³‹‚µ‚Ü‚·'
-    return
-  endif
-  if strlen(&keymap) == 0
-    echo 'keymapƒIƒvƒVƒ‡ƒ“‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÅA‘ÅŒ®ƒwƒ‹ƒv•\¦‚ª‚Å‚«‚Ü‚¹‚ñ'
-    return
-  endif
-  let keyseq = s:SearchKeymap(a:ch)
-  if strlen(keyseq) > 0
-    call s:ShowHelpSequence(a:ch, keyseq)
-  else
-    call s:ShowHelpBushuDic(a:ch)
-  endif
-endfunction
-
-" w’è‚³‚ê‚½•¶š‚Æ‚»‚Ì‘ÅŒ®‚ğ•\‚É‚µ‚Ä•\¦‚·‚é
-function! s:ShowHelpSequence(ch, keyseq)
-  call s:OpenHelpBuffer()
-  execute "normal! ggO" . g:tcvime_keyboard . "\<ESC>"
-  let keyseq = a:keyseq
-  let i = 0
-  while strlen(keyseq) > 0
-    let i = i + 1
-    let key = strpart(keyseq, 0, 1)
-    let keyseq = strpart(keyseq, 1)
-    execute "normal! :%s@\\V" . key . " @" . i . "@\<CR>"
-  endwhile
-  execute "normal! :%s@^\\(....................\\). . @\\1@e\<CR>"
-  execute "normal! :%s@^\\(................\\). . @\\1@e\<CR>"
-  execute "normal! :%s@\\(.\\)\\(.\\)@\\1\\2@ge\<CR>"
-  execute "normal! :%s@\\(.\\). @\\1@ge\<CR>"
-  execute "normal! :%s@. . @E@g\<CR>"
-  execute "normal! :%s@@ @ge\<CR>"
-  execute "normal! 1GA    " . a:ch . "\<ESC>"
-  execute "normal! \<C-W>p"
-endfunction
-
-" •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚µ‚Ä•\¦‚·‚é
-function! s:ShowHelpBushuDic(ch)
-  let lines = s:SearchBushuDic(a:ch)
-  if strlen(lines) > 0
-    call s:OpenHelpBuffer()
-    execute "normal! a" . lines . "\<ESC>1G"
-    execute "normal! \<C-W>p"
-  else
-    redraw
-    echo '‘ÅŒ®ƒwƒ‹ƒv‚Å•\¦‚Å‚«‚éî•ñ‚ª‚ ‚è‚Ü‚¹‚ñ'
-  endif
-endfunction
-
-" •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚·‚é
-function! s:SearchBushuDic(ch)
-  if !s:Bushu_FileOpen()
-    return ""
-  endif
-  let lines = ""
-  let v:errmsg = ""
-  silent! execute "normal! gg/" . a:ch . "\<CR>"
-  if strlen(v:errmsg) == 0
-    let lines = getline('.')
-    let save_wrapscan = &wrapscan
-    let &wrapscan = 0
-    while strlen(v:errmsg) == 0
-      let v:errmsg = ""
-      silent! execute "normal! n"
-      if strlen(v:errmsg) == 0
-	let lines = lines . "\<CR>" . getline('.')
-      endif
-    endwhile
-    let &wrapscan = save_wrapscan
-  endif
-  quit!
-  return lines
-endfunction
-
-" w’è‚³‚ê‚½•¶š‚ğ“ü—Í‚·‚é‚½‚ß‚Ì‘ÅŒ®‚ğkeymapƒtƒ@ƒCƒ‹‚©‚çŒŸõ‚·‚é
-function! s:SearchKeymap(ch)
-  let kmfile = globpath(&rtp, "keymap/" . &keymap . "_" . &encoding . ".vim")
-  if filereadable(kmfile) != 1
-    let kmfile = globpath(&rtp, "keymap/" . &keymap . ".vim")
-    if filereadable(kmfile) != 1
-      return ""
-    endif
-  endif
-  execute "silent normal! :sv " . kmfile . "\<CR>"
-  if !s:buflisted
-    set nobuflisted
-  endif
-  let v:errmsg = ""
-  execute "normal! /loadkeymap/\<CR>"
-  silent! execute 'normal! /^[^"].*[^ 	]\+[ 	]\+' . a:ch . "/\<CR>"
-  if strlen(v:errmsg) == 0
-    let keyseq = substitute(getline('.'), '[ 	]\+.*$', '', '')
-  else
-    let keyseq = ""
-  endif
-  quit!
-  return keyseq
-endfunction
-
-"==============================================================================
-"			     –¢Šm’è•¶šŠÇ——pŠÖ”ŒQ
-"
-
-"   –¢Šm’è•¶š—ñ‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é
-function! s:StatusIsEnable()
-  if s:status_line != line('.') || s:status_column <= 0 || s:status_column > col('.')
-    return 0
-  endif
-  return 1
-endfunction
-
-"   –¢Šm’è•¶š—ñ‚ğŠJn‚·‚é
-function! s:StatusSet()
-  let s:status_line = line("'^")
-  let s:status_column = col("'^")
-  call s:StatusEcho()
-endfunction
-
-"   –¢Šm’è•¶š—ñ‚ğƒŠƒZƒbƒg‚·‚é
-function! s:StatusReset()
-  let s:status_line = 0
-  let s:status_column = 0
-endfunction
-
-"   –¢Šm’è•¶š—ñ‚ğuó‘Ôv‚Æ‚µ‚Äæ“¾‚·‚é
-function! s:StatusGet()
-  if !s:StatusIsEnable()
-    return ''
-  endif
-
-  " •K—v‚Èƒpƒ‰ƒ[ƒ^‚ğûW
-  let stpos = s:status_column - 1
-  let ccl = col("'^")
-  let len = ccl - s:status_column
-  let str = getline('.')
-
-  return strpart(str, stpos, len)
-endfunction
-
-"   –¢Šm’è•¶š—ñ‚ÌŠJnˆÊ’u‚ÆI—¹ˆÊ’u‚ğ•\¦(ƒfƒoƒbƒO—p)
-function! s:StatusEcho(...)
-  echo "New conversion (line=".s:status_line." column=".s:status_column.")"
-endfunction
-
-" ó‘ÔƒŠƒZƒbƒgAƒ}ƒbƒsƒ“ƒO—LŒø‰»
-call s:StatusReset()
-TcvimeOn
