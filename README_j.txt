@@ -1,6 +1,6 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
-							     Version: 1.0
-							     Date: 2003-5-25
+							     Version: 1.0.1
+							     Date: 2003-09-04
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -53,7 +53,16 @@ UNIXでの使用上の注意
   - mazegaki.dic, bushu.revはEmacs用のTコード入力環境tc2(tc-2.3.1)に
     含まれているものです。
 
+更新履歴
+  - 1.0.1 (2003-09-04)
+   - ヘルプバッファ名を"[TcvimeHelp]"から"__TcvimeHelp__"に変更。
+   - TcvimeHelpBushuコマンドを追加:
+     指定した文字を含む行を部首合成変換辞書から検索して表示。
+
+  - 1.0 (2003-05-25)
+    最初のリリース。
+
 -- 
 木原 英人 / KIHARA, Hideto / deton@m1.interq.or.jp
 http://www1.interq.or.jp/~deton/tcvime/
-$Id: README_j.txt,v 1.5 2003/05/25 04:48:07 deton Exp $
+$Id: README_j.txt,v 1.6 2003/09/04 12:36:45 deton Exp $
