@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: $Date: 2003/05/07 13:53:31 $
+" Last Change: $Date: 2003/05/08 13:56:47 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -616,10 +616,13 @@ endfunction
 "
 
 "   マッピングを有効化
-if !exists('g:mapleader')
-  let g:mapleader = "\<C-k>"
-endif
 function! s:MappingOn()
+  let set_mapleader = 0
+  if !exists('g:mapleader')
+    let g:mapleader = "\<C-k>"
+    let set_mapleader = 1
+  endif
+  let s:mapleader = g:mapleader
   inoremap <buffer> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
   inoremap <buffer> <Leader>q <C-O>:call <SID>InputStart()<CR>
   inoremap <buffer> <Leader><Space> <C-O>:call <SID>InputConvert()<CR>
@@ -629,10 +632,21 @@ function! s:MappingOn()
   nnoremap <buffer> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
   nnoremap <buffer> <Leader>o :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
   nnoremap <buffer> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
+  if set_mapleader
+    unlet g:mapleader
+  endif
 endfunction
 
 "   マッピングを無効化
 function! s:MappingOff()
+  let set_mapleader = 0
+  if !exists('g:mapleader')
+    let g:mapleader = "\<C-k>"
+    let set_mapleader = 1
+  else
+    let save_mapleader = g:mapleader
+  endif
+  let g:mapleader = s:mapleader
   silent! iunmap <buffer> <Leader><CR>
   silent! iunmap <buffer> <Leader>q
   silent! iunmap <buffer> <Leader><Space>
@@ -642,20 +656,18 @@ function! s:MappingOff()
   silent! nunmap <buffer> <Leader><Space>
   silent! nunmap <buffer> <Leader>o
   silent! nunmap <buffer> <Leader>b
+  if set_mapleader
+    unlet g:mapleader
+  else
+    let g:mapleader = save_mapleader
+  endif
 endfunction
 
-" keymapが指定されたkeymapnameでない場合はkeymapを設定する。
-" iminsertが1の場合はMappingOnする。1以外の場合はMappingOffする
-function! s:MappingToggle(keymapname)
+" keymapを設定してVImeのMappingを有効にする
+function! s:VImeInit(keymapname)
   if &iminsert == 0 && &keymap !=# a:keymapname
     let &keymap = a:keymapname
     call s:MappingOn()
-    return
-  endif
-  if &iminsert == 1
-    call s:MappingOn()
-  else
-    call s:MappingOff()
   endif
 endfunction
 
@@ -718,9 +730,5 @@ call s:StatusReset()
 command! VImeOn :call <SID>MappingOn()
 command! VImeOff :call <SID>MappingOff()
 " keymap名を引数に取る
-command! -nargs=1 VImeToggle :call <SID>MappingToggle(<f-args>)
+command! -nargs=1 VImeInit :call <SID>VImeInit(<f-args>)
 command! -nargs=1 VImeHelp :call <SID>ShowHelp(<args>)
-
-" $HOME/.vimrcに以下のようなmapを入れると使用できる。
-" map <C-\> <C-^>:VImeToggle tutcode<CR>
-" imap <C-\> <C-^><C-O>:VImeToggle tutcode<CR>
