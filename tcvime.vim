@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Revision: $Id: tcvime.vim,v 1.28 2003/09/03 13:36:07 deton Exp $
+" Revision: $Id: tcvime.vim,v 1.29 2003/09/03 13:46:22 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -393,7 +393,7 @@ function! s:OpenHelpBuffer()
       set nobuflisted
     endif
   endif
-  execute "normal! :%d\<CR>4\<C-W>\<C-_>"
+  execute "normal! :%d _\<CR>4\<C-W>\<C-_>"
 endfunction
 
 " カーソル位置の文字のヘルプ表を表示する
