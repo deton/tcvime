@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/20 12:31:21 $
+" Last Change: $Date: 2003/05/20 13:01:53 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -118,14 +118,22 @@ if !exists("tcvime_keyboard")
 endif
 
 " Mapping
-command! TcvimeOn :call <SID>MappingOn()
-command! TcvimeOff :call <SID>MappingOff()
+if !exists(":TcvimeOn")
+  command TcvimeOn :call <SID>MappingOn()
+endif
+if !exists(":TcvimeOff")
+  command TcvimeOff :call <SID>MappingOff()
+endif
 " keymapを設定して、TcvimeOnする
 " 引数: keymap名
-command! -nargs=1 TcvimeInit :call <SID>TcvimeInit(<f-args>)
+if !exists(":TcvimeInit")
+  command -nargs=1 TcvimeInit :call <SID>TcvimeInit(<f-args>)
+endif
 " 指定された文字の打鍵を表示する
 " 引数: 打鍵を表示する文字
-command! -nargs=1 TcvimeHelp :call <SID>ShowHelp(<args>)
+if !exists(":TcvimeHelp")
+  command -nargs=1 TcvimeHelp :call <SID>ShowHelp(<args>)
+endif
 
 "   マッピングを有効化
 function! s:MappingOn()
@@ -135,16 +143,47 @@ function! s:MappingOn()
     let set_mapleader = 1
   endif
   let s:mapleader = g:mapleader
-  inoremap <silent> <Leader><CR> <C-O>:call <SID>InputFix(1)<CR>
-  inoremap <silent> <Leader>q <C-O>:call <SID>InputStart()<CR>
-  inoremap <silent> <Leader><Space> <C-O>:call <SID>InputConvert(0)<CR>
-  inoremap <silent> <Leader>o <C-O>:call <SID>InputConvert(1)<CR>
-  inoremap <silent> <Leader>b <C-O>:call <SID>InputConvertBushu(1)<CR>
-  nnoremap <silent> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
-  nnoremap <silent> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
-  nnoremap <silent> <Leader>o :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
-  nnoremap <silent> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
-  nnoremap <silent> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
+  if !hasmapto('<Plug>TcvimeIFix')
+    imap <unique> <silent> <Leader><CR> <Plug>TcvimeIFix
+  endif
+  if !hasmapto('<Plug>TcvimeIStart')
+    imap <unique> <silent> <Leader>q <Plug>TcvimeIStart
+  endif
+  if !hasmapto('<Plug>TcvimeIConvert')
+    imap <unique> <silent> <Leader><Space> <Plug>TcvimeIConvert
+  endif
+  if !hasmapto('<Plug>TcvimeIConvertKatuyo')
+    imap <unique> <silent> <Leader>o <Plug>TcvimeIConvertKatuyo
+  endif
+  if !hasmapto('<Plug>TcvimeIBushu')
+    imap <unique> <silent> <Leader>b <Plug>TcvimeIBushu
+  endif
+  if !hasmapto('<Plug>TcvimeNFix')
+    nmap <unique> <silent> <Leader><CR> <Plug>TcvimeNFix
+  endif
+  if !hasmapto('<Plug>TcvimeNConvert')
+    nmap <unique> <silent> <Leader><Space> <Plug>TcvimeNConvert
+  endif
+  if !hasmapto('<Plug>TcvimeNConvertKatuyo')
+    nmap <unique> <silent> <Leader>o <Plug>TcvimeNConvertKatuyo
+  endif
+  if !hasmapto('<Plug>TcvimeNBushu')
+    nmap <unique> <silent> <Leader>b <Plug>TcvimeNBushu
+  endif
+  if !hasmapto('<Plug>TcvimeNHelp')
+    nmap <unique> <silent> <Leader>? <Plug>TcvimeNHelp
+  endif
+
+  inoremap <script> <silent> <Plug>TcvimeIFix <C-O>:call <SID>InputFix(1)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIStart <C-O>:call <SID>InputStart()<CR>
+  inoremap <script> <silent> <Plug>TcvimeIConvert <C-O>:call <SID>InputConvert(0)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIConvertKatuyo <C-O>:call <SID>InputConvert(1)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIBushu <C-O>:call <SID>InputConvertBushu(1)<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNFix :<C-U>call <SID>FixCandidate()<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNConvertKatuyo :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNBushu :<C-U>call <SID>ConvertBushu()<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNHelp :<C-U>call <SID>ShowStrokeHelp()<CR>
   if set_mapleader
     unlet g:mapleader
   endif
