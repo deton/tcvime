@@ -1,108 +1,110 @@
 " vi:set ts=8 sts=2 sw=2 tw=0:
 "
-" tcvime.vim - tcode.vimÅù¤Î´Á»úÄ¾ÀÜÆşÎÏkeymap¤Ç¤ÎÆşÎÏÊä½õµ¡Ç½:
-"              ¸ò¤¼½ñ¤­ÊÑ´¹¡¢Éô¼ó¹çÀ®ÊÑ´¹¡¢ÂÇ¸°¥Ø¥ë¥×É½¼¨µ¡Ç½¡£
+" tcvime.vim - tcode.vim“™‚ÌŠ¿š’¼Ú“ü—Íkeymap‚Å‚Ì“ü—Í•â•‹@”\:
+"              Œğ‚º‘‚«•ÏŠ·A•”ñ‡¬•ÏŠ·A‘ÅŒ®ƒwƒ‹ƒv•\¦‹@”\B
 "
-" Last Change: $Date: 2003/05/19 12:48:03 $
+" Last Change: $Date: 2003/05/19 12:51:42 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
+scriptencoding cp932
+
 " Description:
-" »ÈÍÑË¡:
-"   mazegaki.dic¤Èbushu.rev¤Ï$VIM¤«'runtimepath'¤Ç¼¨¤µ¤ì¤ë¥Ç¥£¥ì¥¯¥È¥ê¤Ë
-"   ÃÖ¤¤¤Æ¤ª¤¤¤Æ¤¯¤À¤µ¤¤¡£
+" g—p–@:
+"   mazegaki.dic‚Æbushu.rev‚Í$VIM‚©'runtimepath'‚Å¦‚³‚ê‚éƒfƒBƒŒƒNƒgƒŠ‚É
+"   ’u‚¢‚Ä‚¨‚¢‚Ä‚­‚¾‚³‚¢B
 "
-"   :TcvimeOn¥³¥Ş¥ó¥É¤Ç¥Ş¥Ã¥Ô¥ó¥°¤¬Í­¸ú¤Ë¤Ê¤ê¤Ş¤¹¡£
-"   tcvime¤Îµ¡Ç½¤Ï'mapleader'¤Ç»ØÄê¤µ¤ì¤¿¥­¡¼¤Î¸å¤Ë
-"   'q'¤Ê¤É¤Î¥­¡¼¤òÆşÎÏ¤¹¤ë¤³¤È¤Ç¼Â¹Ô¤µ¤ì¤Ş¤¹¡£
-"   'mapleader'¤Î¥Ç¥Õ¥©¥ë¥È¤Ï"\<C-J>"(CTRL¥­¡¼¤ò²¡¤·¤Ê¤¬¤éj)¤Ç¤¹¡£
-"   °Ê¹ß¤ÎÀâÌÀÃæ¤Î<Leader>¤È¤¤¤¦Ê¸»úÎó¤Ïmapleader¤òÉ½¤·¤Æ¤¤¤Ş¤¹¡£
-"   ¤Ä¤Ş¤ê¡¢mapleader¤¬"\<C-J>"¤Î¾ì¹ç¡¢<Leader>q ¤Ï CTRL-J¤Î¸å¤Ëq¤òÆşÎÏ¤¹¤ë¡¢
-"   ¤È¤¤¤¦¤³¤È¤Ç¤¹¡£
-"   ¤Ş¤¿¡¢<Space>¤Ï¥¹¥Ú¡¼¥¹¥­¡¼¡¢<CR>¤Ï¥¨¥ó¥¿¡¼¥­¡¼¤Ç¤¹¡£
+"   :TcvimeOnƒRƒ}ƒ“ƒh‚Åƒ}ƒbƒsƒ“ƒO‚ª—LŒø‚É‚È‚è‚Ü‚·B
+"   tcvime‚Ì‹@”\‚Í'mapleader'‚Åw’è‚³‚ê‚½ƒL[‚ÌŒã‚É
+"   'q'‚È‚Ç‚ÌƒL[‚ğ“ü—Í‚·‚é‚±‚Æ‚ÅÀs‚³‚ê‚Ü‚·B
+"   'mapleader'‚ÌƒfƒtƒHƒ‹ƒg‚Í"\<C-J>"(CTRLƒL[‚ğ‰Ÿ‚µ‚È‚ª‚çj)‚Å‚·B
+"   ˆÈ~‚Ìà–¾’†‚Ì<Leader>‚Æ‚¢‚¤•¶š—ñ‚Ímapleader‚ğ•\‚µ‚Ä‚¢‚Ü‚·B
+"   ‚Â‚Ü‚èAmapleader‚ª"\<C-J>"‚Ìê‡A<Leader>q ‚Í CTRL-J‚ÌŒã‚Éq‚ğ“ü—Í‚·‚éA
+"   ‚Æ‚¢‚¤‚±‚Æ‚Å‚·B
+"   ‚Ü‚½A<Space>‚ÍƒXƒy[ƒXƒL[A<CR>‚ÍƒGƒ“ƒ^[ƒL[‚Å‚·B
 "
-"  Insert Mode¤Ç¤Î¸ò¤¼½ñ¤­ÊÑ´¹:
-"    <Leader>q ¤ÇÊÑ´¹ÂĞ¾İÊ¸»úÎó¤Î»Ï¤Ş¤ê¤ò¥Ş¡¼¥¯¤·¤Ş¤¹¡£
-"    <Leader><Space> ¤Ç¸ò¤¼½ñ¤­ÊÑ´¹¤ò¹Ô¤¤¤Ş¤¹¡£
-"      <Leader>q ¤Ç¥Ş¡¼¥¯¤·¤¿°ÌÃÖ¤«¤é¸½ºß¤Î¥«¡¼¥½¥ë°ÌÃÖ¤Î´Ö¤Ë¤¢¤ëÊ¸»úÎó¤ò
-"      ÆÉ¤ß¤È¤·¤Æmazegaki.dic¤Ç¸¡º÷¤·¤Ş¤¹¡£
-"      ¸õÊä¤¬°ì¤Ä¤·¤«¤Ê¤¤¾ì¹ç¤ÏÊÑ´¹ÂĞ¾İÊ¸»úÎó¤òÃÖ¤­´¹¤¨¤Ş¤¹¡£
-"      ¸õÊä¤¬Ê£¿ô¤¢¤ë¾ì¹ç¤Ï¡¢¥³¥Ş¥ó¥É¹Ô¤Î¾å¤ËCANDIDATE: ¤Ç¸õÊä¤¬É½¼¨¤µ¤ì¤Ş¤¹¡£
-"      Æ±¤¸ÊÑ´¹ÂĞ¾İÊ¸»úÎó¤ËÂĞ¤·¤Æ<Leader><Space>¤ò·«¤êÊÖ¤·ÂÇ¤Ä¤È¡¢
-"      ¸õÊä¤ò½ç¤ËÉ½¼¨¤·¤Æ¤¤¤­¤Ş¤¹¡£
-"      ¸õÊä¤Î¥ê¥¹¥È¤ÎºÇ¸å¤Ş¤Ç¹Ô¤¯¤È¥ê¥¹¥È¤ÎºÇ½é¤ËÌá¤ê¤Ş¤¹¡£
-"    <Leader><CR> ¤ÇCANDIDATE: ¤È¤·¤ÆÉ½¼¨¤µ¤ì¤Æ¤¤¤ë¸õÊä¤òÁªÂò¤·¤Æ
-"      ÊÑ´¹ÂĞ¾İÊ¸»úÎó¤òÃÖ¤­´¹¤¨¤Ş¤¹¡£
+"  Insert Mode‚Å‚ÌŒğ‚º‘‚«•ÏŠ·:
+"    <Leader>q ‚Å•ÏŠ·‘ÎÛ•¶š—ñ‚Ìn‚Ü‚è‚ğƒ}[ƒN‚µ‚Ü‚·B
+"    <Leader><Space> ‚ÅŒğ‚º‘‚«•ÏŠ·‚ğs‚¢‚Ü‚·B
+"      <Leader>q ‚Åƒ}[ƒN‚µ‚½ˆÊ’u‚©‚çŒ»İ‚ÌƒJ[ƒ\ƒ‹ˆÊ’u‚ÌŠÔ‚É‚ ‚é•¶š—ñ‚ğ
+"      “Ç‚İ‚Æ‚µ‚Ämazegaki.dic‚ÅŒŸõ‚µ‚Ü‚·B
+"      Œó•â‚ªˆê‚Â‚µ‚©‚È‚¢ê‡‚Í•ÏŠ·‘ÎÛ•¶š—ñ‚ğ’u‚«Š·‚¦‚Ü‚·B
+"      Œó•â‚ª•¡”‚ ‚éê‡‚ÍAƒRƒ}ƒ“ƒhs‚Ìã‚ÉCANDIDATE: ‚ÅŒó•â‚ª•\¦‚³‚ê‚Ü‚·B
+"      “¯‚¶•ÏŠ·‘ÎÛ•¶š—ñ‚É‘Î‚µ‚Ä<Leader><Space>‚ğŒJ‚è•Ô‚µ‘Å‚Â‚ÆA
+"      Œó•â‚ğ‡‚É•\¦‚µ‚Ä‚¢‚«‚Ü‚·B
+"      Œó•â‚ÌƒŠƒXƒg‚ÌÅŒã‚Ü‚Ås‚­‚ÆƒŠƒXƒg‚ÌÅ‰‚É–ß‚è‚Ü‚·B
+"    <Leader><CR> ‚ÅCANDIDATE: ‚Æ‚µ‚Ä•\¦‚³‚ê‚Ä‚¢‚éŒó•â‚ğ‘I‘ğ‚µ‚Ä
+"      •ÏŠ·‘ÎÛ•¶š—ñ‚ğ’u‚«Š·‚¦‚Ü‚·B
 "
-"    Îã: "<Leader>q¤¢¤¤<Leader><Space>"¤ÈÂÇ¤Ä¤È¡¢
-"        "CANDIDATE: °£"¤ÈÉ½¼¨¤µ¤ì¤Ş¤¹¡£
-"        ¤µ¤é¤Ë"<Leader><Space>"¤òÂÇ¤Ä¤È"CANDIDATE: °¥"¤È¤Ê¤ê¤Ş¤¹¡£
-"        ¤³¤Î¾õÂÖ¤Ç"<Leader><CR>"¤òÂÇ¤Ä¤È¡¢"¤¢¤¤"¤¬"°¥"¤ËÃÖ¤­´¹¤¨¤é¤ì¤Ş¤¹¡£
+"    —á: "<Leader>q‚ ‚¢<Leader><Space>"‚Æ‘Å‚Â‚ÆA
+"        "CANDIDATE: ˆ¡"‚Æ•\¦‚³‚ê‚Ü‚·B
+"        ‚³‚ç‚É"<Leader><Space>"‚ğ‘Å‚Â‚Æ"CANDIDATE: ˆ£"‚Æ‚È‚è‚Ü‚·B
+"        ‚±‚Ìó‘Ô‚Å"<Leader><CR>"‚ğ‘Å‚Â‚ÆA"‚ ‚¢"‚ª"ˆ£"‚É’u‚«Š·‚¦‚ç‚ê‚Ü‚·B
 "
-"  Insert Mode¤Ç¤Î¸ò¤¼½ñ¤­ÊÑ´¹(³èÍÑ¤¹¤ë¸ì):
-"    ´ğËÜÅª¤Ë¤Ï³èÍÑ¤·¤Ê¤¤¸ì¤Î¸ò¤¼½ñ¤­ÊÑ´¹¤ÈÆ±¤¸¤Ç¤¹¡£
-"    "¡½"¤ò¤Ä¤±¤Æ<Leader><Space>¤ÇÊÑ´¹¤¹¤ë¤«¡¢³èÍÑ¤·¤Ê¤¤ÉôÊ¬¤Ş¤ÇÆşÎÏ¤·¤Æ¤«¤é¡¢
-"    <Leader>o ¤ÇÊÑ´¹¤·¤Ş¤¹¡£
-"    <Leader>o ¤Ï<Leader>q ¤Ç¥Ş¡¼¥¯¤·¤¿°ÌÃÖ¤«¤é¸½ºß¤Î¥«¡¼¥½¥ë°ÌÃÖ¤Î´Ö¤ÎÊ¸»úÎó¤Ë
-"    "¡½"¤òÉÕ²Ã¤·¤¿Ê¸»úÎó¤òÆÉ¤ß¤È¤·¤Æmazegaki.dic¤«¤é¸¡º÷¤·¤Ş¤¹¡£
+"  Insert Mode‚Å‚ÌŒğ‚º‘‚«•ÏŠ·(Šˆ—p‚·‚éŒê):
+"    Šî–{“I‚É‚ÍŠˆ—p‚µ‚È‚¢Œê‚ÌŒğ‚º‘‚«•ÏŠ·‚Æ“¯‚¶‚Å‚·B
+"    "\"‚ğ‚Â‚¯‚Ä<Leader><Space>‚Å•ÏŠ·‚·‚é‚©AŠˆ—p‚µ‚È‚¢•”•ª‚Ü‚Å“ü—Í‚µ‚Ä‚©‚çA
+"    <Leader>o ‚Å•ÏŠ·‚µ‚Ü‚·B
+"    <Leader>o ‚Í<Leader>q ‚Åƒ}[ƒN‚µ‚½ˆÊ’u‚©‚çŒ»İ‚ÌƒJ[ƒ\ƒ‹ˆÊ’u‚ÌŠÔ‚Ì•¶š—ñ‚É
+"    "\"‚ğ•t‰Á‚µ‚½•¶š—ñ‚ğ“Ç‚İ‚Æ‚µ‚Ämazegaki.dic‚©‚çŒŸõ‚µ‚Ü‚·B
 "
-"    Îã: "<Leader>q¤Ê¤¬¤á<Leader>o"¤ÈÂÇ¤Ä¤È¡¢"CANDIDATE: Ä¯¤á"¤ÈÉ½¼¨¤µ¤ì¤Ş¤¹¡£
-"        "<Leader><CR>"¤ÈÂÇ¤Ä¤È¡¢"¤Ê¤¬¤á"¤¬"Ä¯¤á"¤ËÃÖ¤­´¹¤¨¤é¤ì¤Ş¤¹¡£
+"    —á: "<Leader>q‚È‚ª‚ß<Leader>o"‚Æ‘Å‚Â‚ÆA"CANDIDATE: ’­‚ß"‚Æ•\¦‚³‚ê‚Ü‚·B
+"        "<Leader><CR>"‚Æ‘Å‚Â‚ÆA"‚È‚ª‚ß"‚ª"’­‚ß"‚É’u‚«Š·‚¦‚ç‚ê‚Ü‚·B
 "
-"  Insert Mode¤Ç¤ÎÉô¼ó¹çÀ®ÊÑ´¹:
-"    <Leader>b ¤Ç¥«¡¼¥½¥ë°ÌÃÖ¤ÎÄ¾Á°¤Î2Ê¸»ú¤ÎÉô¼ó¹çÀ®ÊÑ´¹¤ò¹Ô¤¤¤Ş¤¹¡£
+"  Insert Mode‚Å‚Ì•”ñ‡¬•ÏŠ·:
+"    <Leader>b ‚ÅƒJ[ƒ\ƒ‹ˆÊ’u‚Ì’¼‘O‚Ì2•¶š‚Ì•”ñ‡¬•ÏŠ·‚ğs‚¢‚Ü‚·B
 "
-"    Îã: "ÌÚ¸ı<Leader>b"¤ÈÂÇ¤Ä¤È¡¢"ÌÚ¸ı"¤¬"°É"¤ËÃÖ¤­´¹¤¨¤é¤ì¤Ş¤¹¡£
+"    —á: "–ØŒû<Leader>b"‚Æ‘Å‚Â‚ÆA"–ØŒû"‚ª"ˆÇ"‚É’u‚«Š·‚¦‚ç‚ê‚Ü‚·B
 "
-"  Normal Mode¤Ç¤Î¸ò¤¼½ñ¤­ÊÑ´¹:
-"    [count]<Leader><Space> ¥«¡¼¥½¥ë°ÌÃÖ°ÊÁ°¤Î[count]Ê¸»ú¤Î¸ò¤¼½ñ¤­ÊÑ´¹¤ò
-"      ¹Ô¤¤¤Ş¤¹¡£
-"    <Leader><CR> ¤ÇCANDIDATE: ¤È¤·¤ÆÉ½¼¨¤µ¤ì¤Æ¤¤¤ë¸õÊä¤òÁªÂò¤·¤Æ
-"      ÊÑ´¹ÂĞ¾İÊ¸»úÎó¤òÃÖ¤­´¹¤¨¤Ş¤¹¡£
+"  Normal Mode‚Å‚ÌŒğ‚º‘‚«•ÏŠ·:
+"    [count]<Leader><Space> ƒJ[ƒ\ƒ‹ˆÊ’uˆÈ‘O‚Ì[count]•¶š‚ÌŒğ‚º‘‚«•ÏŠ·‚ğ
+"      s‚¢‚Ü‚·B
+"    <Leader><CR> ‚ÅCANDIDATE: ‚Æ‚µ‚Ä•\¦‚³‚ê‚Ä‚¢‚éŒó•â‚ğ‘I‘ğ‚µ‚Ä
+"      •ÏŠ·‘ÎÛ•¶š—ñ‚ğ’u‚«Š·‚¦‚Ü‚·B
 "
-"    Îã: "¤¢¤¤"¤ÈÉ½¼¨¤µ¤ì¤Æ¤¤¤ë¤È¤­¡¢"¤¤"¤Î¾å¤Ë¥«¡¼¥½¥ë¤òÃÖ¤¤¤Æ
-"        "2<Leader><Space>"¤ÈÂÇ¤Ä¤È¡¢"CANDIDATE: °£"¤ÈÉ½¼¨¤µ¤ì¤Ş¤¹¡£
-"        ¤µ¤é¤Ë"<Leader><Space>"¤ÈÂÇ¤Ä¤È¡¢"CANDIDATE: °¥"¤ÈÉ½¼¨¤µ¤ì¤Ş¤¹¡£
-"        ¤³¤Î¾õÂÖ¤Ç"<Leader><CR>"¤òÂÇ¤Ä¤È¡¢"¤¢¤¤"¤¬"°¥"¤ËÃÖ¤­´¹¤¨¤é¤ì¤Ş¤¹¡£
+"    —á: "‚ ‚¢"‚Æ•\¦‚³‚ê‚Ä‚¢‚é‚Æ‚«A"‚¢"‚Ìã‚ÉƒJ[ƒ\ƒ‹‚ğ’u‚¢‚Ä
+"        "2<Leader><Space>"‚Æ‘Å‚Â‚ÆA"CANDIDATE: ˆ¡"‚Æ•\¦‚³‚ê‚Ü‚·B
+"        ‚³‚ç‚É"<Leader><Space>"‚Æ‘Å‚Â‚ÆA"CANDIDATE: ˆ£"‚Æ•\¦‚³‚ê‚Ü‚·B
+"        ‚±‚Ìó‘Ô‚Å"<Leader><CR>"‚ğ‘Å‚Â‚ÆA"‚ ‚¢"‚ª"ˆ£"‚É’u‚«Š·‚¦‚ç‚ê‚Ü‚·B
 "
-"  Normal Mode¤Ç¤Î¸ò¤¼½ñ¤­ÊÑ´¹(³èÍÑ¤·¤Ê¤¤¸ì):
-"    [count]<Leader>o ¥«¡¼¥½¥ë°ÌÃÖ°ÊÁ°¤Î[count]Ê¸»ú¤Ë"¡½"¤òÉÕ²Ã¤·¤¿Ê¸»úÎó¤ò
-"      ÆÉ¤ß¤È¤·¤Æmazegaki.dic¤«¤é¸¡º÷¤·¤Ş¤¹¡£
+"  Normal Mode‚Å‚ÌŒğ‚º‘‚«•ÏŠ·(Šˆ—p‚µ‚È‚¢Œê):
+"    [count]<Leader>o ƒJ[ƒ\ƒ‹ˆÊ’uˆÈ‘O‚Ì[count]•¶š‚É"\"‚ğ•t‰Á‚µ‚½•¶š—ñ‚ğ
+"      “Ç‚İ‚Æ‚µ‚Ämazegaki.dic‚©‚çŒŸõ‚µ‚Ü‚·B
 "
-"    Îã: "¤Ê¤¬¤á"¤ÈÉ½¼¨¤µ¤ì¤Æ¤¤¤ë¤È¤­¡¢"¤á"¤Î¾å¤Ë¥«¡¼¥½¥ë¤òÃÖ¤¤¤Æ
-"        "3<Leader>o"¤ÈÂÇ¤Ä¤È¡¢"CANDIDATE: Ä¯¤á"¤ÈÉ½¼¨¤µ¤ì¤Ş¤¹¡£
-"        "<Leader><CR>"¤ÈÂÇ¤Ä¤È¡¢"¤Ê¤¬¤á"¤¬"Ä¯¤á"¤ËÃÖ¤­´¹¤¨¤é¤ì¤Ş¤¹¡£
+"    —á: "‚È‚ª‚ß"‚Æ•\¦‚³‚ê‚Ä‚¢‚é‚Æ‚«A"‚ß"‚Ìã‚ÉƒJ[ƒ\ƒ‹‚ğ’u‚¢‚Ä
+"        "3<Leader>o"‚Æ‘Å‚Â‚ÆA"CANDIDATE: ’­‚ß"‚Æ•\¦‚³‚ê‚Ü‚·B
+"        "<Leader><CR>"‚Æ‘Å‚Â‚ÆA"‚È‚ª‚ß"‚ª"’­‚ß"‚É’u‚«Š·‚¦‚ç‚ê‚Ü‚·B
 "
-"  Normal Mode¤Ç¤ÎÉô¼ó¹çÀ®ÊÑ´¹:
-"    <Leader>b ¥«¡¼¥½¥ë°ÌÃÖ°ÊÁ°¤Î2Ê¸»ú¤ÎÉô¼ó¹çÀ®ÊÑ´¹¤ò¹Ô¤¤¤Ş¤¹¡£
+"  Normal Mode‚Å‚Ì•”ñ‡¬•ÏŠ·:
+"    <Leader>b ƒJ[ƒ\ƒ‹ˆÊ’uˆÈ‘O‚Ì2•¶š‚Ì•”ñ‡¬•ÏŠ·‚ğs‚¢‚Ü‚·B
 "
-"    Îã: "ÌÚ¸ı"¤ÈÉ½¼¨¤µ¤ì¤Æ¤¤¤ë¤È¤­¡¢"¸ı"¤Î¾å¤Ë¥«¡¼¥½¥ë¤òÃÖ¤¤¤Æ
-"        "<Leader>b"¤ÈÂÇ¤Ä¤È¡¢"ÌÚ¸ı"¤¬"°É"¤ËÃÖ¤­´¹¤¨¤é¤ì¤Ş¤¹¡£
+"    —á: "–ØŒû"‚Æ•\¦‚³‚ê‚Ä‚¢‚é‚Æ‚«A"Œû"‚Ìã‚ÉƒJ[ƒ\ƒ‹‚ğ’u‚¢‚Ä
+"        "<Leader>b"‚Æ‘Å‚Â‚ÆA"–ØŒû"‚ª"ˆÇ"‚É’u‚«Š·‚¦‚ç‚ê‚Ü‚·B
 "
-" ÂÇ¸°¥Ø¥ë¥×É½¼¨(Normal Mode):
-"    <Leader>? ¤Ç¥«¡¼¥½¥ë°ÌÃÖ¤ÎÊ¸»ú¤ÎÂÇ¸°¤òÉ½¼¨¤·¤Ş¤¹¡£
-"      »ÈÍÑÃæ¤Îkeymap¤ÇÄ¾ÀÜÆşÎÏ¤Ç¤­¤Ê¤¤Ê¸»ú¤Î¾ì¹ç¤Ï¡¢
-"      Éô¼ó¹çÀ®ÊÑ´¹¼­½ñ¤ò¸¡º÷¤·¤Æ¡¢»ØÄê¤µ¤ì¤¿Ê¸»ú¤¬´Ş¤Ş¤ì¤ë¹Ô¤òÉ½¼¨¤·¤Ş¤¹¡£
+" ‘ÅŒ®ƒwƒ‹ƒv•\¦(Normal Mode):
+"    <Leader>? ‚ÅƒJ[ƒ\ƒ‹ˆÊ’u‚Ì•¶š‚Ì‘ÅŒ®‚ğ•\¦‚µ‚Ü‚·B
+"      g—p’†‚Ìkeymap‚Å’¼Ú“ü—Í‚Å‚«‚È‚¢•¶š‚Ìê‡‚ÍA
+"      •”ñ‡¬•ÏŠ·«‘‚ğŒŸõ‚µ‚ÄAw’è‚³‚ê‚½•¶š‚ªŠÜ‚Ü‚ê‚és‚ğ•\¦‚µ‚Ü‚·B
 "
-"    Îã: "¸°"¤È¤¤¤¦Ê¸»ú¤Î¾å¤Ë¥«¡¼¥½¥ë¤òÃÖ¤¤¤Æ"<Leader>?"¤ÈÂÇ¤Ä¤È¡¢
-"        "[TcvimeHelp]"¤È¤¤¤¦¥Ğ¥Ã¥Õ¥¡¤¬³«¤¤¤Æ¼¡¤Î¤è¤¦¤ËÉ½¼¨¤µ¤ì¤Ş¤¹
-"        (keymap¤¬tutcode¤Î¾ì¹ç)¡£
-"        ¡¦¡¦¡¦¡¦    ¡¦¡¦¡¦¡¦    ¸°
-"        ¡¦¡¦¡¦¡¦  3 ¡¦¡¦¡¦¡¦
-"        ¡¦¡¦¡¦¡¦    ¡¦¡¦¡¦¡¦
-"        ¡¦¡¦1 2     ¡¦¡¦¡¦¡¦
+"    —á: "Œ®"‚Æ‚¢‚¤•¶š‚Ìã‚ÉƒJ[ƒ\ƒ‹‚ğ’u‚¢‚Ä"<Leader>?"‚Æ‘Å‚Â‚ÆA
+"        "[TcvimeHelp]"‚Æ‚¢‚¤ƒoƒbƒtƒ@‚ªŠJ‚¢‚ÄŸ‚Ì‚æ‚¤‚É•\¦‚³‚ê‚Ü‚·
+"        (keymap‚ªtutcode‚Ìê‡)B
+"        EEEE    EEEE    Œ®
+"        EEEE  3 EEEE
+"        EEEE    EEEE
+"        EE1 2     EEEE
 "
-" ¥ª¥×¥·¥ç¥ó:
+" ƒIƒvƒVƒ‡ƒ“:
 "    'tcvime_keyboard'
-"       ÂÇ¸°¥Ø¥ë¥×É½¼¨ÍÑ¤Î¥­¡¼¥Ü¡¼¥ÉÇÛÎó¤òÉ½¤¹Ê¸»úÎó¡£
-"       ¥­¡¼¤Î¸å¤Ë¥¹¥Ú¡¼¥¹¡¢¤ò2²ó¤º¤Äµ­½Ò¤¹¤ë¡£
-"       Îã:
+"       ‘ÅŒ®ƒwƒ‹ƒv•\¦—p‚ÌƒL[ƒ{[ƒh”z—ñ‚ğ•\‚·•¶š—ñB
+"       ƒL[‚ÌŒã‚ÉƒXƒy[ƒXA‚ğ2‰ñ‚¸‚Â‹Lq‚·‚éB
+"       —á:
 "         let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 "
 "    'mapleader'
 "       |mapleader|
 
-" ¤³¤Î¥×¥é¥°¥¤¥ó¤òÆÉ¹ş¤ß¤¿¤¯¤Ê¤¤»ş¤Ï.vimrc¤Ë¼¡¤Î¤è¤¦¤Ë½ñ¤¯¤³¤È:
+" ‚±‚Ìƒvƒ‰ƒOƒCƒ“‚ğ“Ç‚İ‚½‚­‚È‚¢‚Í.vimrc‚ÉŸ‚Ì‚æ‚¤‚É‘‚­‚±‚Æ:
 "       :let plugin_tcvime_disable = 1
 
 if exists('plugin_tcvime_disable')
@@ -111,18 +113,18 @@ endif
 
 if !exists("tcvime_keyboard")
   let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
-  " ¿ô»ú¥­¡¼¤ÎÃÊ¤òÉ½¼¨¤·¤Ê¤¤¾ì¹ç¤Ï¼¡¤ÎÊ¸»úÎó¤ò»È¤¦¤è¤¦¤Ë¤¹¤ë(qwerty)
+  " ”šƒL[‚Ì’i‚ğ•\¦‚µ‚È‚¢ê‡‚ÍŸ‚Ì•¶š—ñ‚ğg‚¤‚æ‚¤‚É‚·‚é(qwerty)
 "  let tcvime_keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 endif
 
 " Mapping
 command! TcvimeOn :call <SID>MappingOn()
 command! TcvimeOff :call <SID>MappingOff()
-" keymap¤òÀßÄê¤·¤Æ¡¢TcvimeOn¤¹¤ë
-" °ú¿ô: keymapÌ¾
+" keymap‚ğİ’è‚µ‚ÄATcvimeOn‚·‚é
+" ˆø”: keymap–¼
 command! -nargs=1 TcvimeInit :call <SID>TcvimeInit(<f-args>)
 
-"   ¥Ş¥Ã¥Ô¥ó¥°¤òÍ­¸ú²½
+"   ƒ}ƒbƒsƒ“ƒO‚ğ—LŒø‰»
 function! s:MappingOn()
   let set_mapleader = 0
   if !exists('g:mapleader')
@@ -152,7 +154,7 @@ function! s:MappingOn()
   call s:StatusReset()
 endfunction
 
-"   ¥Ş¥Ã¥Ô¥ó¥°¤òÌµ¸ú²½
+"   ƒ}ƒbƒsƒ“ƒO‚ğ–³Œø‰»
 function! s:MappingOff()
   let set_mapleader = 0
   if !exists('g:mapleader')
@@ -183,7 +185,7 @@ function! s:MappingOff()
   augroup END
 endfunction
 
-" keymap¤òÀßÄê¤·¤ÆTcvime¤ÎMapping¤òÍ­¸ú¤Ë¤¹¤ë
+" keymap‚ğİ’è‚µ‚ÄTcvime‚ÌMapping‚ğ—LŒø‚É‚·‚é
 function! s:TcvimeInit(keymapname)
   if &keymap !=# a:keymapname
     let &keymap = a:keymapname
@@ -192,7 +194,7 @@ function! s:TcvimeInit(keymapname)
 endfunction
 
 
-" ÀßÄê
+" İ’è
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 "echo "candidate_file: ".s:candidate_file
@@ -200,10 +202,10 @@ let s:helpbufname = '[TcvimeHelp]'
 let s:helpbufpat = '\[TcvimeHelp\]'
 
 "==============================================================================
-"				    ¼­½ñ¸¡º÷
+"				    «‘ŒŸõ
 "
 
-" ¼­½ñ¥Ç¡¼¥¿¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó
+" «‘ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
 function! s:Candidate_FileOpen()
   if filereadable(s:candidate_file) != 1
     return 0
@@ -214,7 +216,7 @@ function! s:Candidate_FileOpen()
   return 1
 endfunction
 
-" ¸¡º÷¤Ë»ÈÍÑ¤¹¤ë¾õÂÖÊÑ¿ô
+" ŒŸõ‚Ég—p‚·‚éó‘Ô•Ï”
 let s:last_keyword = ''
 let s:last_found = 0
 let s:last_candidate = ''
@@ -222,20 +224,20 @@ let s:last_candidate_str = ''
 let s:last_candidate_num = 0
 let s:is_katuyo = 0
 
-" ¼­½ñ¤«¤éÌ¤³ÎÄêÊ¸»úÎó¤ò¸¡º÷
-" ¸õÊä¤¬°ì¤Ä¤·¤«¤Ê¤¤¾ì¹ç¤Ï1¤òÊÖ¤¹¡£¸õÊä¤¬Ê£¿ô¤¢¤ë¾ì¹ç¤Ï0¤òÊÖ¤¹¡£
+" «‘‚©‚ç–¢Šm’è•¶š—ñ‚ğŒŸõ
+" Œó•â‚ªˆê‚Â‚µ‚©‚È‚¢ê‡‚Í1‚ğ•Ô‚·BŒó•â‚ª•¡”‚ ‚éê‡‚Í0‚ğ•Ô‚·B
 function! s:CandidateSearch(keyword)
   let found_num = s:last_found
   let uniq = 0
 
-  " ¸¡º÷Ê¸»úÎó¤¬Á°²ó¤ÈÆ±¤¸»ş¤Ï¾ÊÎ¬
+  " ŒŸõ•¶š—ñ‚ª‘O‰ñ‚Æ“¯‚¶‚ÍÈ—ª
   if s:last_keyword !=# a:keyword
     let s:last_keyword = a:keyword
     if !s:Candidate_FileOpen()
       return 0
     endif
 
-    " ¼Âºİ¤Î¸¡º÷
+    " ÀÛ‚ÌŒŸõ
     let v:errmsg = ""
     silent! execute "normal! gg/^" . a:keyword . " \<CR>"
     if v:errmsg != ""
@@ -251,11 +253,11 @@ function! s:CandidateSearch(keyword)
     endif
     quit!
   else
-    " ¼¡¤ÎÊÑ´¹¸õÊä¤òÃµ¤·½Ğ¤¹¤¿¤á
+    " Ÿ‚Ì•ÏŠ·Œó•â‚ğ’T‚µo‚·‚½‚ß
     if s:last_candidate_num > 0 && s:last_candidate != ''
       let s:last_candidate_num = s:last_candidate_num + strlen(s:last_candidate) + 1
     endif
-    " Á°²óÊÑ´¹¤·¤¿Ê¸»úÎó¤òºÆÅÙÊÑ´¹¤¹¤ë¾ì¹ç¡¢¸õÊä¿ô¤ò¥Á¥§¥Ã¥¯¤·Ä¾¤¹
+    " ‘O‰ñ•ÏŠ·‚µ‚½•¶š—ñ‚ğÄ“x•ÏŠ·‚·‚éê‡AŒó•â”‚ğƒ`ƒFƒbƒN‚µ’¼‚·
     if s:last_candidate_num == 1 && s:last_candidate == ''
       if s:last_candidate_str =~# '^/[^/]\+/$'
 	let uniq = 1
@@ -264,7 +266,7 @@ function! s:CandidateSearch(keyword)
   endif
 
   if found_num > 0
-    " ¸õÊä¤¬¤ß¤Ä¤«¤Ã¤Æ¤¤¤ë¤Ê¤é¤Ğ¡¢½çÈÖ¤ËÉ½¼¨¤¹¤ë
+    " Œó•â‚ª‚İ‚Â‚©‚Á‚Ä‚¢‚é‚È‚ç‚ÎA‡”Ô‚É•\¦‚·‚é
     let str = ''
     while strlen(str) < 1
       let str = matchstr(s:last_candidate_str, '[^/]\+', s:last_candidate_num)
@@ -277,7 +279,7 @@ function! s:CandidateSearch(keyword)
       echo "CANDIDATE: ".str
     endif
   else
-    " ¸õÊä¤¬¤ß¤Ä¤«¤é¤Ê¤«¤Ã¤¿»ş¡¢¥ê¥»¥Ã¥È
+    " Œó•â‚ª‚İ‚Â‚©‚ç‚È‚©‚Á‚½AƒŠƒZƒbƒg
     let s:last_candidate = ''
     let s:last_candidate_str = ''
     let s:last_candidate_num = 0
@@ -286,7 +288,7 @@ function! s:CandidateSearch(keyword)
   return uniq
 endfunction
 
-" ¸õÊä¤ò¥Ğ¥Ã¥Õ¥¡¤ËÁŞÆş
+" Œó•â‚ğƒoƒbƒtƒ@‚É‘}“ü
 function! s:CandidateSelect(len)
   if strlen(s:last_candidate) > 0
     let str = getline(s:status_line)
@@ -312,7 +314,7 @@ function! s:SelectWindowByName(name)
   return num
 endfunction
 
-" Éô¼ó¹çÀ®¼­½ñ¥Ç¡¼¥¿¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó
+" •”ñ‡¬«‘ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
 function! s:Bushu_FileOpen()
   if filereadable(s:bushu_file) != 1
     return 0
@@ -323,7 +325,7 @@ function! s:Bushu_FileOpen()
   return 1
 endfunction
 
-" Åù²ÁÊ¸»ú¤ò¸¡º÷¤·¤ÆÊÖ¤¹¡£Åù²ÁÊ¸»ú¤¬¤Ê¤¤¾ì¹ç¤Ï¤â¤È¤ÎÊ¸»ú¤½¤Î¤â¤Î¤òÊÖ¤¹
+" “™‰¿•¶š‚ğŒŸõ‚µ‚Ä•Ô‚·B“™‰¿•¶š‚ª‚È‚¢ê‡‚Í‚à‚Æ‚Ì•¶š‚»‚Ì‚à‚Ì‚ğ•Ô‚·
 function! s:BushuAlternative(ch)
   if !s:Bushu_FileOpen()
     return a:ch
@@ -340,8 +342,8 @@ function! s:BushuAlternative(ch)
   return retchar
 endfunction
 
-" char1¤Èchar2¤ò¤³¤Î½çÈÖ¤Ç¹çÀ®¤·¤Æ¤Ç¤­¤ëÊ¸»ú¤ò¸¡º÷¤·¤ÆÊÖ¤¹¡£
-" ¸«¤Ä¤«¤é¤Ê¤¤¾ì¹ç¤Ï''¤òÊÖ¤¹
+" char1‚Æchar2‚ğ‚±‚Ì‡”Ô‚Å‡¬‚µ‚Ä‚Å‚«‚é•¶š‚ğŒŸõ‚µ‚Ä•Ô‚·B
+" Œ©‚Â‚©‚ç‚È‚¢ê‡‚Í''‚ğ•Ô‚·
 function! s:BushuSearchCompose(char1, char2)
   if !s:Bushu_FileOpen()
     return ''
@@ -358,9 +360,9 @@ function! s:BushuSearchCompose(char1, char2)
   return retchar
 endfunction
 
-" »ØÄê¤µ¤ì¤¿Ê¸»ú¤ò2¤Ä¤ÎÉô¼ó¤ËÊ¬²ò¤¹¤ë¡£
-" Ê¬²ò¤·¤¿Éô¼ó¤òs:decomp1, s:decomp2¤Ë¥»¥Ã¥È¤¹¤ë¡£
-" @return 1: Ê¬²ò¤ËÀ®¸ù¤·¤¿¾ì¹ç¡¢0: Ê¬²ò¤Ç¤­¤Ê¤«¤Ã¤¿¾ì¹ç
+" w’è‚³‚ê‚½•¶š‚ğ2‚Â‚Ì•”ñ‚É•ª‰ğ‚·‚éB
+" •ª‰ğ‚µ‚½•”ñ‚ğs:decomp1, s:decomp2‚ÉƒZƒbƒg‚·‚éB
+" @return 1: •ª‰ğ‚É¬Œ÷‚µ‚½ê‡A0: •ª‰ğ‚Å‚«‚È‚©‚Á‚½ê‡
 function! s:BushuDecompose(ch)
   if !s:Bushu_FileOpen()
     return 0
@@ -388,11 +390,11 @@ function! s:BushuDecompose(ch)
   return ret
 endfunction
 
-" ¹çÀ®¸å¤ÎÊ¸»ú¤¬¶õ¤Ç¤Ê¤¯¡¢¸µ¤ÎÊ¸»ú¤Ç¤â¤Ê¤¤¤³¤È¤ò³ÎÇ§
-" @param ch ¹çÀ®¸å¤ÎÊ¸»ú
-" @param char1 ¸µ¤ÎÊ¸»ú
-" @param char2 ¸µ¤ÎÊ¸»ú
-" @return 1: ch¤¬¶õ¤Ç¤âchar1¤Ç¤âchar2¤Ç¤â¤Ê¤¤¾ì¹ç¡£0: ¤½¤ì°Ê³°¤Î¾ì¹ç
+" ‡¬Œã‚Ì•¶š‚ª‹ó‚Å‚È‚­AŒ³‚Ì•¶š‚Å‚à‚È‚¢‚±‚Æ‚ğŠm”F
+" @param ch ‡¬Œã‚Ì•¶š
+" @param char1 Œ³‚Ì•¶š
+" @param char2 Œ³‚Ì•¶š
+" @return 1: ch‚ª‹ó‚Å‚àchar1‚Å‚àchar2‚Å‚à‚È‚¢ê‡B0: ‚»‚êˆÈŠO‚Ìê‡
 function! s:BushuCharOK(ch, char1, char2)
   if a:ch !=# '' && a:ch !=# a:char1 && a:ch !=# a:char2
     return 1
@@ -401,19 +403,19 @@ function! s:BushuCharOK(ch, char1, char2)
   endif
 endfunction
 
-" Éô¼ó¹çÀ®ÊÑ´¹¼­½ñ¤ò¸¡º÷
+" •”ñ‡¬•ÏŠ·«‘‚ğŒŸõ
 function! s:BushuSearch(char1, char2)
   let char1 = a:char1
   let char2 = a:char2
   let i = 0
   while i < 2
-    " ¤½¤Î¤Ş¤Ş¹çÀ®¤Ç¤­¤ë?
+    " ‚»‚Ì‚Ü‚Ü‡¬‚Å‚«‚é?
     let retchar = s:BushuSearchCompose(char1, char2)
     if s:BushuCharOK(retchar, char1, char2)
       return retchar
     endif
 
-    " Åù²ÁÊ¸»ú¤É¤¦¤·¤Ç¹çÀ®¤Ç¤­¤ë?
+    " “™‰¿•¶š‚Ç‚¤‚µ‚Å‡¬‚Å‚«‚é?
     if !exists("ch1alt")
       let ch1alt = s:BushuAlternative(char1)
     endif
@@ -425,7 +427,7 @@ function! s:BushuSearch(char1, char2)
       return retchar
     endif
 
-    " Åù²ÁÊ¸»ú¤òÉô¼ó¤ËÊ¬²ò
+    " “™‰¿•¶š‚ğ•”ñ‚É•ª‰ğ
     if !exists("ch1a1")
       if s:BushuDecompose(ch1alt) == 1
 	let ch1a1 = s:decomp1
@@ -449,7 +451,7 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
-    " °ú¤­»»
+    " ˆø‚«Z
     if ch1a1 !=# '' && ch1a2 !=# '' && ch1a2 ==# ch2alt
       let retchar = ch1a1
       if s:BushuCharOK(retchar, char1, char2)
@@ -463,7 +465,7 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
-    " °ìÊı¤¬ÉôÉÊ¤Ë¤è¤ëÂ­¤·»»
+    " ˆê•û‚ª•”•i‚É‚æ‚é‘«‚µZ
     if ch1alt !=# '' && ch2a1 !=# ''
       let retchar = s:BushuSearchCompose(ch1alt, ch2a1)
       if s:BushuCharOK(retchar, char1, char2)
@@ -489,7 +491,7 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
-    " Î¾Êı¤¬ÉôÉÊ¤Ë¤è¤ëÂ­¤·»»
+    " —¼•û‚ª•”•i‚É‚æ‚é‘«‚µZ
     if ch1a1 !=# '' && ch2a1 !=# ''
       let retchar = s:BushuSearchCompose(ch1a1, ch2a1)
       if s:BushuCharOK(retchar, char1, char2)
@@ -515,7 +517,7 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
-    " ÉôÉÊ¤Ë¤è¤ë°ú¤­»»
+    " •”•i‚É‚æ‚éˆø‚«Z
     if ch1a2 !=# '' && ch2a1 !=# '' && ch1a2 ==# ch2a1
       let retchar = ch1a1
       if s:BushuCharOK(retchar, char1, char2)
@@ -541,7 +543,7 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
-    " Ê¸»ú¤Î½ç¤òµÕ¤Ë¤·¤Æ¤ä¤Ã¤Æ¤ß¤ë
+    " •¶š‚Ì‡‚ğ‹t‚É‚µ‚Ä‚â‚Á‚Ä‚İ‚é
     let t = char1  | let char1  = char2  | let char2 = t
     let t = ch1alt | let ch1alt = ch2alt | let ch2alt = t
     let t = ch1a1  | let ch1a1  = ch2a1  | let ch2a1 = t
@@ -549,11 +551,11 @@ function! s:BushuSearch(char1, char2)
     let i = i + 1
   endwhile
 
-  " ¹çÀ®¤Ç¤­¤Ê¤«¤Ã¤¿
+  " ‡¬‚Å‚«‚È‚©‚Á‚½
   return ''
 endfunction
 
-" Éô¼ó¹çÀ®¤·¤¿Ê¸»ú¤ò¥Ğ¥Ã¥Õ¥¡¤ËÁŞÆş
+" •”ñ‡¬‚µ‚½•¶š‚ğƒoƒbƒtƒ@‚É‘}“ü
 function! s:BushuReplace(linenum, stcol, endcol, ch)
   let str = getline(a:linenum)
   let str = strpart(str, 0, a:stcol - 1) . a:ch . strpart(str, a:endcol - 1)
@@ -561,7 +563,7 @@ function! s:BushuReplace(linenum, stcol, endcol, ch)
 endfunction
 
 "==============================================================================
-"				    ÆşÎÏÀ©¸æ
+"				    “ü—Í§Œä
 "
 
 function! s:InputConvert()
@@ -582,8 +584,8 @@ function! s:InputConvert()
   endif
 endfunction
 
-" ³èÍÑ¤Î¤¢¤ëÃ±¸ì¤ÎÊÑ´¹¤ò¹Ô¤¦¡£
-" ÊÑ´¹ÂĞ¾İÊ¸»úÎó¤ÎËöÈø¤Ë¡Ö¡½¡×¤òÄÉ²Ã¤·¤Æ¸ò¤¼½ñ¤­¼­½ñ¤ò¸¡º÷¤¹¤ë¡£
+" Šˆ—p‚Ì‚ ‚é’PŒê‚Ì•ÏŠ·‚ğs‚¤B
+" •ÏŠ·‘ÎÛ•¶š—ñ‚Ì––”ö‚Éu\v‚ğ’Ç‰Á‚µ‚ÄŒğ‚º‘‚««‘‚ğŒŸõ‚·‚éB
 function! s:InputConvertKatuyo()
   let col = col("'^")
   let status = s:StatusGet()
@@ -591,7 +593,7 @@ function! s:InputConvertKatuyo()
   let len = strlen(status)
   if len > 0
     let s:is_katuyo = 1
-    let uniq = s:CandidateSearch(status . '¡½')
+    let uniq = s:CandidateSearch(status . '\')
   else
     let s:last_keyword = ''
     call s:StatusReset()
@@ -602,10 +604,10 @@ function! s:InputConvertKatuyo()
   endif
 endfunction
 
-" ³ÎÄê¤·¤è¤¦¤È¤·¤Æ¤¤¤ë¸õÊä¤¬ÌäÂê¤Ê¤¤¤«¤É¤¦¤«¥Á¥§¥Ã¥¯
+" Šm’è‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚éŒó•â‚ª–â‘è‚È‚¢‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
 function! s:IsCandidateOK(str)
   if strlen(a:str) > 0 && strlen(s:last_candidate) > 0
-    if s:is_katuyo && s:last_keyword ==# (a:str . '¡½') || s:last_keyword ==# a:str
+    if s:is_katuyo && s:last_keyword ==# (a:str . '\') || s:last_keyword ==# a:str
       return 1
     endif
   endif
@@ -630,7 +632,7 @@ function! s:InputStart()
   call s:StatusSet()
 endfunction
 
-" Ä¾Á°¤Î2Ê¸»ú¤ÎÉô¼ó¹çÀ®ÊÑ´¹¤ò¹Ô¤¦
+" ’¼‘O‚Ì2•¶š‚Ì•”ñ‡¬•ÏŠ·‚ğs‚¤
 function! s:InputConvertBushu(is_insert_mode)
   let col3 = col("'^")
   if col3 > 3
@@ -663,17 +665,17 @@ function! s:InputConvertBushu(is_insert_mode)
   endif
 endfunction
 
-" º£¤Î°ÌÃÖ°ÊÁ°¤Î2Ê¸»ú¤òÉô¼ó¹çÀ®ÊÑ´¹¤¹¤ë
+" ¡‚ÌˆÊ’uˆÈ‘O‚Ì2•¶š‚ğ•”ñ‡¬•ÏŠ·‚·‚é
 function! s:ConvertBushu()
   execute "normal! a\<ESC>"
   call s:InputConvertBushu(0)
 endfunction
 
-" °ÊÁ°¤ÎConvertCount(), ConvertKatuyo()¤ËÅÏ¤µ¤ì¤¿count°ú¿ô¤ÎÃÍ¡£
-" count¤¬0¤Ç¼Â¹Ô¤µ¤ì¤¿¾ì¹ç¤Ë°ÊÁ°¤ÎcountÃÍ¤ò»È¤¦¤è¤¦¤Ë¤¹¤ë¤¿¤á¡£
+" ˆÈ‘O‚ÌConvertCount(), ConvertKatuyo()‚É“n‚³‚ê‚½countˆø”‚Ì’lB
+" count‚ª0‚ÅÀs‚³‚ê‚½ê‡‚ÉˆÈ‘O‚Ìcount’l‚ğg‚¤‚æ‚¤‚É‚·‚é‚½‚ßB
 let s:last_count = 0
 
-" º£¤Î°ÌÃÖ°ÊÁ°¤ÎcountÊ¸»ú¤òÊÑ´¹¤¹¤ë
+" ¡‚ÌˆÊ’uˆÈ‘O‚Ìcount•¶š‚ğ•ÏŠ·‚·‚é
 function! s:ConvertCount(count)
   let cnt = a:count
   if cnt == 0
@@ -713,7 +715,7 @@ function! s:ConvertCount(count)
   endif
 endfunction
 
-" º£¤Î°ÌÃÖ°ÊÁ°¤ÎcountÊ¸»ú¤ò³èÍÑ¤Î¤¢¤ë¸ì¤È¤·¤ÆÊÑ´¹¤¹¤ë
+" ¡‚ÌˆÊ’uˆÈ‘O‚Ìcount•¶š‚ğŠˆ—p‚Ì‚ ‚éŒê‚Æ‚µ‚Ä•ÏŠ·‚·‚é
 function! s:ConvertKatuyo(count)
   let cnt = a:count
   if cnt == 0
@@ -742,7 +744,7 @@ function! s:ConvertKatuyo(count)
       let &cmdheight = 2
     endif
     let s:is_katuyo = 1
-    let uniq = s:CandidateSearch(status . '¡½')
+    let uniq = s:CandidateSearch(status . '\')
     if uniq
       call s:FixCandidate()
     endif
@@ -753,7 +755,7 @@ function! s:ConvertKatuyo(count)
   endif
 endfunction
 
-" ConvertCount()¤ÇÊÑ´¹¤ò³«»Ï¤·¤¿¸õÊä¤ò³ÎÄê¤¹¤ë
+" ConvertCount()‚Å•ÏŠ·‚ğŠJn‚µ‚½Œó•â‚ğŠm’è‚·‚é
 function! s:FixCandidate()
   execute "normal! a\<ESC>"
   let str = s:StatusGet()
@@ -767,9 +769,9 @@ function! s:FixCandidate()
 endfunction
 
 "==============================================================================
-" ¥Ø¥ë¥×É½¼¨
+" ƒwƒ‹ƒv•\¦
 
-" ¶õ¤Î¥Ø¥ë¥×ÍÑ¥Ğ¥Ã¥Õ¥¡¤òºî¤ë
+" ‹ó‚Ìƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğì‚é
 function! s:Help_BufReadCmd()
   set ft=
   set buftype=nofile
@@ -777,7 +779,7 @@ function! s:Help_BufReadCmd()
   set noswapfile
 endfunction
 
-" ¥Ø¥ë¥×ÍÑ¥Ğ¥Ã¥Õ¥¡¤ò³«¤¯
+" ƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğŠJ‚­
 function! s:OpenHelpBuffer()
   if s:SelectWindowByName(s:helpbufname) < 0
     execute "silent normal! :sp " . s:helpbufname . "\<CR>"
@@ -785,7 +787,7 @@ function! s:OpenHelpBuffer()
   execute "normal! :%d\<CR>4\<C-W>\<C-_>"
 endfunction
 
-" ¥«¡¼¥½¥ë°ÌÃÖ¤ÎÊ¸»ú¤ÎÂÇ¸°¤òÉ½¼¨¤¹¤ë
+" ƒJ[ƒ\ƒ‹ˆÊ’u‚Ì•¶š‚Ì‘ÅŒ®‚ğ•\¦‚·‚é
 function! s:ShowStrokeHelp()
   let col1 = col(".")
   execute "normal! a\<ESC>"
@@ -794,7 +796,7 @@ function! s:ShowStrokeHelp()
   call s:ShowHelp(ch)
 endfunction
 
-" »ØÄê¤µ¤ì¤¿Ê¸»ú¤òÆşÎÏ¤¹¤ë¤¿¤á¤ÎÂÇ¸°¤òÉ½¼¨¤¹¤ë
+" w’è‚³‚ê‚½•¶š‚ğ“ü—Í‚·‚é‚½‚ß‚Ì‘ÅŒ®‚ğ•\¦‚·‚é
 function! s:ShowHelp(ch)
   if strlen(a:ch) == 0 || &keymap == ""
     return
@@ -807,7 +809,7 @@ function! s:ShowHelp(ch)
   endif
 endfunction
 
-" »ØÄê¤µ¤ì¤¿Ê¸»ú¤È¤½¤ÎÂÇ¸°¤òÉ½¤Ë¤·¤ÆÉ½¼¨¤¹¤ë
+" w’è‚³‚ê‚½•¶š‚Æ‚»‚Ì‘ÅŒ®‚ğ•\‚É‚µ‚Ä•\¦‚·‚é
 function! s:ShowHelpSequence(ch, keyseq)
   call s:OpenHelpBuffer()
   execute "normal! ggO" . g:tcvime_keyboard . "\<ESC>"
@@ -823,13 +825,13 @@ function! s:ShowHelpSequence(ch, keyseq)
   execute "normal! :%s@^\\(................\\). . @\\1@e\<CR>"
   execute "normal! :%s@\\(.\\)\\(.\\)@\\1\\2@ge\<CR>"
   execute "normal! :%s@\\(.\\). @\\1@ge\<CR>"
-  execute "normal! :%s@. . @¡¦@g\<CR>"
+  execute "normal! :%s@. . @E@g\<CR>"
   execute "normal! :%s@@ @ge\<CR>"
   execute "normal! 1GA    " . a:ch . "\<ESC>"
   execute "normal! \<C-W>p"
 endfunction
 
-" Éô¼ó¹çÀ®¼­½ñ¤«¤é¡¢»ØÄê¤µ¤ì¤¿Ê¸»ú¤ò´Ş¤à¹Ô¤ò¸¡º÷¤·¤ÆÉ½¼¨¤¹¤ë
+" •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚µ‚Ä•\¦‚·‚é
 function! s:ShowHelpBushuDic(ch)
   let lines = s:SearchBushuDic(a:ch)
   if strlen(lines) > 0
@@ -839,7 +841,7 @@ function! s:ShowHelpBushuDic(ch)
   endif
 endfunction
 
-" Éô¼ó¹çÀ®¼­½ñ¤«¤é¡¢»ØÄê¤µ¤ì¤¿Ê¸»ú¤ò´Ş¤à¹Ô¤ò¸¡º÷¤¹¤ë
+" •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚·‚é
 function! s:SearchBushuDic(ch)
   if !s:Bushu_FileOpen()
     return ""
@@ -864,7 +866,7 @@ function! s:SearchBushuDic(ch)
   return lines
 endfunction
 
-" »ØÄê¤µ¤ì¤¿Ê¸»ú¤òÆşÎÏ¤¹¤ë¤¿¤á¤ÎÂÇ¸°¤òkeymap¥Õ¥¡¥¤¥ë¤«¤é¸¡º÷¤¹¤ë
+" w’è‚³‚ê‚½•¶š‚ğ“ü—Í‚·‚é‚½‚ß‚Ì‘ÅŒ®‚ğkeymapƒtƒ@ƒCƒ‹‚©‚çŒŸõ‚·‚é
 function! s:SearchKeymap(ch)
   let kmfile = globpath(&rtp, "keymap/" . &keymap . "_" . &encoding . ".vim")
   if filereadable(kmfile) != 1
@@ -887,10 +889,10 @@ function! s:SearchKeymap(ch)
 endfunction
 
 "==============================================================================
-"			     Ì¤³ÎÄêÊ¸»ú´ÉÍıÍÑ´Ø¿ô·²
+"			     –¢Šm’è•¶šŠÇ——pŠÖ”ŒQ
 "
 
-"   Ì¤³ÎÄêÊ¸»úÎó¤¬Â¸ºß¤¹¤ë¤«¥Á¥§¥Ã¥¯¤¹¤ë
+"   –¢Šm’è•¶š—ñ‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é
 function! s:StatusIsEnable()
   if s:status_line != line('.') || s:status_column <= 0 || s:status_column > col('.')
     return 0
@@ -898,26 +900,26 @@ function! s:StatusIsEnable()
   return 1
 endfunction
 
-"   Ì¤³ÎÄêÊ¸»úÎó¤ò³«»Ï¤¹¤ë
+"   –¢Šm’è•¶š—ñ‚ğŠJn‚·‚é
 function! s:StatusSet()
   let s:status_line = line("'^")
   let s:status_column = col("'^")
   call s:StatusEcho()
 endfunction
 
-"   Ì¤³ÎÄêÊ¸»úÎó¤ò¥ê¥»¥Ã¥È¤¹¤ë
+"   –¢Šm’è•¶š—ñ‚ğƒŠƒZƒbƒg‚·‚é
 function! s:StatusReset()
   let s:status_line = 0
   let s:status_column = 0
 endfunction
 
-"   Ì¤³ÎÄêÊ¸»úÎó¤ò¡Ö¾õÂÖ¡×¤È¤·¤Æ¼èÆÀ¤¹¤ë
+"   –¢Šm’è•¶š—ñ‚ğuó‘Ôv‚Æ‚µ‚Äæ“¾‚·‚é
 function! s:StatusGet()
   if !s:StatusIsEnable()
     return ''
   endif
 
-  " É¬Í×¤Ê¥Ñ¥é¥á¡¼¥¿¤ò¼ı½¸
+  " •K—v‚Èƒpƒ‰ƒ[ƒ^‚ğûW
   let stpos = s:status_column - 1
   let ccl = col("'^")
   let len = ccl - s:status_column
@@ -926,7 +928,7 @@ function! s:StatusGet()
   return strpart(str, stpos, len)
 endfunction
 
-"   Ì¤³ÎÄêÊ¸»úÎó¤Î³«»Ï°ÌÃÖ¤È½ªÎ»°ÌÃÖ¤òÉ½¼¨(¥Ç¥Ğ¥Ã¥°ÍÑ)
+"   –¢Šm’è•¶š—ñ‚ÌŠJnˆÊ’u‚ÆI—¹ˆÊ’u‚ğ•\¦(ƒfƒoƒbƒO—p)
 function! s:StatusEcho(...)
   echo "New conversion (line=".s:status_line." column=".s:status_column.")"
 endfunction
