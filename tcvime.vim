@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Revision: $Id: tcvime.vim,v 1.27 2003/07/09 12:42:33 deton Exp $
+" Revision: $Id: tcvime.vim,v 1.28 2003/09/03 13:36:07 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -14,6 +14,7 @@ scriptencoding cp932
 "   :TcvimeOn         キーマッピングを有効化する
 "   :TcvimeOff        キーマッピングを無効化する
 "   :TcvimeHelp       指定した文字のヘルプ表を表示する
+"   :TcvimeHelpBushu  指定した文字を含む行を部首合成変換辞書から検索して表示
 "   :TcvimeSetKeymap  keymapをsetする
 "
 " imap:
@@ -72,7 +73,10 @@ command! TcvimeOff call <SID>MappingOff()
 command! -nargs=1 TcvimeSetKeymap call <SID>SetKeymap(<args>)
 " 指定された文字のヘルプ表を表示する
 " 引数: 対象の文字
-command! -nargs=1 TcvimeHelp call <SID>ShowHelp(<args>)
+command! -nargs=1 TcvimeHelp call <SID>ShowHelp(<q-args>)
+" 指定された文字を含む行を部首合成変換辞書から検索して表示する
+" 引数: 対象の文字
+command! -nargs=1 TcvimeHelpBushu call <SID>ShowHelpBushuDic(<q-args>)
 
 " keymapを設定する
 function! s:SetKeymap(keymapname)
