@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: $Date: 2003/05/09 14:04:43 $
+" Last Change: $Date: 2003/05/10 15:59:13 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -59,8 +59,10 @@ let s:last_candidate_num = 0
 let s:is_katuyo = 0
 
 " 辞書から未確定文字列を検索
+" 候補が一つしかない場合は1を返す。候補が複数ある場合は0を返す。
 function! s:CandidateSearch(keyword)
   let found_num = s:last_found
+  let uniq = 0
 
   " 検索文字列が前回と同じ時は省略
   if s:last_keyword !=# a:keyword
@@ -79,12 +81,21 @@ function! s:CandidateSearch(keyword)
       let s:last_candidate_str = substitute(getline('.'), '^' . a:keyword . ' ', '', '')
       let s:last_candidate_num = 1
       let found_num = line('.')
+      if s:last_candidate_str =~# '^/[^/]\+/$'
+	let uniq = 1
+      endif
     endif
     execute "normal! \<C-w>p"
   else
     " 次の変換候補を探し出すため
     if s:last_candidate_num > 0 && s:last_candidate != ''
       let s:last_candidate_num = s:last_candidate_num + strlen(s:last_candidate) + 1
+    endif
+    " 前回変換した文字列を再度変換する場合、候補数をチェックし直す
+    if s:last_candidate_num == 1 && s:last_candidate == ''
+      if s:last_candidate_str =~# '^/[^/]\+/$'
+	let uniq = 1
+      endif
     endif
   endif
 
@@ -98,8 +109,9 @@ function! s:CandidateSearch(keyword)
       endif
     endwhile
     let s:last_candidate = str
-    echo "CANDIDATE: ".str
-    "echo "CANDIDATE: ".str." (".s:last_candidate_str.")"
+    if !uniq
+      echo "CANDIDATE: ".str
+    endif
   else
     " 候補がみつからなかった時、リセット
     let s:last_candidate = ''
@@ -107,6 +119,7 @@ function! s:CandidateSearch(keyword)
     let s:last_candidate_num = 0
   endif
   let s:last_found = found_num
+  return uniq
 endfunction
 
 " 候補をバッファに挿入
@@ -159,7 +172,6 @@ function! s:BushuAlternative(ch)
   let v:errmsg = ""
   silent! execute "normal! gg/^." . a:ch . "$\<CR>"
   if v:errmsg == ""
-    let found_num = line('.')
     execute "normal! l"
     let retchar = strpart(getline('.'), 0, col('.') - 1)
   else
@@ -178,7 +190,6 @@ function! s:BushuSearchCompose(char1, char2)
   let v:errmsg = ""
   silent! execute "normal! gg/^." . a:char1 . a:char2 . "\<CR>"
   if v:errmsg == ""
-    let found_num = line('.')
     execute "normal! l"
     let retchar = strpart(getline('.'), 0, col('.') - 1)
   else
@@ -198,7 +209,6 @@ function! s:BushuDecompose(ch)
   let v:errmsg = ""
   silent! execute "normal! gg/^" . a:ch . "..\<CR>"
   if v:errmsg == ""
-    let found_num = line('.')
     let save_ve = &ve
     let &ve = 'all'
     execute "normal! l"
@@ -399,14 +409,18 @@ function! s:InputConvert()
   let col = col("'^")
   let s:is_katuyo = 0
   let status = s:StatusGet()
+  let uniq = 0
   let len = strlen(status)
   if len > 0
-    call s:CandidateSearch(status)
+    let uniq = s:CandidateSearch(status)
   else
     let s:last_keyword = ''
     call s:StatusReset()
   endif
   execute "normal! " . col . "|"
+  if uniq
+    call s:InputFix()
+  endif
 endfunction
 
 " 活用のある単語の変換を行う。
@@ -414,15 +428,19 @@ endfunction
 function! s:InputConvertKatuyo()
   let col = col("'^")
   let status = s:StatusGet()
+  let uniq = 0
   let len = strlen(status)
   if len > 0
     let s:is_katuyo = 1
-    call s:CandidateSearch(status . "―")
+    let uniq = s:CandidateSearch(status . "―")
   else
     let s:last_keyword = ''
     call s:StatusReset()
   endif
   execute "normal! " . col . "|"
+  if uniq
+    call s:InputFix()
+  endif
 endfunction
 
 " 確定しようとしている候補が問題ないかどうかチェック
@@ -507,21 +525,21 @@ function! s:ConvertCount(count)
     endif
     let s:status_column = col(".")
     execute "normal! " . save_col . "|"
-    if !s:StatusIsEnable()
-      call s:StatusReset()
-    else
-      let status = s:StatusGet()
-      let len = strlen(status)
-      if len > 0
-	let s:save_cmdheight = &cmdheight
-	if &cmdheight < 2
-	  let &cmdheight = 2
-	endif
-	call s:CandidateSearch(status)
-      else
-	let s:last_keyword = ''
-	call s:StatusReset()
+
+    let status = s:StatusGet()
+    let len = strlen(status)
+    if len > 0
+      let s:save_cmdheight = &cmdheight
+      if &cmdheight < 2
+	let &cmdheight = 2
       endif
+      let uniq = s:CandidateSearch(status)
+      if uniq
+	call s:FixCandidate()
+      endif
+    else
+      let s:last_keyword = ''
+      call s:StatusReset()
     endif
   endif
 endfunction
@@ -540,22 +558,22 @@ function! s:ConvertKatuyo(count)
     endif
     let s:status_column = col(".")
     execute "normal! " . save_col . "|"
-    if !s:StatusIsEnable()
-      call s:StatusReset()
-    else
-      let status = s:StatusGet()
-      let len = strlen(status)
-      if len > 0
-	let s:save_cmdheight = &cmdheight
-	if &cmdheight < 2
-	  let &cmdheight = 2
-	endif
-	let s:is_katuyo = 1
-	call s:CandidateSearch(status . "―")
-      else
-	let s:last_keyword = ''
-	call s:StatusReset()
+
+    let status = s:StatusGet()
+    let len = strlen(status)
+    if len > 0
+      let s:save_cmdheight = &cmdheight
+      if &cmdheight < 2
+	let &cmdheight = 2
       endif
+      let s:is_katuyo = 1
+      let uniq = s:CandidateSearch(status . "―")
+      if uniq
+	call s:FixCandidate()
+      endif
+    else
+      let s:last_keyword = ''
+      call s:StatusReset()
     endif
   endif
 endfunction
@@ -567,7 +585,7 @@ function! s:FixCandidate()
   if s:IsCandidateOK(str)
     let len = strlen(str)
     call s:CandidateSelect(len)
-    execute "normal! " . s:status_column . "|"
+    execute "normal! " . (s:status_column - 1) . "|"
   endif
   call s:StatusReset()
 endfunction
