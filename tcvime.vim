@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/15 14:16:11 $
+" Last Change: $Date: 2003/05/15 14:23:30 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -797,10 +797,8 @@ function! s:OpenHelpBuffer()
     setlocal buftype=nofile
     setlocal bufhidden=delete
     setlocal noswapfile
-  else
-    execute "normal! :%d\<CR>"
   endif
-  execute "normal! 4\<C-W>\<C-_>"
+  execute "normal! :%d\<CR>4\<C-W>\<C-_>"
 endfunction
 
 " カーソル位置の文字の打鍵を表示する
@@ -828,7 +826,7 @@ endfunction
 " 指定された文字とその打鍵を表にして表示する
 function! s:ShowHelpSequence(ch, keyseq)
   call s:OpenHelpBuffer()
-  execute "normal! a" . g:tcvime_keyboard . "\<ESC>"
+  execute "normal! ggO" . g:tcvime_keyboard . "\<ESC>"
   let keyseq = a:keyseq
   let i = 0
   while strlen(keyseq) > 0
