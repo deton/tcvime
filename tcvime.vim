@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/21 13:50:55 $
+" Last Change: $Date: 2003/05/22 13:20:34 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -118,11 +118,11 @@ if !exists("tcvime_keyboard")
 endif
 
 " Mapping
-command! TcvimeOn :call <SID>MappingOn()
-command! TcvimeOff :call <SID>MappingOff()
+command! TcvimeOn call <SID>MappingOn()
+command! TcvimeOff call <SID>MappingOff()
 " 指定された文字の打鍵を表示する
 " 引数: 打鍵を表示する文字
-command! -nargs=1 TcvimeHelp :call <SID>ShowHelp(<args>)
+command! -nargs=1 TcvimeHelp call <SID>ShowHelp(<args>)
 
 "   マッピングを有効化
 function! s:MappingOn()
@@ -599,12 +599,12 @@ function! s:InputConvert(katuyo)
   execute "normal! " . col . "|"
   if exists('found')
     if found == 2
-      redraw
       echo 'CANDIDATE: ' . s:last_candidate
+      redraw
     elseif found == 1
       call s:InputFix(1)
     elseif found == 0
-      echo 'Not found: ' . status
+      echo 'Not found: <' . status . '>'
     elseif found == -1
       echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
     endif
@@ -727,12 +727,12 @@ function! s:ConvertCount(count, katuyo)
     endif
     let found = s:CandidateSearch(status)
     if found == 2
-      redraw
       echo 'CANDIDATE: ' . s:last_candidate
+      redraw
     elseif found == 1
       call s:FixCandidate()
     elseif found == 0
-      echo 'Not found: ' . status
+      echo 'Not found: <' . status . '>'
     elseif found == -1
       echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
     endif
