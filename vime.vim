@@ -1,6 +1,6 @@
 " vi:set ts=8 sts=2 sw=2 tw=0 nowrap:
 "
-" vime.vim - ŠÈˆÕSKK-IME
+" vime.vim - ´Ê°×SKK-IME
 "
 " Last Change: 02-Jul-2001.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
@@ -11,7 +11,7 @@ let s:candidate_file = globpath($VIM.','.&runtimepath, 'SKK-JISYO.L')
 "echo "candidate_file: ".s:candidate_file
 
 "==============================================================================
-"				    «‘ŒŸõ
+"				    ¼­½ñ¸¡º÷
 "
 
 "
@@ -31,7 +31,7 @@ function! s:Candidate_WinLeave()
   exe "normal! 1\<C-W>_"
 endfunction
 
-" «‘ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+" ¼­½ñ¥Ç¡¼¥¿¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó
 function! s:Candidate_FileOpen()
   if filereadable(s:candidate_file) != 1
     return 0
@@ -51,26 +51,26 @@ function! s:Candidate_GeneratePattern(keyword)
   return '^'.a:keyword.' '
 endfunction
 
-" ŒŸõ‚Ég—p‚·‚éó‘Ô•Ï”
+" ¸¡º÷¤Ë»ÈÍÑ¤¹¤ë¾õÂÖÊÑ¿ô
 let s:last_keyword = ''
 let s:last_found = 0
 let s:last_candidate = ''
 let s:last_candidate_str = ''
 let s:last_candidate_num = 0
 
-" «‘‚©‚ç–¢Šm’è•¶š—ñ‚ğŒŸõ
+" ¼­½ñ¤«¤éÌ¤³ÎÄêÊ¸»úÎó¤ò¸¡º÷
 function! s:CandidateSearch(keyword)
   let pat = s:Candidate_GeneratePattern(a:keyword)
   let found_num = s:last_found
 
-  " ŒŸõ•¶š—ñ‚ª‘O‰ñ‚Æ“¯‚¶‚ÍÈ—ª
+  " ¸¡º÷Ê¸»úÎó¤¬Á°²ó¤ÈÆ±¤¸»ş¤Ï¾ÊÎ¬
   if s:last_keyword !=# a:keyword
     let s:last_keyword = a:keyword
     if !s:Candidate_FileOpen()
       return 0
     endif
     let in_candidate_window = 1
-    " ÀÛ‚ÌŒŸõ
+    " ¼Âºİ¤Î¸¡º÷
     execute "silent normal! gg/".pat."\<CR>"
     let s:last_candidate = ''
     let s:last_candidate_str = substitute(getline('.'), pat, '', '')
@@ -78,14 +78,14 @@ function! s:CandidateSearch(keyword)
     let found_num = line('.')
     execute "normal! \<C-w>p"
   else
-    " Ÿ‚Ì•ÏŠ·Œó•â‚ğ’T‚µo‚·‚½‚ß
+    " ¼¡¤ÎÊÑ´¹¸õÊä¤òÃµ¤·½Ğ¤¹¤¿¤á
     if s:last_candidate_num > 0 && s:last_candidate != ''
       let s:last_candidate_num = s:last_candidate_num + strlen(s:last_candidate) + 1
     endif
   endif
 
   if found_num > 1
-    " Œó•â‚ª‚İ‚Â‚©‚Á‚Ä‚¢‚é‚È‚ç‚ÎA‡”Ô‚É•\¦‚·‚é
+    " ¸õÊä¤¬¤ß¤Ä¤«¤Ã¤Æ¤¤¤ë¤Ê¤é¤Ğ¡¢½çÈÖ¤ËÉ½¼¨¤¹¤ë
     let str = ''
     while strlen(str) < 1
       let str = matchstr(s:last_candidate_str, '[^/]\+', s:last_candidate_num)
@@ -97,7 +97,7 @@ function! s:CandidateSearch(keyword)
     echo "CANDIDATE: ".str
     "echo "CANDIDATE: ".str." (".s:last_candidate_str.")"
   else
-    " Œó•â‚ª‚İ‚Â‚©‚ç‚È‚©‚Á‚½AƒŠƒZƒbƒg
+    " ¸õÊä¤¬¤ß¤Ä¤«¤é¤Ê¤«¤Ã¤¿»ş¡¢¥ê¥»¥Ã¥È
     let s:last_candidate = ''
     let s:last_candidate_str = ''
     let s:last_candidate_num = 0
@@ -105,7 +105,7 @@ function! s:CandidateSearch(keyword)
   let s:last_found = found_num
 endfunction
 
-" Œó•â‚ğƒoƒbƒtƒ@‚É‘}“ü
+" ¸õÊä¤ò¥Ğ¥Ã¥Õ¥¡¤ËÁŞÆş
 function! s:CandidateSelect(len)
   if strlen(s:last_candidate) > 0
     let str = getline(s:status_line)
@@ -131,7 +131,7 @@ function! s:SelectWindowByName(name)
 endfunction
 
 "==============================================================================
-"				    “ü—Í§Œä
+"				    ÆşÎÏÀ©¸æ
 "
 
 function! s:InputNullSpace()
@@ -178,10 +178,10 @@ function! s:InputStart()
 endfunction
 
 "==============================================================================
-"				  ƒL[ƒgƒ‰ƒbƒv
+"				  ¥­¡¼¥È¥é¥Ã¥×
 "
 
-"   ƒ}ƒbƒsƒ“ƒO‚ğ—LŒø‰»
+"   ¥Ş¥Ã¥Ô¥ó¥°¤òÍ­¸ú²½
 function! s:MappingOn()
   inoremap <buffer> <CR> <C-O>:call <SID>InputCR()<CR>
   inoremap <buffer> <Space> <C-O>:call <SID>InputConvert()<CR>
@@ -197,16 +197,16 @@ function! s:MappingOn()
   endwhile
 endfunction
 
-"   ƒ}ƒbƒsƒ“ƒO‚ğ–³Œø‰»
+"   ¥Ş¥Ã¥Ô¥ó¥°¤òÌµ¸ú²½
 function! s:MappingOff()
   imapclear <buffer>
 endfunction
 
 "==============================================================================
-"			     –¢Šm’è•¶šŠÇ——pŠÖ”ŒQ
+"			     Ì¤³ÎÄêÊ¸»ú´ÉÍıÍÑ´Ø¿ô·²
 "
 
-"   –¢Šm’è•¶š—ñ‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é
+"   Ì¤³ÎÄêÊ¸»úÎó¤¬Â¸ºß¤¹¤ë¤«¥Á¥§¥Ã¥¯¤¹¤ë
 function! s:StatusIsEnable()
   if s:status_line != line('.') || s:status_column <= 0 || s:status_column > col('.')
     return 0
@@ -214,7 +214,7 @@ function! s:StatusIsEnable()
   return 1
 endfunction
 
-"   –¢Šm’è•¶š—ñ‚ğŠJn‚·‚é
+"   Ì¤³ÎÄêÊ¸»úÎó¤ò³«»Ï¤¹¤ë
 function! s:StatusSet()
   let s:status_line = line("'^")
   let s:status_column = col("'^")
@@ -224,19 +224,19 @@ function! s:StatusSet()
   endif
 endfunction
 
-"   –¢Šm’è•¶š—ñ‚ğƒŠƒZƒbƒg‚·‚é
+"   Ì¤³ÎÄêÊ¸»úÎó¤ò¥ê¥»¥Ã¥È¤¹¤ë
 function! s:StatusReset()
   let s:status_line = 0
   let s:status_column = 0
 endfunction
 
-"   –¢Šm’è•¶š—ñ‚ğuó‘Ôv‚Æ‚µ‚Äæ“¾‚·‚é
+"   Ì¤³ÎÄêÊ¸»úÎó¤ò¡Ö¾õÂÖ¡×¤È¤·¤Æ¼èÆÀ¤¹¤ë
 function! s:StatusGet()
   if !s:StatusIsEnable()
     return ''
   endif
 
-  " •K—v‚Èƒpƒ‰ƒ[ƒ^‚ğûW
+  " É¬Í×¤Ê¥Ñ¥é¥á¡¼¥¿¤ò¼ı½¸
   let stpos = s:status_column - 1
   let ccl = col("'^")
   let len = ccl - s:status_column
@@ -248,13 +248,13 @@ function! s:StatusGet()
   return strpart(str, stpos, len)
 endfunction
 
-"   –¢Šm’è•¶š—ñ‚ÌŠJnˆÊ’u‚ÆI—¹ˆÊ’u‚ğ•\¦(ƒfƒoƒbƒO—p)
+"   Ì¤³ÎÄêÊ¸»úÎó¤Î³«»Ï°ÌÃÖ¤È½ªÎ»°ÌÃÖ¤òÉ½¼¨(¥Ç¥Ğ¥Ã¥°ÍÑ)
 function! s:StatusEcho(...)
   echo "New conversion (line=".s:status_line." column=".s:status_column.")"
 endfunction
 
 "==============================================================================
-"				   ‰Šúİ’è
+"				   ½é´üÀßÄê
 "
 
 call s:StatusReset()
