@@ -434,14 +434,12 @@ function! s:IsCandidateOK(str)
   return 0
 endfunction
 
-function! s:InputCR()
+function! s:InputFix()
   let str = s:StatusGet()
   if s:IsCandidateOK(str)
     let len = strlen(str)
     call s:CandidateSelect(len)
     execute "normal! " . s:status_column . "|"
-  else
-    execute "normal! gi\<CR>\<ESC>"
   endif
   call s:StatusReset()
 endfunction
@@ -569,8 +567,6 @@ function! s:FixCandidate()
     let len = strlen(str)
     call s:CandidateSelect(len)
     execute "normal! " . s:status_column . "|"
-  else
-    execute "normal! \<CR>"
   endif
   call s:StatusReset()
 endfunction
@@ -580,16 +576,19 @@ endfunction
 "
 
 "   マッピングを有効化
+if !exists('g:mapleader')
+  let g:mapleader = "\<C-\>"
+endif
 function! s:MappingOn()
-  inoremap <buffer> <CR> <C-O>:call <SID>InputCR()<CR>
-  inoremap <buffer> <C-L> <C-O>:call <SID>InputStart()<CR>
-  inoremap <buffer> <Nul> <C-O>:call <SID>InputConvert()<CR>
-  inoremap <buffer> <C-Q> <C-O>:call <SID>InputConvertKatuyo()<CR>
-  inoremap <buffer> <C-S> <C-O>:call <SID>InputConvertBushu(1)<CR>
-  nnoremap <buffer> <CR> :<C-U>call <SID>FixCandidate()<CR>
-  nnoremap <buffer> <Nul> :<C-U>call <SID>ConvertCount(v:count)<CR>
-  nnoremap <buffer> <C-Q> :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
-  nnoremap <buffer> <C-S> :<C-U>call <SID>ConvertBushu()<CR>
+  inoremap <buffer> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
+  inoremap <buffer> <Leader>q <C-O>:call <SID>InputStart()<CR>
+  inoremap <buffer> <Leader><Space> <C-O>:call <SID>InputConvert()<CR>
+  inoremap <buffer> <Leader>n <C-O>:call <SID>InputConvertKatuyo()<CR>
+  inoremap <buffer> <Leader>b <C-O>:call <SID>InputConvertBushu(1)<CR>
+  nnoremap <buffer> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
+  nnoremap <buffer> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
+  nnoremap <buffer> <Leader>n :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
+  nnoremap <buffer> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
 endfunction
 
 "   マッピングを無効化
@@ -598,8 +597,14 @@ function! s:MappingOff()
   nmapclear <buffer>
 endfunction
 
-" iminsertが1の場合はMappingOnして、0の場合はMappingOffする
-function! s:MappingToggle()
+" keymapが指定されたkeymapnameでない場合はkeymapを設定する。
+" iminsertが1の場合はMappingOnする。1以外の場合はMappingOffする
+function! s:MappingToggle(keymapname)
+  if &iminsert == 0 && &keymap !=# a:keymapname
+    let &keymap = a:keymapname
+    call s:MappingOn()
+    return
+  endif
   if &iminsert == 1
     call s:MappingOn()
   else
@@ -665,4 +670,9 @@ endfunction
 call s:StatusReset()
 command! VImeOn :call <SID>MappingOn()
 command! VImeOff :call <SID>MappingOff()
-command! VImeToggle :call <SID>MappingToggle()
+" keymap名を引数に取る
+command! -nargs=1 VImeToggle :call <SID>MappingToggle(<f-args>)
+
+" $HOME/.vimrcに以下のようなmapを入れると使用できる。
+" map <C-J> <C-^>:VImeToggle tutcode<CR>
+" imap <C-J> <C-^><C-O>:VImeToggle tutcode<CR>
