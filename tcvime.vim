@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/20 13:03:22 $
+" Last Change: $Date: 2003/05/20 13:10:55 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -155,6 +155,9 @@ function! s:MappingOn()
   augroup END
 
   call s:StatusReset()
+  if !exists('s:save_cmdheight')
+    let s:save_cmdheight = &cmdheight
+  endif
 endfunction
 
 "   マッピングを無効化
@@ -186,6 +189,7 @@ function! s:MappingOff()
   augroup Tcvime
   autocmd!
   augroup END
+  unlet s:save_cmdheight
 endfunction
 
 " keymapを設定してTcvimeのMappingを有効にする
@@ -628,14 +632,10 @@ function! s:InputFix(is_insert_mode)
   endif
   call s:StatusReset()
   let &cmdheight = s:save_cmdheight
-  unlet s:save_cmdheight
 endfunction
 
 " &cmdheightが2より小さかったら2に設定する。CANDIDATE:表示のため。
 function! s:SetCmdheight()
-  if !exists('s:save_cmdheight')
-    let s:save_cmdheight = &cmdheight
-  endif
   if &cmdheight < 2
     let &cmdheight = 2
   endif
