@@ -66,7 +66,8 @@ function! s:CandidateSearch(keyword)
     if !s:Candidate_FileOpen()
       return 0
     endif
-    let in_candidate_window = 1
+    let save_undolevels = &undolevels
+    let &undolevels = 0
     " 見つからなくてエラーメッセージが表示されないようにダミーを入れておく
     execute "silent normal! ggO" . a:keyword . " \<ESC>"
     " 実際の検索
@@ -76,6 +77,7 @@ function! s:CandidateSearch(keyword)
     let s:last_candidate_num = 1
     let found_num = line('.')
     execute "normal! u\<C-w>p"
+    let &undolevels = save_undolevels
   else
     " 次の変換候補を探し出すため
     if s:last_candidate_num > 0 && s:last_candidate != ''
@@ -151,6 +153,8 @@ function! s:BushuAlternative(ch)
   if !s:Bushu_FileOpen()
     return a:ch
   endif
+  let save_undolevels = &undolevels
+  let &undolevels = 0
   execute "silent normal! ggO." . a:ch . "\<ESC>"
   execute "silent normal! 2G/^." . a:ch . "$\<CR>"
   let found_num = line('.')
@@ -161,6 +165,7 @@ function! s:BushuAlternative(ch)
     let retchar = a:ch
   endif
   execute "normal! u\<C-w>p"
+  let &undolevels = save_undolevels
   return retchar
 endfunction
 
@@ -170,6 +175,8 @@ function! s:BushuSearchCompose(char1, char2)
   if !s:Bushu_FileOpen()
     return ''
   endif
+  let save_undolevels = &undolevels
+  let &undolevels = 0
   execute "silent normal! ggO." . a:char1 . a:char2 . "\<ESC>"
   execute "silent normal! 2G/^." . a:char1 . a:char2 . "\<CR>"
   let found_num = line('.')
@@ -180,6 +187,7 @@ function! s:BushuSearchCompose(char1, char2)
     let retchar = ''
   endif
   execute "normal! u\<C-w>p"
+  let &undolevels = save_undolevels
   return retchar
 endfunction
 
@@ -190,6 +198,8 @@ function! s:BushuDecompose(ch)
   if !s:Bushu_FileOpen()
     return 0
   endif
+  let save_undolevels = &undolevels
+  let &undolevels = 0
   execute "silent normal! ggO" . a:ch . "..\<ESC>"
   execute "silent normal! 2G/^" . a:ch . "..\<CR>"
   let found_num = line('.')
@@ -211,6 +221,7 @@ function! s:BushuDecompose(ch)
     let ret = 0
   endif
   execute "normal! u\<C-w>p"
+  let &undolevels = save_undolevels
   return ret
 endfunction
 
@@ -547,14 +558,6 @@ function! s:StatusIsEnable()
   return 1
 endfunction
 
-" 桁位置を指定して変換対象文字列が存在するかチェックする
-function! s:StatusIsEnableCol(col)
-  if s:status_line != line('.') || s:status_column <= 0 || s:status_column > a:col
-    return 0
-  endif
-  return 1
-endfunction
-
 "   未確定文字列を開始する
 function! s:StatusSet()
   let s:status_line = line("'^")
@@ -585,22 +588,6 @@ function! s:StatusGet()
 
   if s:verbose
     echo "SLINE=".s:status_line." SCOLUMN=".s:status_column." CCOLUMN=".ccl." LEN=".len
-  endif
-  return strpart(str, stpos, len)
-endfunction
-
-" 桁位置を指定して変換対象文字列を取得する
-function! s:StatusGetCol(col)
-  if !s:StatusIsEnableCol(a:col)
-    return ''
-  endif
-
-  let stpos = s:status_column - 1
-  let len = a:col - s:status_column
-  let str = getline('.')
-
-  if s:verbose
-    echo "SLINE=".s:status_line." SCOLUMN=".s:status_column." CCOLUMN=".a:col." LEN=".len
   endif
   return strpart(str, stpos, len)
 endfunction
