@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Revision: $Id: tcvime.vim,v 1.26 2003/05/25 04:42:28 deton Exp $
+" Revision: $Id: tcvime.vim,v 1.27 2003/07/09 12:42:33 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -59,7 +59,8 @@ endif
 " 設定
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
-let s:helpbufname = '\[TcvimeHelp\]'
+let s:helpbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeHelp__'
+let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
 " 辞書ファイルが:ls等で表示されるようにするかどうか。0:表示されない,1:表示する
 let s:buflisted = 0
 
