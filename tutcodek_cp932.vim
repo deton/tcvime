@@ -1,6 +1,6 @@
 " Vim Keymap file for Japanese (TUT-Code with katakana mode toggle)
 " Maintainer: KIHARA, Hideto <deton@m1.interq.or.jp>
-" Last Change: 11-May-2003.
+" Last Change: 2004-07-20.
 
 scriptencoding cp932
  
@@ -17,6 +17,7 @@ function! s:ToggleKana()
   else
     let s:is_katakana = 1
   endif
+  return ''
 endfunction
 
 " ひらがな/カタカナモードに応じて、ひらがなかカタカナを挿入する
@@ -28,97 +29,97 @@ function! s:InsertKana(hira, kata)
   else
     let ch = a:kata
   endif
-  execute "normal! gi" . ch . "\<ESC>"
+  return ch
 endfunction
 
 loadkeymap
-'	<C-O>:call<Space><SID>ToggleKana()<CR>
-rk	<ESC>:call<Space><SID>InsertKana("あ","ア")<CR>a
-ri	<ESC>:call<Space><SID>InsertKana("い","イ")<CR>a
-ru	<ESC>:call<Space><SID>InsertKana("う","ウ")<CR>a
-rh	<ESC>:call<Space><SID>InsertKana("え","エ")<CR>a
-rj	<ESC>:call<Space><SID>InsertKana("お","オ")<CR>a
-ek	<ESC>:call<Space><SID>InsertKana("か","カ")<CR>a
-ei	<ESC>:call<Space><SID>InsertKana("き","キ")<CR>a
-eu	<ESC>:call<Space><SID>InsertKana("く","ク")<CR>a
-eh	<ESC>:call<Space><SID>InsertKana("け","ケ")<CR>a
-ej	<ESC>:call<Space><SID>InsertKana("こ","コ")<CR>a
-sk	<ESC>:call<Space><SID>InsertKana("さ","サ")<CR>a
-si	<ESC>:call<Space><SID>InsertKana("し","シ")<CR>a
-su	<ESC>:call<Space><SID>InsertKana("す","ス")<CR>a
-sh	<ESC>:call<Space><SID>InsertKana("せ","セ")<CR>a
-sj	<ESC>:call<Space><SID>InsertKana("そ","ソ")<CR>a
-dk	<ESC>:call<Space><SID>InsertKana("た","タ")<CR>a
-di	<ESC>:call<Space><SID>InsertKana("ち","チ")<CR>a
-du	<ESC>:call<Space><SID>InsertKana("つ","ツ")<CR>a
-dh	<ESC>:call<Space><SID>InsertKana("て","テ")<CR>a
-dj	<ESC>:call<Space><SID>InsertKana("と","ト")<CR>a
-fk	<ESC>:call<Space><SID>InsertKana("な","ナ")<CR>a
-fi	<ESC>:call<Space><SID>InsertKana("に","ニ")<CR>a
-fu	<ESC>:call<Space><SID>InsertKana("ぬ","ヌ")<CR>a
-fh	<ESC>:call<Space><SID>InsertKana("ね","ネ")<CR>a
-fj	<ESC>:call<Space><SID>InsertKana("の","ノ")<CR>a
-tk	<ESC>:call<Space><SID>InsertKana("は","ハ")<CR>a
-ti	<ESC>:call<Space><SID>InsertKana("ひ","ヒ")<CR>a
-tu	<ESC>:call<Space><SID>InsertKana("ふ","フ")<CR>a
-th	<ESC>:call<Space><SID>InsertKana("へ","ヘ")<CR>a
-tj	<ESC>:call<Space><SID>InsertKana("ほ","ホ")<CR>a
-wk	<ESC>:call<Space><SID>InsertKana("ま","マ")<CR>a
-wi	<ESC>:call<Space><SID>InsertKana("み","ミ")<CR>a
-wu	<ESC>:call<Space><SID>InsertKana("む","ム")<CR>a
-wh	<ESC>:call<Space><SID>InsertKana("め","メ")<CR>a
-wj	<ESC>:call<Space><SID>InsertKana("も","モ")<CR>a
-qk	<ESC>:call<Space><SID>InsertKana("や","ヤ")<CR>a
-qu	<ESC>:call<Space><SID>InsertKana("ゆ","ユ")<CR>a
-qj	<ESC>:call<Space><SID>InsertKana("よ","ヨ")<CR>a
-gk	<ESC>:call<Space><SID>InsertKana("ら","ラ")<CR>a
-gi	<ESC>:call<Space><SID>InsertKana("り","リ")<CR>a
-gu	<ESC>:call<Space><SID>InsertKana("る","ル")<CR>a
-gh	<ESC>:call<Space><SID>InsertKana("れ","レ")<CR>a
-gj	<ESC>:call<Space><SID>InsertKana("ろ","ロ")<CR>a
-ak	<ESC>:call<Space><SID>InsertKana("わ","ワ")<CR>a
-ai	<ESC>:call<Space><SID>InsertKana("ゐ","ヰ")<CR>a
-ah	<ESC>:call<Space><SID>InsertKana("ゑ","ヱ")<CR>a
-aj	<ESC>:call<Space><SID>InsertKana("を","ヲ")<CR>a
-rlk	<ESC>:call<Space><SID>InsertKana("ぁ","ァ")<CR>a
-rli	<ESC>:call<Space><SID>InsertKana("ぃ","ィ")<CR>a
-rlu	<ESC>:call<Space><SID>InsertKana("ぅ","ゥ")<CR>a
+'	<C-R>=<SID>ToggleKana()<CR>
+rk	<C-R>=<SID>InsertKana("あ","ア")<CR>
+ri	<C-R>=<SID>InsertKana("い","イ")<CR>
+ru	<C-R>=<SID>InsertKana("う","ウ")<CR>
+rh	<C-R>=<SID>InsertKana("え","エ")<CR>
+rj	<C-R>=<SID>InsertKana("お","オ")<CR>
+ek	<C-R>=<SID>InsertKana("か","カ")<CR>
+ei	<C-R>=<SID>InsertKana("き","キ")<CR>
+eu	<C-R>=<SID>InsertKana("く","ク")<CR>
+eh	<C-R>=<SID>InsertKana("け","ケ")<CR>
+ej	<C-R>=<SID>InsertKana("こ","コ")<CR>
+sk	<C-R>=<SID>InsertKana("さ","サ")<CR>
+si	<C-R>=<SID>InsertKana("し","シ")<CR>
+su	<C-R>=<SID>InsertKana("す","ス")<CR>
+sh	<C-R>=<SID>InsertKana("せ","セ")<CR>
+sj	<C-R>=<SID>InsertKana("そ","ソ")<CR>
+dk	<C-R>=<SID>InsertKana("た","タ")<CR>
+di	<C-R>=<SID>InsertKana("ち","チ")<CR>
+du	<C-R>=<SID>InsertKana("つ","ツ")<CR>
+dh	<C-R>=<SID>InsertKana("て","テ")<CR>
+dj	<C-R>=<SID>InsertKana("と","ト")<CR>
+fk	<C-R>=<SID>InsertKana("な","ナ")<CR>
+fi	<C-R>=<SID>InsertKana("に","ニ")<CR>
+fu	<C-R>=<SID>InsertKana("ぬ","ヌ")<CR>
+fh	<C-R>=<SID>InsertKana("ね","ネ")<CR>
+fj	<C-R>=<SID>InsertKana("の","ノ")<CR>
+tk	<C-R>=<SID>InsertKana("は","ハ")<CR>
+ti	<C-R>=<SID>InsertKana("ひ","ヒ")<CR>
+tu	<C-R>=<SID>InsertKana("ふ","フ")<CR>
+th	<C-R>=<SID>InsertKana("へ","ヘ")<CR>
+tj	<C-R>=<SID>InsertKana("ほ","ホ")<CR>
+wk	<C-R>=<SID>InsertKana("ま","マ")<CR>
+wi	<C-R>=<SID>InsertKana("み","ミ")<CR>
+wu	<C-R>=<SID>InsertKana("む","ム")<CR>
+wh	<C-R>=<SID>InsertKana("め","メ")<CR>
+wj	<C-R>=<SID>InsertKana("も","モ")<CR>
+qk	<C-R>=<SID>InsertKana("や","ヤ")<CR>
+qu	<C-R>=<SID>InsertKana("ゆ","ユ")<CR>
+qj	<C-R>=<SID>InsertKana("よ","ヨ")<CR>
+gk	<C-R>=<SID>InsertKana("ら","ラ")<CR>
+gi	<C-R>=<SID>InsertKana("り","リ")<CR>
+gu	<C-R>=<SID>InsertKana("る","ル")<CR>
+gh	<C-R>=<SID>InsertKana("れ","レ")<CR>
+gj	<C-R>=<SID>InsertKana("ろ","ロ")<CR>
+ak	<C-R>=<SID>InsertKana("わ","ワ")<CR>
+ai	<C-R>=<SID>InsertKana("ゐ","ヰ")<CR>
+ah	<C-R>=<SID>InsertKana("ゑ","ヱ")<CR>
+aj	<C-R>=<SID>InsertKana("を","ヲ")<CR>
+rlk	<C-R>=<SID>InsertKana("ぁ","ァ")<CR>
+rli	<C-R>=<SID>InsertKana("ぃ","ィ")<CR>
+rlu	<C-R>=<SID>InsertKana("ぅ","ゥ")<CR>
 rlru	ヴ
-rlh	<ESC>:call<Space><SID>InsertKana("ぇ","ェ")<CR>a
-rlj	<ESC>:call<Space><SID>InsertKana("ぉ","ォ")<CR>a
-elk	<ESC>:call<Space><SID>InsertKana("が","ガ")<CR>a
+rlh	<C-R>=<SID>InsertKana("ぇ","ェ")<CR>
+rlj	<C-R>=<SID>InsertKana("ぉ","ォ")<CR>
+elk	<C-R>=<SID>InsertKana("が","ガ")<CR>
 elek	ヵ
-eli	<ESC>:call<Space><SID>InsertKana("ぎ","ギ")<CR>a
-elu	<ESC>:call<Space><SID>InsertKana("ぐ","グ")<CR>a
-elh	<ESC>:call<Space><SID>InsertKana("げ","ゲ")<CR>a
+eli	<C-R>=<SID>InsertKana("ぎ","ギ")<CR>
+elu	<C-R>=<SID>InsertKana("ぐ","グ")<CR>
+elh	<C-R>=<SID>InsertKana("げ","ゲ")<CR>
 eleh	ヶ
-elj	<ESC>:call<Space><SID>InsertKana("ご","ゴ")<CR>a
-slk	<ESC>:call<Space><SID>InsertKana("ざ","ザ")<CR>a
-sli	<ESC>:call<Space><SID>InsertKana("じ","ジ")<CR>a
-slu	<ESC>:call<Space><SID>InsertKana("ず","ズ")<CR>a
-slh	<ESC>:call<Space><SID>InsertKana("ぜ","ゼ")<CR>a
-slj	<ESC>:call<Space><SID>InsertKana("ぞ","ゾ")<CR>a
-dlk	<ESC>:call<Space><SID>InsertKana("だ","ダ")<CR>a
-dli	<ESC>:call<Space><SID>InsertKana("ぢ","ヂ")<CR>a
-dlu	<ESC>:call<Space><SID>InsertKana("っ","ッ")<CR>a
-dldu	<ESC>:call<Space><SID>InsertKana("づ","ヅ")<CR>a
-dlh	<ESC>:call<Space><SID>InsertKana("で","デ")<CR>a
-dlj	<ESC>:call<Space><SID>InsertKana("ど","ド")<CR>a
-fl	<ESC>:call<Space><SID>InsertKana("ん","ン")<CR>a
-tlk	<ESC>:call<Space><SID>InsertKana("ば","バ")<CR>a
-tli	<ESC>:call<Space><SID>InsertKana("び","ビ")<CR>a
-tlu	<ESC>:call<Space><SID>InsertKana("ぶ","ブ")<CR>a
-tlh	<ESC>:call<Space><SID>InsertKana("べ","ベ")<CR>a
-tlj	<ESC>:call<Space><SID>InsertKana("ぼ","ボ")<CR>a
-tltk	<ESC>:call<Space><SID>InsertKana("ぱ","パ")<CR>a
-tlti	<ESC>:call<Space><SID>InsertKana("ぴ","ピ")<CR>a
-tltu	<ESC>:call<Space><SID>InsertKana("ぷ","プ")<CR>a
-tlth	<ESC>:call<Space><SID>InsertKana("ぺ","ペ")<CR>a
-tltj	<ESC>:call<Space><SID>InsertKana("ぽ","ポ")<CR>a
-qlk	<ESC>:call<Space><SID>InsertKana("ゃ","ャ")<CR>a
-qlu	<ESC>:call<Space><SID>InsertKana("ゅ","ュ")<CR>a
-qlj	<ESC>:call<Space><SID>InsertKana("ょ","ョ")<CR>a
-alk	<ESC>:call<Space><SID>InsertKana("ゎ","ヮ")<CR>a
+elj	<C-R>=<SID>InsertKana("ご","ゴ")<CR>
+slk	<C-R>=<SID>InsertKana("ざ","ザ")<CR>
+sli	<C-R>=<SID>InsertKana("じ","ジ")<CR>
+slu	<C-R>=<SID>InsertKana("ず","ズ")<CR>
+slh	<C-R>=<SID>InsertKana("ぜ","ゼ")<CR>
+slj	<C-R>=<SID>InsertKana("ぞ","ゾ")<CR>
+dlk	<C-R>=<SID>InsertKana("だ","ダ")<CR>
+dli	<C-R>=<SID>InsertKana("ぢ","ヂ")<CR>
+dlu	<C-R>=<SID>InsertKana("っ","ッ")<CR>
+dldu	<C-R>=<SID>InsertKana("づ","ヅ")<CR>
+dlh	<C-R>=<SID>InsertKana("で","デ")<CR>
+dlj	<C-R>=<SID>InsertKana("ど","ド")<CR>
+fl	<C-R>=<SID>InsertKana("ん","ン")<CR>
+tlk	<C-R>=<SID>InsertKana("ば","バ")<CR>
+tli	<C-R>=<SID>InsertKana("び","ビ")<CR>
+tlu	<C-R>=<SID>InsertKana("ぶ","ブ")<CR>
+tlh	<C-R>=<SID>InsertKana("べ","ベ")<CR>
+tlj	<C-R>=<SID>InsertKana("ぼ","ボ")<CR>
+tltk	<C-R>=<SID>InsertKana("ぱ","パ")<CR>
+tlti	<C-R>=<SID>InsertKana("ぴ","ピ")<CR>
+tltu	<C-R>=<SID>InsertKana("ぷ","プ")<CR>
+tlth	<C-R>=<SID>InsertKana("ぺ","ペ")<CR>
+tltj	<C-R>=<SID>InsertKana("ぽ","ポ")<CR>
+qlk	<C-R>=<SID>InsertKana("ゃ","ャ")<CR>
+qlu	<C-R>=<SID>InsertKana("ゅ","ュ")<CR>
+qlj	<C-R>=<SID>InsertKana("ょ","ョ")<CR>
+alk	<C-R>=<SID>InsertKana("ゎ","ヮ")<CR>
 RK	ア
 RI	イ
 RU	ウ
