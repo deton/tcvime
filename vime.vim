@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: $Date: 2003/05/11 04:50:38 $
+" Last Change: $Date: 2003/05/11 13:31:36 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -11,6 +11,12 @@ let s:helpbufname = "[VImeHelp]"
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 "echo "candidate_file: ".s:candidate_file
+
+" 打鍵ヘルプ表示用のキーボード配列を表す文字列(qwerty)
+" キーの後にスペース、を2回ずつ記述する。
+"let s:keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
+" 数字キーの段を表示しない場合は次の文字列を使うようにする(qwerty)
+let s:keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 
 "==============================================================================
 "				    辞書検索
@@ -636,7 +642,7 @@ endfunction
 " 指定された文字とその打鍵を表にして表示する
 function! s:ShowHelpSequence(ch, keyseq)
   call s:OpenHelpBuffer()
-  execute "normal! aq q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / \<ESC>"
+  execute "normal! a" . s:keyboard . "\<ESC>"
   let keyseq = a:keyseq
   let i = 0
   while strlen(keyseq) > 0
@@ -829,6 +835,9 @@ endfunction
 call s:StatusReset()
 command! VImeOn :call <SID>MappingOn()
 command! VImeOff :call <SID>MappingOff()
-" keymap名を引数に取る
+" keymapを設定して、VImeOnする
+" 引数: keymap名
 command! -nargs=1 VImeInit :call <SID>VImeInit(<f-args>)
+" 指定された文字の打鍵を表示する
+" 引数: 打鍵を表示する文字
 command! -nargs=1 VImeHelp :call <SID>ShowHelp(<args>)
