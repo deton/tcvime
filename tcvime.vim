@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/21 13:13:20 $
+" Last Change: $Date: 2003/05/21 13:30:46 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -242,7 +242,7 @@ function! s:CandidateSearch(keyword)
     " 実際の検索
     let v:errmsg = ""
     silent! execute "normal! gg/^" . a:keyword . " \<CR>"
-    if v:errmsg != ""
+    if strlen(v:errmsg) > 0
       let found_num = 0
     else
       let s:last_candidate = ''
@@ -336,7 +336,7 @@ function! s:BushuAlternative(ch)
   endif
   let v:errmsg = ""
   silent! execute "normal! gg/^." . a:ch . "$\<CR>"
-  if v:errmsg == ""
+  if strlen(v:errmsg) == 0
     execute "normal! l"
     let retchar = strpart(getline('.'), 0, col('.') - 1)
   else
@@ -354,7 +354,7 @@ function! s:BushuSearchCompose(char1, char2)
   endif
   let v:errmsg = ""
   silent! execute "normal! gg/^." . a:char1 . a:char2 . "\<CR>"
-  if v:errmsg == ""
+  if strlen(v:errmsg) == 0
     execute "normal! l"
     let retchar = strpart(getline('.'), 0, col('.') - 1)
   else
@@ -373,7 +373,7 @@ function! s:BushuDecompose(ch)
   endif
   let v:errmsg = ""
   silent! execute "normal! gg/^" . a:ch . "..\<CR>"
-  if v:errmsg == ""
+  if strlen(v:errmsg) == 0
     let save_ve = &ve
     let &ve = 'all'
     execute "normal! l"
@@ -400,7 +400,7 @@ endfunction
 " @param char2 元の文字
 " @return 1: chが空でもchar1でもchar2でもない場合。0: それ以外の場合
 function! s:BushuCharOK(ch, char1, char2)
-  if a:ch !=# '' && a:ch !=# a:char1 && a:ch !=# a:char2
+  if strlen(a:ch) > 0 && a:ch !=# a:char1 && a:ch !=# a:char2
     return 1
   else
     return 0
@@ -455,14 +455,21 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
+    let lench1a1 = strlen(ch1a1)
+    let lench1a2 = strlen(ch1a2)
+    let lench2a1 = strlen(ch2a1)
+    let lench2a2 = strlen(ch2a2)
+    let lench1alt = strlen(ch1alt)
+    let lench2alt = strlen(ch2alt)
+
     " 引き算
-    if ch1a1 !=# '' && ch1a2 !=# '' && ch1a2 ==# ch2alt
+    if lench1a1 > 0 && lench1a2 > 0 && ch1a2 ==# ch2alt
       let retchar = ch1a1
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1a1 !=# '' && ch1a2 !=# '' && ch1a1 ==# ch2alt
+    if lench1a1 > 0 && lench1a2 > 0 && ch1a1 ==# ch2alt
       let retchar = ch1a2
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
@@ -470,25 +477,25 @@ function! s:BushuSearch(char1, char2)
     endif
 
     " 一方が部品による足し算
-    if ch1alt !=# '' && ch2a1 !=# ''
+    if lench1alt > 0 && lench2a1 > 0
       let retchar = s:BushuSearchCompose(ch1alt, ch2a1)
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1alt !=# '' && ch2a2 !=# ''
+    if lench1alt > 0 && lench2a2 > 0
       let retchar = s:BushuSearchCompose(ch1alt, ch2a2)
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1a1 !=# '' && ch2alt !=# ''
+    if lench1a1 > 0 && lench2alt > 0
       let retchar = s:BushuSearchCompose(ch1a1, ch2alt)
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1a2 !=# '' && ch2alt !=# ''
+    if lench1a2 > 0 && lench2alt > 0
       let retchar = s:BushuSearchCompose(ch1a2, ch2alt)
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
@@ -496,25 +503,25 @@ function! s:BushuSearch(char1, char2)
     endif
 
     " 両方が部品による足し算
-    if ch1a1 !=# '' && ch2a1 !=# ''
+    if lench1a1 > 0 && lench2a1 > 0
       let retchar = s:BushuSearchCompose(ch1a1, ch2a1)
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1a1 !=# '' && ch2a2 !=# ''
+    if lench1a1 > 0 && lench2a2 > 0
       let retchar = s:BushuSearchCompose(ch1a1, ch2a2)
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1a2 !=# '' && ch2a1 !=# ''
+    if lench1a2 > 0 && lench2a1 > 0
       let retchar = s:BushuSearchCompose(ch1a2, ch2a1)
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1a2 !=# '' && ch2a2 !=# ''
+    if lench1a2 > 0 && lench2a2 > 0
       let retchar = s:BushuSearchCompose(ch1a2, ch2a2)
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
@@ -522,25 +529,25 @@ function! s:BushuSearch(char1, char2)
     endif
 
     " 部品による引き算
-    if ch1a2 !=# '' && ch2a1 !=# '' && ch1a2 ==# ch2a1
+    if lench1a2 > 0 && lench2a1 > 0 && ch1a2 ==# ch2a1
       let retchar = ch1a1
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1a2 !=# '' && ch2a2 !=# '' && ch1a2 ==# ch2a2
+    if lench1a2 > 0 && lench2a2 > 0 && ch1a2 ==# ch2a2
       let retchar = ch1a1
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1a1 !=# '' && ch2a1 !=# '' && ch1a1 ==# ch2a1
+    if lench1a1 > 0 && lench2a1 > 0 && ch1a1 ==# ch2a1
       let retchar = ch1a2
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
-    if ch1a1 !=# '' && ch2a2 !=# '' && ch1a1 ==# ch2a2
+    if lench1a1 > 0 && lench2a2 > 0 && ch1a1 ==# ch2a2
       let retchar = ch1a2
       if s:BushuCharOK(retchar, char1, char2)
 	return retchar
@@ -774,7 +781,7 @@ endfunction
 
 " 指定された文字を入力するための打鍵を表示する
 function! s:ShowHelp(ch)
-  if strlen(a:ch) == 0 || &keymap == ""
+  if strlen(a:ch) == 0 || strlen(&keymap) == 0
     return
   endif
   let keyseq = s:SearchKeymap(a:ch)
@@ -825,14 +832,14 @@ function! s:SearchBushuDic(ch)
   let lines = ""
   let v:errmsg = ""
   silent! execute "normal! gg/" . a:ch . "\<CR>"
-  if v:errmsg == ""
+  if strlen(v:errmsg) == 0
     let lines = getline('.')
     let save_wrapscan = &wrapscan
     let &wrapscan = 0
-    while v:errmsg == ""
+    while strlen(v:errmsg) == 0
       let v:errmsg = ""
       silent! execute "normal! n"
-      if v:errmsg == ""
+      if strlen(v:errmsg) == 0
 	let lines = lines . "\<CR>" . getline('.')
       endif
     endwhile
@@ -858,7 +865,7 @@ function! s:SearchKeymap(ch)
   let v:errmsg = ""
   execute "normal! /loadkeymap/\<CR>"
   silent! execute 'normal! /^[^"].*[^ 	]\+[ 	]\+' . a:ch . "/\<CR>"
-  if v:errmsg == ""
+  if strlen(v:errmsg) == 0
     let keyseq = substitute(getline('.'), '[ 	]\+.*$', '', '')
   else
     let keyseq = ""
