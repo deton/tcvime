@@ -1,11 +1,15 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
-							     Version: 1.1
-							     Date: 2004-08-13
+							     Version: 1.2
+							     Date: 2005-03-10
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
   プラグインスクリプトです。
-  次の3つの機能を提供します: 交ぜ書き変換、部首合成変換、文字ヘルプ表表示。
+  4つの機能を提供します:
+   * 交ぜ書き変換: かな漢字変換で、かな部分に漢字が交じっていても変換
+   * 部首合成変換: 口未→味 のように部首の足し算/引き算を行って漢字を合成
+   * 文字ヘルプ表表示: ある文字を入力する際のキーの位置と入力順序を表示
+   * 漢字テーブルファイルの表示と文字選択による入力
 
 必要条件
   Vim 6.1以降。
@@ -17,7 +21,8 @@ UNIXでの使用上の注意
   keymapを使うために、configure時に--with-features=bigを指定して
   コンパイルしておいてください。
 
-  tcvime.vimやmazegaki.dic, bushu.revはcp932エンコーディングになっています。
+  tcvime.vim, mazegaki.dic, bushu.rev, kanjitable.txtはcp932エンコーディング
+  になっています。
   これらをそのまま使うには、Vimがiconv入りで作られており、
   かつ、(香り屋版に含まれているvimrcで設定されているように)、fileencodingsに
   cp932が含まれている必要があります。
@@ -34,6 +39,7 @@ UNIXでの使用上の注意
   tcvime.txt          'runtimepath'/doc     スクリプトの説明書
   mazegaki.dic        'runtimepath'か$VIM   交ぜ書き変換用辞書
   bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
+  kanjitable.txt      'runtimepath'か$VIM   漢字テーブルファイル
   tutcodek_cp932.vim  'runtimepath'/keymap  'でひらがな/カタカナモード切り替え
 					    ができるようにしたtutcodeのkeymap
 
@@ -54,6 +60,9 @@ UNIXでの使用上の注意
     含まれているものです。
 
 更新履歴
+  - 1.2 (2005-03-10)
+   - 漢字テーブルファイルを表示して、文字を選択して入力する機能を追加。
+
   - 1.1 (2004-08-13)
    - タブのある行で部首合成変換等ができないバグを修正。
 
@@ -68,4 +77,4 @@ UNIXでの使用上の注意
 -- 
 木原 英人 / KIHARA, Hideto / deton@m1.interq.or.jp
 http://www1.interq.or.jp/~deton/tcvime/
-$Id: README_j.txt,v 1.7 2004/08/12 22:59:48 deton Exp $
+$Id: README_j.txt,v 1.8 2005/03/09 14:02:29 deton Exp $

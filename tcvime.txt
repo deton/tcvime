@@ -32,6 +32,7 @@ mapleaderがCTRL-Kの場合、<Leader>q は CTRL-Kの後にqを入力する、ということです。
 |tcvime-normal-mazegaki-katuyo|	Normal Modeでの交ぜ書き変換(活用する語)
 |tcvime-normal-bushu|		Normal Modeでの部首合成変換
 |tcvime-normal-help|		文字ヘルプ表表示(Normal Mode)
+|tcvime-normal-kanjitable|	漢字テーブルファイル表示(Normal Mode)
 
 
 Insert Modeでの交ぜ書き変換			*tcvime-insert-mazegaki*
@@ -109,7 +110,7 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
 
 
 文字ヘルプ表表示(Normal Mode)			*tcvime-normal-help*
----------------------------
+-----------------------------
 <Leader>?	カーソル位置の文字のヘルプ表を表示します。使用中のkeymapで
 		直接入力できない文字の場合は、部首合成変換辞書を検索して、
 		指定された文字が含まれる行を表示します。
@@ -121,6 +122,14 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
         ・・・・  3 ・・・・
         ・・・・    ・・・・
         ・・1 2     ・・・・
+
+漢字テーブルファイル表示(Normal Mode)		*tcvime-normal-kanjitable*
+-------------------------------------
+<Leader>t	漢字テーブルファイルを表示します。
+		漢字テーブルファイルバッファで、入力したい文字の上にカーソルを
+		移動して<CR>キーを押すと、元のバッファにその文字がコピーされま
+		す。漢字テーブルファイルバッファは通常の方法(:q等)以外にqキー
+		でも閉じます。
 
 ==============================================================================
 3. オプション					*tcvime-option*
