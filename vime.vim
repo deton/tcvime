@@ -2,12 +2,13 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 18-Apr-2003.
+" Last Change: 20-Apr-2003.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
 let s:verbose = 0
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'SKK-JISYO.L')
+let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 "echo "candidate_file: ".s:candidate_file
 
 "==============================================================================
@@ -28,7 +29,8 @@ endfunction
 "   WinLeave
 function! s:Candidate_WinLeave()
   setlocal nowrap
-  exe "normal! 1\<C-W>_"
+  hide
+  "exe "normal! 1\<C-W>_"
 endfunction
 
 " 辞書データファイルをオープン
@@ -130,6 +132,48 @@ function! s:SelectWindowByName(name)
   return num
 endfunction
 
+" 部首合成辞書データファイルをオープン
+function! s:Bushu_FileOpen()
+  if filereadable(s:bushu_file) != 1
+    return 0
+  endif
+  if s:SelectWindowByName(s:bushu_file) < 0
+    execute "augroup VIme"
+    execute "autocmd!"
+    execute "autocmd WinEnter ".s:bushu_file." call <SID>Candidate_WinEnter()"
+    execute "autocmd WinLeave ".s:bushu_file." call <SID>Candidate_WinLeave()"
+    execute "augroup END"
+    execute 'silent normal! :sv '.s:bushu_file."\<CR>"
+  endif
+  return 1
+endfunction
+
+" 部首合成変換辞書を検索
+function! s:BushuSearch(char1, char2)
+  if !s:Bushu_FileOpen()
+    return 0
+  endif
+  " 実際の検索
+  execute "silent normal! gg/^." . a:char1 . a:char2 . "\<CR>"
+  let found_num = line('.')
+  if found_num > 1
+    execute "normal! l"
+    let retchar = strpart(getline('.'), 0, col('.') - 1)
+  else
+    let retchar = ''
+  endif
+  execute "normal! \<C-w>p"
+
+  return retchar
+endfunction
+
+" 部首合成した文字をバッファに挿入
+function! s:BushuReplace(linenum, stcol, endcol, ch)
+  let str = getline(a:linenum)
+  let str = strpart(str, 0, a:stcol - 1) . a:ch . strpart(str, a:endcol - 1)
+  call setline(a:linenum, str)
+endfunction
+
 "==============================================================================
 "				    入力制御
 "
@@ -174,6 +218,46 @@ endfunction
 
 function! s:InputStart()
   call s:StatusSet()
+endfunction
+
+" 直前の2文字の部首合成変換を行う
+function! s:InputConvertBushu()
+  let col3 = col("'^")
+  if col3 > 3
+    execute "normal! h"
+    let col2 = col(".")
+    execute "normal! h"
+    let col1 = col(".")
+    execute "normal! " . col3 . "|"
+    let str = getline('.')
+    let char1 = strpart(str, col1 - 1, col2 - col1)
+    let char2 = strpart(str, col2 - 1, col3 - col2)
+    let retchar = s:BushuSearch(char1, char2)
+    let len = strlen(retchar)
+    if len > 0
+      call s:BushuReplace(line("."), col1, col3, retchar)
+    endif
+  endif
+endfunction
+
+" 今の位置以前の2文字を部首合成変換する
+function! s:ConvertBushu()
+  execute "normal! a\<ESC>"
+  let col3 = col("'^")
+  if col3 > 3
+    let col2 = col(".")
+    execute "normal! h"
+    let col1 = col(".")
+    execute "normal! " . col3 . "|"
+    let str = getline('.')
+    let char1 = strpart(str, col1 - 1, col2 - col1)
+    let char2 = strpart(str, col2 - 1, col3 - col2)
+    let retchar = s:BushuSearch(char1, char2)
+    let len = strlen(retchar)
+    if len > 0
+      call s:BushuReplace(line("."), col1, col3, retchar)
+    endif
+  endif
 endfunction
 
 " 今の位置以前のcount文字を変換する
@@ -235,8 +319,10 @@ function! s:MappingOn()
   inoremap <buffer> <CR> <C-O>:call <SID>InputCR()<CR>
   inoremap <buffer> M <C-O>:call <SID>InputStart()<CR>
   inoremap <buffer> <Space> <C-O>:call <SID>InputConvert()<CR>
+  inoremap <buffer> B <C-O>:call <SID>InputConvertBushu()<CR>
   nnoremap <buffer> <CR> :<C-U>call <SID>FixCandidate()<CR>
   nnoremap <buffer> <Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
+  nnoremap <buffer> <C-N> :<C-U>call <SID>ConvertBushu()<CR>
 endfunction
 
 "   マッピングを無効化
