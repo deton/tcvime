@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Revision: $Id: tcvime.vim,v 1.29 2003/09/03 13:46:22 deton Exp $
+" Revision: $Id: tcvime.vim,v 1.30 2004/06/06 13:21:15 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -93,11 +93,11 @@ function! s:MappingOn()
     let set_mapleader = 1
   endif
   let s:mapleader = g:mapleader
-  inoremap <silent> <Leader><CR> <C-O>:call <SID>InputFix(1)<CR>
-  inoremap <silent> <Leader>q <C-O>:call <SID>InputStart()<CR>
-  inoremap <silent> <Leader><Space> <C-O>:call <SID>InputConvert(0)<CR>
-  inoremap <silent> <Leader>o <C-O>:call <SID>InputConvert(1)<CR>
-  inoremap <silent> <Leader>b <C-O>:call <SID>InputConvertBushu(1)<CR>
+  inoremap <silent> <Leader><CR> <C-R>=<SID>InputFix(col('.'))<CR>
+  inoremap <silent> <Leader>q <C-R>=<SID>InputStart()<CR>
+  inoremap <silent> <Leader><Space> <C-R>=<SID>InputConvert(0)<CR>
+  inoremap <silent> <Leader>o <C-R>=<SID>InputConvert(1)<CR>
+  inoremap <silent> <Leader>b <C-R>=<SID>InputConvertBushu(col('.'))<CR>
   nnoremap <silent> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
   nnoremap <silent> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
   nnoremap <silent> <Leader>o :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
@@ -158,6 +158,7 @@ TcvimeOn
 function! s:InputStart()
   call s:SetCmdheight()
   call s:StatusSet()
+  return ''
 endfunction
 
 " Insert modeで交ぜ書き変換を行う。
@@ -165,9 +166,9 @@ endfunction
 " 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! s:InputConvert(katuyo)
-  let col = col("'^")
+  let inschars = ''
   let s:is_katuyo = 0
-  let status = s:StatusGet()
+  let status = s:StatusGet(col('.'))
   let len = strlen(status)
   if len > 0
     let s:is_katuyo = a:katuyo
@@ -179,18 +180,18 @@ function! s:InputConvert(katuyo)
     let s:last_keyword = ''
     call s:InputStart()
   endif
-  execute "normal! " . col . "|"
   if exists('found')
     if found == 2
       echo 'CANDIDATE: ' . s:last_candidate
     elseif found == 1
-      call s:InputFix(1)
+      let inschars = s:InputFix(col('.'))
     elseif found == 0
       echo '交ぜ書き辞書中には見つかりません: <' . status . '>'
     elseif found == -1
       echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
     endif
   endif
+  return inschars
 endfunction
 
 " 確定しようとしている候補が問題ないかどうかチェック
@@ -203,20 +204,20 @@ function! s:IsCandidateOK(str)
   return 0
 endfunction
 
-" 候補を確定する
-function! s:InputFix(is_insert_mode)
-  let str = s:StatusGet()
+" 候補を確定して、確定した文字列を返す
+function! s:InputFix(col)
+  let inschars = ''
+  let str = s:StatusGet(a:col)
   if s:IsCandidateOK(str)
-    let len = strlen(str)
-    call s:CandidateSelect(len)
-    let col = s:status_column
-    if !a:is_insert_mode
-      let col = col - 1
+    let inschars = s:CandidateSelect()
+    if strlen(inschars) > 0
+      let bs = substitute(str, '.', "\<BS>", "g")
+      let inschars = bs . inschars
     endif
-    execute "normal! " . col . "|"
   endif
   call s:StatusReset()
   let &cmdheight = s:save_cmdheight
+  return inschars
 endfunction
 
 " &cmdheightが2より小さかったら2に設定する。CANDIDATE:表示のため。
@@ -227,37 +228,22 @@ function! s:SetCmdheight()
 endfunction
 
 " 直前の2文字の部首合成変換を行う
-function! s:InputConvertBushu(is_insert_mode)
-  let col3 = col("'^")
-  if col3 > 3
-    let save_ve = &ve
-    let &ve = 'all'
-    execute "normal! " . col3 . "|h"
-    let col2 = col(".")
-    execute "normal! h"
-    let col1 = col(".")
-    let str = getline('.')
-    let char1 = strpart(str, col1 - 1, col2 - col1)
-    let char2 = strpart(str, col2 - 1, col3 - col2)
+function! s:InputConvertBushu(col)
+  let inschars = ''
+  if a:col > 2
+    let str = strpart(getline('.'), 0, a:col - 1)
+    let chars = matchstr(str, "..$")
+    let char1 = matchstr(chars, "^.")
+    let char2 = matchstr(chars, ".$")
     let retchar = s:BushuSearch(char1, char2)
     let len = strlen(retchar)
     if len > 0
-      call s:BushuReplace(line("."), col1, col3, retchar)
-      if a:is_insert_mode
-	execute "normal! " . col2 . "|"
-      else
-	execute "normal! " . col1 . "|"
-      endif
+      let inschars = "\<BS>\<BS>" . retchar
     else
-      if a:is_insert_mode
-	execute "normal! " . col3 . "|"
-      else
-	execute "normal! " . col2 . "|"
-      endif
       echo '部首合成変換ができませんでした: <' . char1 . '>, <' . char2 . '>'
     endif
-    let &ve = save_ve
   endif
+  return inschars
 endfunction
 
 " 以前のConvertCount()に渡されたcount引数の値。
@@ -277,32 +263,35 @@ function! s:ConvertCount(count, katuyo)
   endif
   let s:last_count = cnt
 
+  " cnt長の文字列にマッチする正規表現を作る
+  let i = 0
+  let mstr = ''
+  while i < cnt
+    let mstr = mstr . '.'
+    let i = i + 1
+  endwhile
+
   let s:is_katuyo = 0
   let s:status_line = line(".")
-  let save_col = col(".")
   execute "normal! a\<ESC>"
-  let cnt = cnt - 1
-  if cnt > 0
-    execute "normal! " . cnt . "h"
-  endif
-  let s:status_column = col(".")
-  execute "normal! " . save_col . "|"
+  let str = strpart(getline('.'), 0, col("'^") - 1)
+  let chars = matchstr(str, mstr . "$")
 
-  let status = s:StatusGet()
-  let len = strlen(status)
+  let len = strlen(chars)
   if len > 0
+    let s:status_column = col("'^") - len
     "call s:SetCmdheight()
     let s:is_katuyo = a:katuyo
     if s:is_katuyo
-      let status = status . '―'
+      let chars = chars . '―'
     endif
-    let found = s:CandidateSearch(status)
+    let found = s:CandidateSearch(chars)
     if found == 2
       echo 'CANDIDATE: ' . s:last_candidate
     elseif found == 1
       call s:FixCandidate()
     elseif found == 0
-      echo '交ぜ書き辞書中には見つかりません: <' . status . '>'
+      echo '交ぜ書き辞書中には見つかりません: <' . chars . '>'
     elseif found == -1
       echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
     endif
@@ -316,22 +305,34 @@ endfunction
 " ConvertCount()で変換を開始した候補を確定する
 function! s:FixCandidate()
   execute "normal! a\<ESC>"
-  call s:InputFix(0)
+  let inschars = s:InputFix(col("'^"))
   let s:last_count = 0
+  call s:InsertString(inschars)
 endfunction
 
 " 今の位置以前の2文字を部首合成変換する
 function! s:ConvertBushu()
   execute "normal! a\<ESC>"
-  call s:InputConvertBushu(0)
+  let inschars = s:InputConvertBushu(col("'^"))
+  call s:InsertString(inschars)
+endfunction
+
+" 指定された文字列をバッファにappendする
+function! s:InsertString(inschars)
+  if strlen(a:inschars) > 0
+    let save_bs = &backspace
+    set backspace+=start
+    execute "normal! a" . a:inschars . "\<ESC>"
+    let &backspace = save_bs
+  endif
 endfunction
 
 "==============================================================================
 "			     未確定文字管理用関数群
 
 "   未確定文字列が存在するかチェックする
-function! s:StatusIsEnable()
-  if s:status_line != line('.') || s:status_column <= 0 || s:status_column > col('.')
+function! s:StatusIsEnable(col)
+  if s:status_line != line('.') || s:status_column <= 0 || s:status_column > a:col
     return 0
   endif
   return 1
@@ -339,8 +340,8 @@ endfunction
 
 "   未確定文字列を開始する
 function! s:StatusSet()
-  let s:status_line = line("'^")
-  let s:status_column = col("'^")
+  let s:status_line = line('.')
+  let s:status_column = col('.')
   call s:StatusEcho()
 endfunction
 
@@ -351,15 +352,14 @@ function! s:StatusReset()
 endfunction
 
 "   未確定文字列を「状態」として取得する
-function! s:StatusGet()
-  if !s:StatusIsEnable()
+function! s:StatusGet(col)
+  if !s:StatusIsEnable(a:col)
     return ''
   endif
 
   " 必要なパラメータを収集
   let stpos = s:status_column - 1
-  let ccl = col("'^")
-  let len = ccl - s:status_column
+  let len = a:col - s:status_column
   let str = getline('.')
 
   return strpart(str, stpos, len)
@@ -612,16 +612,17 @@ function! s:CandidateSearch(keyword)
   return ret
 endfunction
 
-" 候補をバッファに挿入
-function! s:CandidateSelect(len)
+" 確定文字列を取得
+function! s:CandidateSelect()
+  let inschars = ''
   if strlen(s:last_candidate) > 0
-    let str = getline(s:status_line)
-    let str = strpart(str, 0, s:status_column - 1).s:last_candidate.strpart(str, s:status_column - 1 + a:len)
-    call setline(s:status_line, str)
+    let i = 0
+    let inschars = inschars . s:last_candidate
     let s:status_column = s:status_column + strlen(s:last_candidate)
     let s:last_candidate = ''
     let s:last_candidate_num = 1
   endif
+  return inschars
 endfunction
 
 " 部首合成辞書データファイルをオープン
@@ -873,11 +874,4 @@ function! s:BushuSearch(char1, char2)
 
   " 合成できなかった
   return ''
-endfunction
-
-" 部首合成した文字をバッファに挿入
-function! s:BushuReplace(linenum, stcol, endcol, ch)
-  let str = getline(a:linenum)
-  let str = strpart(str, 0, a:stcol - 1) . a:ch . strpart(str, a:endcol - 1)
-  call setline(a:linenum, str)
 endfunction
