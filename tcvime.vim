@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/19 13:37:01 $
+" Last Change: $Date: 2003/05/19 14:38:42 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -134,12 +134,12 @@ function! s:MappingOn()
   let s:mapleader = g:mapleader
   inoremap <silent> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
   inoremap <silent> <Leader>q <C-O>:call <SID>InputStart()<CR>
-  inoremap <silent> <Leader><Space> <C-O>:call <SID>InputConvert()<CR>
-  inoremap <silent> <Leader>o <C-O>:call <SID>InputConvertKatuyo()<CR>
+  inoremap <silent> <Leader><Space> <C-O>:call <SID>InputConvert(0)<CR>
+  inoremap <silent> <Leader>o <C-O>:call <SID>InputConvert(1)<CR>
   inoremap <silent> <Leader>b <C-O>:call <SID>InputConvertBushu(1)<CR>
   nnoremap <silent> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
-  nnoremap <silent> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
-  nnoremap <silent> <Leader>o :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
+  nnoremap <silent> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
+  nnoremap <silent> <Leader>o :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
   nnoremap <silent> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
   nnoremap <silent> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
   if set_mapleader
@@ -225,16 +225,18 @@ let s:last_candidate_num = 0
 let s:is_katuyo = 0
 
 " 辞書から未確定文字列を検索
-" 候補が一つしかない場合は1を返す。候補が複数ある場合は0を返す。
+" @return -1:辞書が開けない場合, 0:文字列が見つからない場合,
+"   1:候補が1つだけ見つかった場合, 2:候補が2つ以上見つかった場合
 function! s:CandidateSearch(keyword)
   let found_num = s:last_found
   let uniq = 0
+  let ret = 0
 
   " 検索文字列が前回と同じ時は省略
   if s:last_keyword !=# a:keyword
     let s:last_keyword = a:keyword
     if !s:Candidate_FileOpen()
-      return 0
+      return -1
     endif
 
     " 実際の検索
@@ -275,17 +277,20 @@ function! s:CandidateSearch(keyword)
       endif
     endwhile
     let s:last_candidate = str
-    if !uniq
-      echo "CANDIDATE: ".str
+    if uniq
+      let ret = 1
+    else
+      let ret = 2
     endif
   else
     " 候補がみつからなかった時、リセット
     let s:last_candidate = ''
     let s:last_candidate_str = ''
     let s:last_candidate_num = 0
+    let ret = 0
   endif
   let s:last_found = found_num
-  return uniq
+  return ret
 endfunction
 
 " 候補をバッファに挿入
@@ -564,41 +569,36 @@ endfunction
 "				    入力制御
 "
 
-function! s:InputConvert()
+" Insert modeで交ぜ書き変換を行う。
+" 活用のある語の変換の場合は、
+" 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
+" @param katuyo 活用のある語の変換かどうか。0:活用なし, 1:活用あり
+function! s:InputConvert(katuyo)
   let col = col("'^")
   let s:is_katuyo = 0
   let status = s:StatusGet()
-  let uniq = 0
   let len = strlen(status)
   if len > 0
-    let uniq = s:CandidateSearch(status)
+    let s:is_katuyo = a:katuyo
+    if s:is_katuyo
+      let status = status . '―'
+    endif
+    let found = s:CandidateSearch(status)
   else
     let s:last_keyword = ''
     call s:InputStart()
   endif
   execute "normal! " . col . "|"
-  if uniq
-    call s:InputFix()
-  endif
-endfunction
-
-" 活用のある単語の変換を行う。
-" 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
-function! s:InputConvertKatuyo()
-  let col = col("'^")
-  let status = s:StatusGet()
-  let uniq = 0
-  let len = strlen(status)
-  if len > 0
-    let s:is_katuyo = 1
-    let uniq = s:CandidateSearch(status . '―')
-  else
-    let s:last_keyword = ''
-    call s:InputStart()
-  endif
-  execute "normal! " . col . "|"
-  if uniq
-    call s:InputFix()
+  if exists('found')
+    if found == 2
+      echo 'CANDIDATE: ' . s:last_candidate
+    elseif found == 1
+      call s:InputFix()
+    elseif found == 0
+      echo 'Not found: ' . status
+    elseif found == -1
+      echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
+    endif
   endif
 endfunction
 
@@ -667,6 +667,7 @@ function! s:InputConvertBushu(is_insert_mode)
       else
 	execute "normal! " . col2 . "|"
       endif
+      echo '部首合成変換ができませんでした: ' . char1 . ', ' . char2
     endif
     let &ve = save_ve
   endif
@@ -678,12 +679,14 @@ function! s:ConvertBushu()
   call s:InputConvertBushu(0)
 endfunction
 
-" 以前のConvertCount(), ConvertKatuyo()に渡されたcount引数の値。
+" 以前のConvertCount()に渡されたcount引数の値。
 " countが0で実行された場合に以前のcount値を使うようにするため。
 let s:last_count = 0
 
 " 今の位置以前のcount文字を変換する
-function! s:ConvertCount(count)
+" @param count 変換する文字列の長さ
+" @param katuyo 活用のある語の変換かどうか。0:活用なし, 1:活用あり
+function! s:ConvertCount(count, katuyo)
   let cnt = a:count
   if cnt == 0
     let cnt = s:last_count
@@ -708,46 +711,19 @@ function! s:ConvertCount(count)
   let len = strlen(status)
   if len > 0
     call s:SetCmdheight()
-    let uniq = s:CandidateSearch(status)
-    if uniq
-      call s:FixCandidate()
+    let s:is_katuyo = a:katuyo
+    if s:is_katuyo
+      let status = status . '―'
     endif
-  else
-    let s:last_keyword = ''
-    let s:last_count = 0
-    call s:StatusReset()
-  endif
-endfunction
-
-" 今の位置以前のcount文字を活用のある語として変換する
-function! s:ConvertKatuyo(count)
-  let cnt = a:count
-  if cnt == 0
-    let cnt = s:last_count
-    if cnt == 0
-      let cnt = 1
-    endif
-  endif
-  let s:last_count = cnt
-
-  let s:status_line = line(".")
-  let save_col = col(".")
-  execute "normal! a\<ESC>"
-  let cnt = cnt - 1
-  if cnt > 0
-    execute "normal! " . cnt . "h"
-  endif
-  let s:status_column = col(".")
-  execute "normal! " . save_col . "|"
-
-  let status = s:StatusGet()
-  let len = strlen(status)
-  if len > 0
-    call s:SetCmdheight()
-    let s:is_katuyo = 1
-    let uniq = s:CandidateSearch(status . '―')
-    if uniq
+    let found = s:CandidateSearch(status)
+    if found == 2
+      echo 'CANDIDATE: ' . s:last_candidate
+    elseif found == 1
       call s:FixCandidate()
+    elseif found == 0
+      echo 'Not found: ' . status
+    elseif found == -1
+      echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
     endif
   else
     let s:last_keyword = ''
