@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/21 12:55:48 $
+" Last Change: $Date: 2003/05/21 13:13:20 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -120,9 +120,6 @@ endif
 " Mapping
 command! TcvimeOn :call <SID>MappingOn()
 command! TcvimeOff :call <SID>MappingOff()
-" keymapを設定して、TcvimeOnする
-" 引数: keymap名
-command! -nargs=1 TcvimeInit :call <SID>TcvimeInit(<f-args>)
 " 指定された文字の打鍵を表示する
 " 引数: 打鍵を表示する文字
 command! -nargs=1 TcvimeHelp :call <SID>ShowHelp(<args>)
@@ -190,14 +187,6 @@ function! s:MappingOff()
   autocmd!
   augroup END
   unlet s:save_cmdheight
-endfunction
-
-" keymapを設定してTcvimeのMappingを有効にする
-function! s:TcvimeInit(keymapname)
-  if &keymap !=# a:keymapname
-    let &keymap = a:keymapname
-    call s:MappingOn()
-  endif
 endfunction
 
 
@@ -923,4 +912,6 @@ function! s:StatusEcho(...)
   echo "New conversion (line=".s:status_line." column=".s:status_column.")"
 endfunction
 
+" 状態リセット、マッピング有効化
 call s:StatusReset()
+TcvimeOn
