@@ -2,7 +2,7 @@
 "
 " vime.vim - ´Ê°×SKK-IME
 "
-" Last Change: $Date: 2003/05/08 13:56:47 $
+" Last Change: $Date: 2003/05/08 15:23:05 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -577,29 +577,50 @@ endfunction
 
 " ¥Ø¥ë¥×ÍÑ¥Ð¥Ã¥Õ¥¡¤ò³«¤¯
 function! s:OpenHelpBuffer()
-  execute "augroup VIme"
-  execute "autocmd!"
-  execute "autocmd WinEnter ".s:helpbufname." call <SID>Candidate_WinEnter()"
-  execute "autocmd WinLeave ".s:helpbufname." call <SID>Candidate_WinLeave()"
-  execute "augroup END"
-  execute "normal! :sp " . s:helpbufname . "\<CR>"
-  setlocal buftype=nofile
-  setlocal bufhidden=delete
-  setlocal noswapfile
+  if s:SelectWindowByName(s:helpbufname) < 0
+    execute "augroup VIme"
+    execute "autocmd!"
+    execute "autocmd WinEnter ".s:helpbufname." call <SID>Candidate_WinEnter()"
+    execute "autocmd WinLeave ".s:helpbufname." call <SID>Candidate_WinLeave()"
+    execute "augroup END"
+    execute "silent normal! :sp " . s:helpbufname . "\<CR>"
+    setlocal buftype=nofile
+    setlocal bufhidden=delete
+    setlocal noswapfile
+  else
+    execute "normal! :%d\<CR>"
+  endif
   execute "normal! 4\<C-W>\<C-_>"
 endfunction
 
 " »ØÄê¤µ¤ì¤¿Ê¸»ú¤òÆþÎÏ¤¹¤ë¤¿¤á¤ÎÂÇ¸°¤òÉ½¼¨¤¹¤ë
 function! s:ShowHelp(ch)
+  if &keymap == ""
+    return
+  endif
+  let keyseq = s:SearchKeymap(a:ch)
   call s:OpenHelpBuffer()
-  execute "normal! o" . s:SearchKeymap(a:ch) . "\<ESC>"
-  execute "normal! o" . a:ch . "\<ESC>"
+  execute "normal! a" . a:ch . "\<ESC>"
+  execute "normal! oq q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / \<ESC>"
+  let i = 0
+  while strlen(keyseq) > 0
+    let i = i + 1
+    let key = strpart(keyseq, 0, 1)
+    let keyseq = strpart(keyseq, 1)
+    execute "normal! :%s@" . key . " @" . i . "@\<CR>"
+  endwhile
+  execute "normal! :%s@^\\(....................\\). . @\\1@e\<CR>"
+  execute "normal! :%s@^\\(................\\). . @\\1@e\<CR>"
+  execute "normal! :%s@\\(.\\)\\(.\\)@\\1\\2@ge\<CR>"
+  execute "normal! :%s@\\(.\\). @\\1@ge\<CR>"
+  execute "normal! :%s@. . @¡¦@g\<CR>"
+  execute "normal! :%s@@ @ge\<CR>"
 endfunction
 
 " »ØÄê¤µ¤ì¤¿Ê¸»ú¤òÆþÎÏ¤¹¤ë¤¿¤á¤ÎÂÇ¸°¤òkeymap¥Õ¥¡¥¤¥ë¤«¤é¸¡º÷¤¹¤ë
 function! s:SearchKeymap(ch)
   let kmfile = globpath(&rtp, "keymap/" . &keymap . "_" . &encoding . ".vim")
-  execute "normal! :sv " . kmfile . "\<CR>"
+  execute "silent normal! :sv " . kmfile . "\<CR>"
   let v:errmsg = ""
   silent! execute "normal! gg/[^ 	][^ 	]*[ 	][ 	]*" . a:ch . "/\<CR>"
   if v:errmsg == ""
