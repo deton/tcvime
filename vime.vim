@@ -2,12 +2,12 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 24-Apr-2003.
+" Last Change: 01-May-2003.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
 let s:verbose = 0
-let s:candidate_file = globpath($VIM.','.&runtimepath, 'SKK-JISYO.L')
+let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 "echo "candidate_file: ".s:candidate_file
 
@@ -29,8 +29,8 @@ endfunction
 "   WinLeave
 function! s:Candidate_WinLeave()
   setlocal nowrap
-  "hide
-  exe "normal! 1\<C-W>_"
+  hide
+  "exe "normal! 1\<C-W>_"
 endfunction
 
 " 辞書データファイルをオープン
@@ -58,7 +58,6 @@ let s:last_candidate_num = 0
 
 " 辞書から未確定文字列を検索
 function! s:CandidateSearch(keyword)
-  let pat = '^'.a:keyword.' '
   let found_num = s:last_found
 
   " 検索文字列が前回と同じ時は省略
@@ -71,9 +70,9 @@ function! s:CandidateSearch(keyword)
     " 見つからなくてエラーメッセージが表示されないようにダミーを入れておく
     execute "silent normal! ggO" . a:keyword . " \<ESC>"
     " 実際の検索
-    execute "silent normal! 2G/".pat."\<CR>"
+    execute "silent normal! 2G/^" . a:keyword . " \<CR>"
     let s:last_candidate = ''
-    let s:last_candidate_str = substitute(getline('.'), pat, '', '')
+    let s:last_candidate_str = substitute(getline('.'), '^' . a:keyword . ' ', '', '')
     let s:last_candidate_num = 1
     let found_num = line('.')
     execute "normal! u\<C-w>p"
@@ -114,7 +113,8 @@ function! s:CandidateSelect(len)
     let s:status_column = s:status_column + strlen(s:last_candidate)
     let s:last_candidate = ''
     let s:last_candidate_num = 1
-    call s:StatusEcho()
+    let &cmdheight = s:save_cmdheight
+    unlet s:save_cmdheight
   endif
 endfunction
 
@@ -390,30 +390,20 @@ endfunction
 "				    入力制御
 "
 
-function! s:InputNullSpace()
-  call s:StatusSet()
-endfunction
-
 function! s:InputConvert()
-  if !s:StatusIsEnable()
-    execute "normal! gi \<ESC>`^"
-    call s:StatusReset()
+  let status = s:StatusGet()
+  let len = strlen(status)
+  if len > 0
+    call s:CandidateSearch(status)
   else
-    let status = s:StatusGet()
-    let len = strlen(status)
-    if len > 0
-      call s:CandidateSearch(status)
-    else
-      let s:last_keyword = ''
-      execute "normal! gi \<ESC>`^"
-      call s:StatusReset()
-    endif
+    let s:last_keyword = ''
+    call s:StatusReset()
   endif
 endfunction
 
 function! s:InputCR()
   if !s:StatusIsEnable()
-    execute "normal! a\<CR>\<ESC>"
+    execute "normal! gi\<CR>\<ESC>"
   else
     let str = s:StatusGet()
     let len = strlen(str)
@@ -422,13 +412,17 @@ function! s:InputCR()
 	call s:CandidateSelect(len)
       endif
     else
-      execute "normal! a\<CR>\<ESC>"
+      execute "normal! gi\<CR>\<ESC>"
     endif
   endif
   call s:StatusReset()
 endfunction
 
 function! s:InputStart()
+  let s:save_cmdheight = &cmdheight
+  if &cmdheight < 2
+    let &cmdheight = 2
+  endif
   call s:StatusSet()
 endfunction
 
@@ -470,9 +464,9 @@ function! s:ConvertCount(count)
     let s:status_line = line(".")
     let save_col = col(".")
     execute "normal! a\<ESC>"
-    let count = a:count - 1
-    if count > 0
-      execute "normal! " . count . "h"
+    let cnt = a:count - 1
+    if cnt > 0
+      execute "normal! " . cnt . "h"
     endif
     let s:status_column = col(".")
     execute "normal! " . save_col . "|"
@@ -518,18 +512,27 @@ endfunction
 "   マッピングを有効化
 function! s:MappingOn()
   inoremap <buffer> <CR> <C-O>:call <SID>InputCR()<CR>
-  inoremap <buffer> M <C-O>:call <SID>InputStart()<CR>
-  inoremap <buffer> <Space> <C-O>:call <SID>InputConvert()<CR>
-  inoremap <buffer> B <C-O>:call <SID>InputConvertBushu()<CR>
+  inoremap <buffer> <C-L> <C-O>:call <SID>InputStart()<CR>
+  inoremap <buffer> <Nul> <C-O>:call <SID>InputConvert()<CR>
+  inoremap <buffer> <C-S> <C-O>:call <SID>InputConvertBushu()<CR>
   nnoremap <buffer> <CR> :<C-U>call <SID>FixCandidate()<CR>
-  nnoremap <buffer> <Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
-  nnoremap <buffer> <C-N> :<C-U>call <SID>ConvertBushu()<CR>
+  nnoremap <buffer> <Nul> :<C-U>call <SID>ConvertCount(v:count)<CR>
+  nnoremap <buffer> <C-S> :<C-U>call <SID>ConvertBushu()<CR>
 endfunction
 
 "   マッピングを無効化
 function! s:MappingOff()
   imapclear <buffer>
   nmapclear <buffer>
+endfunction
+
+" iminsertが1の場合はMappingOnして、0の場合はMappingOffする
+function! s:MappingToggle()
+  if &iminsert == 1
+    call s:MappingOn()
+  else
+    call s:MappingOff()
+  endif
 endfunction
 
 "==============================================================================
@@ -539,6 +542,14 @@ endfunction
 "   未確定文字列が存在するかチェックする
 function! s:StatusIsEnable()
   if s:status_line != line('.') || s:status_column <= 0 || s:status_column > col('.')
+    return 0
+  endif
+  return 1
+endfunction
+
+" 桁位置を指定して変換対象文字列が存在するかチェックする
+function! s:StatusIsEnableCol(col)
+  if s:status_line != line('.') || s:status_column <= 0 || s:status_column > a:col
     return 0
   endif
   return 1
@@ -578,6 +589,22 @@ function! s:StatusGet()
   return strpart(str, stpos, len)
 endfunction
 
+" 桁位置を指定して変換対象文字列を取得する
+function! s:StatusGetCol(col)
+  if !s:StatusIsEnableCol(a:col)
+    return ''
+  endif
+
+  let stpos = s:status_column - 1
+  let len = a:col - s:status_column
+  let str = getline('.')
+
+  if s:verbose
+    echo "SLINE=".s:status_line." SCOLUMN=".s:status_column." CCOLUMN=".a:col." LEN=".len
+  endif
+  return strpart(str, stpos, len)
+endfunction
+
 "   未確定文字列の開始位置と終了位置を表示(デバッグ用)
 function! s:StatusEcho(...)
   echo "New conversion (line=".s:status_line." column=".s:status_column.")"
@@ -590,3 +617,4 @@ endfunction
 call s:StatusReset()
 command! VImeOn :call <SID>MappingOn()
 command! VImeOff :call <SID>MappingOff()
+command! VImeToggle :call <SID>MappingToggle()
