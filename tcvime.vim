@@ -1,22 +1,155 @@
-" vi:set ts=8 sts=2 sw=2 tw=0 nowrap:
+" vi:set ts=8 sts=2 sw=2 tw=0:
 "
-" vime.vim - 簡易SKK-IME
+" tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力を補助する。
+"              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/14 11:57:24 $
-" Written By:  Muraoka Taro <koron@tka.att.ne.jp>
-"
+" Last Change: $Date: 2003/05/14 13:04:40 $
+" Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
+" Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
-let s:verbose = 0
-let s:helpbufname = "[VImeHelp]"
+" Description:
+" 使用法:
+"   mazegaki.dicとbushu.revは$VIMか'runtimepath'で示されるディレクトリに
+"   置いておいてください。
+"
+"   :TcvimeOnコマンドでマッピングが有効になります。
+"
+"  Insert Modeでの交ぜ書き変換:
+"    <Leader>q で変換対象文字列の始まりをマークします。
+"    <Leader><Space> で交ぜ書き変換を行います。
+"      <Leader>q でマークした位置から現在のカーソル位置の間にある文字列を
+"      mazegaki.dicで検索します。
+"      候補が一つしかない場合は変換対象文字列を置き換えます。
+"      候補が複数ある場合は、コマンド行の上にCANDIDATE: で候補が表示されます。
+"      同じ変換対象文字列に対して<Leader><Space>を繰り返し打つと、
+"      候補を順に表示していきます。
+"      候補のリストの最後まで行くとリストの最初に戻ります。
+"    <Leader><CR> でCANDIDATE: として表示されている候補を選択して
+"      変換対象文字列を置き換えます。
+"
+"  Insert Modeでの交ぜ書き変換(活用のある語):
+"    基本的には活用のない語の交ぜ書き変換と同じです。
+"    "―"をつけて<Leader><Space>で変換するか、活用しない部分まで入力してから、
+"    <Leader>o で変換します。
+"    <Leader>o は<Leader>q でマークした位置から現在のカーソル位置の間の文字列に
+"    "―"を付加した文字列をmazegaki.dicから検索します。
+"
+"  Insert Modeでの部首合成変換:
+"    <Leader>b でカーソル位置の直前の2文字の部首合成変換を行います。
+"
+"  Normal Modeでの交ぜ書き変換:
+"    [count]<Leader><Space> カーソル位置以前の[count]文字の交ぜ書き変換を
+"      行います。
+"    <Leader><CR> でCANDIDATE: として表示されている候補を選択して
+"      変換対象文字列を置き換えます。
+"
+"  Normal Modeでの交ぜ書き変換(活用のある語):
+"    [count]<Leader>o カーソル位置以前の[count]文字に"―"を付加した文字列を
+"      mazegaki.dicから検索します。
+"
+"  Normal Modeでの部首合成変換:
+"    <Leader>b カーソル位置以前の2文字の部首合成変換を行います。
+"
+" 打鍵ヘルプ表示(Normal Mode):
+"    <Leader>? でカーソル位置の文字の打鍵を表示します。
+"      使用中のkeymapで直接入力できない文字の場合は、
+"      部首合成変換辞書を検索して、指定された文字が含まれる行を表示します。
+"
+" オプション:
+"    'tcvime_keyboard'
+"       打鍵ヘルプ表示用のキーボード配列を表す文字列。
+"       キーの後にスペース、を2回ずつ記述する。
+"       例:
+"         let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
+"
+"    'mapleader'
+"       |mapleader|
+
+" このプラグインを読込みたくない時は.vimrcに次のように書くこと:
+"       :let plugin_tcvime_disable = 1
+
+if exists('plugin_tcvime_disable')
+  finish
+endif
+
+if !exists("tcvime_keyboard")
+  " querty
+  let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
+  " 数字キーの段を表示しない場合は次の文字列を使うようにする(qwerty)
+  let tcvime_keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
+endif
+
+" Mapping
+command! TcvimeOn :call <SID>MappingOn()
+command! TcvimeOff :call <SID>MappingOff()
+" keymapを設定して、TcvimeOnする
+" 引数: keymap名
+command! -nargs=1 TcvimeInit :call <SID>TcvimeInit(<f-args>)
+
+"   マッピングを有効化
+function! s:MappingOn()
+  let set_mapleader = 0
+  if !exists('g:mapleader')
+    let g:mapleader = "\<C-J>"
+    let set_mapleader = 1
+  endif
+  let s:mapleader = g:mapleader
+  inoremap <silent> <buffer> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
+  inoremap <silent> <buffer> <Leader>q <C-O>:call <SID>InputStart()<CR>
+  inoremap <silent> <buffer> <Leader><Space> <C-O>:call <SID>InputConvert()<CR>
+  inoremap <silent> <buffer> <Leader>o <C-O>:call <SID>InputConvertKatuyo()<CR>
+  inoremap <silent> <buffer> <Leader>b <C-O>:call <SID>InputConvertBushu(1)<CR>
+  nnoremap <silent> <buffer> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
+  nnoremap <silent> <buffer> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
+  nnoremap <silent> <buffer> <Leader>o :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
+  nnoremap <silent> <buffer> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
+  nnoremap <silent> <buffer> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
+  if set_mapleader
+    unlet g:mapleader
+  endif
+endfunction
+
+"   マッピングを無効化
+function! s:MappingOff()
+  let set_mapleader = 0
+  if !exists('g:mapleader')
+    let g:mapleader = "\<C-J>"
+    let set_mapleader = 1
+  else
+    let save_mapleader = g:mapleader
+  endif
+  let g:mapleader = s:mapleader
+  silent! iunmap <buffer> <Leader><CR>
+  silent! iunmap <buffer> <Leader>q
+  silent! iunmap <buffer> <Leader><Space>
+  silent! iunmap <buffer> <Leader>o
+  silent! iunmap <buffer> <Leader>b
+  silent! nunmap <buffer> <Leader><CR>
+  silent! nunmap <buffer> <Leader><Space>
+  silent! nunmap <buffer> <Leader>o
+  silent! nunmap <buffer> <Leader>b
+  silent! nunmap <buffer> <Leader>?
+  if set_mapleader
+    unlet g:mapleader
+  else
+    let g:mapleader = save_mapleader
+  endif
+endfunction
+
+" keymapを設定してTcvimeのMappingを有効にする
+function! s:TcvimeInit(keymapname)
+  if &iminsert == 0 && &keymap !=# a:keymapname
+    let &keymap = a:keymapname
+    call s:MappingOn()
+  endif
+endfunction
+
+
+" 設定
+let s:helpbufname = "[TcvimeHelp]"
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 "echo "candidate_file: ".s:candidate_file
-
-" 打鍵ヘルプ表示用のキーボード配列を表す文字列(qwerty)
-" キーの後にスペース、を2回ずつ記述する。
-"let s:keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
-" 数字キーの段を表示しない場合は次の文字列を使うようにする(qwerty)
-let s:keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 
 "==============================================================================
 "				    辞書検索
@@ -46,7 +179,7 @@ function! s:Candidate_FileOpen()
     return 0
   endif
   if s:SelectWindowByName(s:candidate_file) < 0
-    execute "augroup VIme"
+    execute "augroup Tcvime"
     execute "autocmd!"
     execute "autocmd WinEnter ".s:candidate_file." call <SID>Candidate_WinEnter()"
     execute "autocmd WinLeave ".s:candidate_file." call <SID>Candidate_WinLeave()"
@@ -160,7 +293,7 @@ function! s:Bushu_FileOpen()
     return 0
   endif
   if s:SelectWindowByName(s:bushu_file) < 0
-    execute "augroup VIme"
+    execute "augroup Tcvime"
     execute "autocmd!"
     execute "autocmd WinEnter ".s:bushu_file." call <SID>Candidate_WinEnter()"
     execute "autocmd WinLeave ".s:bushu_file." call <SID>Candidate_WinLeave()"
@@ -619,7 +752,7 @@ endfunction
 " ヘルプ用バッファを開く
 function! s:OpenHelpBuffer()
   if s:SelectWindowByName(s:helpbufname) < 0
-    execute "augroup VIme"
+    execute "augroup Tcvime"
     execute "autocmd!"
     execute "autocmd WinEnter ".s:helpbufname." call <SID>Candidate_WinEnter()"
     execute "autocmd WinLeave ".s:helpbufname." call <SID>Candidate_WinLeave()"
@@ -659,7 +792,7 @@ endfunction
 " 指定された文字とその打鍵を表にして表示する
 function! s:ShowHelpSequence(ch, keyseq)
   call s:OpenHelpBuffer()
-  execute "normal! a" . s:keyboard . "\<ESC>"
+  execute "normal! a" . tcvime_keyboard . "\<ESC>"
   let keyseq = a:keyseq
   let i = 0
   while strlen(keyseq) > 0
@@ -734,67 +867,6 @@ function! s:SearchKeymap(ch)
 endfunction
 
 "==============================================================================
-"				  キートラップ
-"
-
-"   マッピングを有効化
-function! s:MappingOn()
-  let set_mapleader = 0
-  if !exists('g:mapleader')
-    let g:mapleader = "\<C-k>"
-    let set_mapleader = 1
-  endif
-  let s:mapleader = g:mapleader
-  inoremap <buffer> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
-  inoremap <buffer> <Leader>q <C-O>:call <SID>InputStart()<CR>
-  inoremap <buffer> <Leader><Space> <C-O>:call <SID>InputConvert()<CR>
-  inoremap <buffer> <Leader>o <C-O>:call <SID>InputConvertKatuyo()<CR>
-  inoremap <buffer> <Leader>b <C-O>:call <SID>InputConvertBushu(1)<CR>
-  nnoremap <buffer> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
-  nnoremap <buffer> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
-  nnoremap <buffer> <Leader>o :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
-  nnoremap <buffer> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
-  nnoremap <buffer> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
-  if set_mapleader
-    unlet g:mapleader
-  endif
-endfunction
-
-"   マッピングを無効化
-function! s:MappingOff()
-  let set_mapleader = 0
-  if !exists('g:mapleader')
-    let g:mapleader = "\<C-k>"
-    let set_mapleader = 1
-  else
-    let save_mapleader = g:mapleader
-  endif
-  let g:mapleader = s:mapleader
-  silent! iunmap <buffer> <Leader><CR>
-  silent! iunmap <buffer> <Leader>q
-  silent! iunmap <buffer> <Leader><Space>
-  silent! iunmap <buffer> <Leader>o
-  silent! iunmap <buffer> <Leader>b
-  silent! nunmap <buffer> <Leader><CR>
-  silent! nunmap <buffer> <Leader><Space>
-  silent! nunmap <buffer> <Leader>o
-  silent! nunmap <buffer> <Leader>b
-  if set_mapleader
-    unlet g:mapleader
-  else
-    let g:mapleader = save_mapleader
-  endif
-endfunction
-
-" keymapを設定してVImeのMappingを有効にする
-function! s:VImeInit(keymapname)
-  if &iminsert == 0 && &keymap !=# a:keymapname
-    let &keymap = a:keymapname
-    call s:MappingOn()
-  endif
-endfunction
-
-"==============================================================================
 "			     未確定文字管理用関数群
 "
 
@@ -811,9 +883,6 @@ function! s:StatusSet()
   let s:status_line = line("'^")
   let s:status_column = col("'^")
   call s:StatusEcho()
-  if s:verbose
-    echo "StatusSet: SLINE=".s:status_line." SCOLUMN=".s:status_column
-  endif
 endfunction
 
 "   未確定文字列をリセットする
@@ -834,9 +903,6 @@ function! s:StatusGet()
   let len = ccl - s:status_column
   let str = getline('.')
 
-  if s:verbose
-    echo "SLINE=".s:status_line." SCOLUMN=".s:status_column." CCOLUMN=".ccl." LEN=".len
-  endif
   return strpart(str, stpos, len)
 endfunction
 
@@ -845,16 +911,4 @@ function! s:StatusEcho(...)
   echo "New conversion (line=".s:status_line." column=".s:status_column.")"
 endfunction
 
-"==============================================================================
-"				   初期設定
-"
-
 call s:StatusReset()
-command! VImeOn :call <SID>MappingOn()
-command! VImeOff :call <SID>MappingOff()
-" keymapを設定して、VImeOnする
-" 引数: keymap名
-command! -nargs=1 VImeInit :call <SID>VImeInit(<f-args>)
-" 指定された文字の打鍵を表示する
-" 引数: 打鍵を表示する文字
-command! -nargs=1 VImeHelp :call <SID>ShowHelp(<args>)
