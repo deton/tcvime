@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/22 13:49:26 $
+" Last Change: $Date: 2003/05/23 09:47:38 $
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -237,7 +237,6 @@ function! s:InputConvert(katuyo)
   if exists('found')
     if found == 2
       echo 'CANDIDATE: ' . s:last_candidate
-      redraw
     elseif found == 1
       call s:InputFix(1)
     elseif found == 0
@@ -354,7 +353,6 @@ function! s:ConvertCount(count, katuyo)
     let found = s:CandidateSearch(status)
     if found == 2
       echo 'CANDIDATE: ' . s:last_candidate
-      redraw
     elseif found == 1
       call s:FixCandidate()
     elseif found == 0
