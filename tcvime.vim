@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Revision: $Id: tcvime.vim,v 1.25 2003/05/24 14:29:57 deton Exp $
+" Revision: $Id: tcvime.vim,v 1.26 2003/05/25 04:42:28 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -181,7 +181,7 @@ function! s:InputConvert(katuyo)
     elseif found == 1
       call s:InputFix(1)
     elseif found == 0
-      echo 'Not found: <' . status . '>'
+      echo '交ぜ書き辞書中には見つかりません: <' . status . '>'
     elseif found == -1
       echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
     endif
@@ -297,7 +297,7 @@ function! s:ConvertCount(count, katuyo)
     elseif found == 1
       call s:FixCandidate()
     elseif found == 0
-      echo 'Not found: <' . status . '>'
+      echo '交ぜ書き辞書中には見つかりません: <' . status . '>'
     elseif found == -1
       echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
     endif
@@ -362,7 +362,8 @@ endfunction
 
 "   未確定文字列の開始位置と終了位置を表示(デバッグ用)
 function! s:StatusEcho(...)
-  echo "New conversion (line=".s:status_line." column=".s:status_column.")"
+  echo '読み入力開始;<Leader><Space>:変換,<Leader>o:活用する語の変換,<Leader><CR>:確定'
+  "echo "New conversion (line=".s:status_line." column=".s:status_column.")"
 endfunction
 
 " 状態リセット
