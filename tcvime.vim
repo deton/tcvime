@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vimÅù¤Î´Á»úÄ¾ÀÜÆþÎÏkeymap¤Ç¤ÎÆþÎÏÊä½õµ¡Ç½:
 "              ¸ò¤¼½ñ¤­ÊÑ´¹¡¢Éô¼ó¹çÀ®ÊÑ´¹¡¢ÂÇ¸°¥Ø¥ë¥×É½¼¨µ¡Ç½¡£
 "
-" Last Change: $Date: 2003/05/15 14:23:30 $
+" Last Change: $Date: 2003/05/16 12:39:06 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -260,7 +260,7 @@ function! s:CandidateSearch(keyword)
 	let uniq = 1
       endif
     endif
-    execute "normal! \<C-w>p"
+    quit!
   else
     " ¼¡¤ÎÊÑ´¹¸õÊä¤òÃµ¤·½Ð¤¹¤¿¤á
     if s:last_candidate_num > 0 && s:last_candidate != ''
@@ -352,7 +352,7 @@ function! s:BushuAlternative(ch)
   else
     let retchar = a:ch
   endif
-  execute "normal! \<C-w>p"
+  quit!
   return retchar
 endfunction
 
@@ -370,7 +370,7 @@ function! s:BushuSearchCompose(char1, char2)
   else
     let retchar = ''
   endif
-  execute "normal! \<C-w>p"
+  quit!
   return retchar
 endfunction
 
@@ -400,7 +400,7 @@ function! s:BushuDecompose(ch)
   else
     let ret = 0
   endif
-  execute "normal! \<C-w>p"
+  quit!
   return ret
 endfunction
 
@@ -607,7 +607,7 @@ function! s:InputConvertKatuyo()
   let len = strlen(status)
   if len > 0
     let s:is_katuyo = 1
-    let uniq = s:CandidateSearch(status . "¡½")
+    let uniq = s:CandidateSearch(status . '¡½')
   else
     let s:last_keyword = ''
     call s:StatusReset()
@@ -621,7 +621,7 @@ endfunction
 " ³ÎÄê¤·¤è¤¦¤È¤·¤Æ¤¤¤ë¸õÊä¤¬ÌäÂê¤Ê¤¤¤«¤É¤¦¤«¥Á¥§¥Ã¥¯
 function! s:IsCandidateOK(str)
   if strlen(a:str) > 0 && strlen(s:last_candidate) > 0
-    if s:is_katuyo && s:last_keyword ==# a:str . "¡½" || s:last_keyword ==# a:str
+    if s:is_katuyo && s:last_keyword ==# (a:str . '¡½') || s:last_keyword ==# a:str
       return 1
     endif
   endif
@@ -758,7 +758,7 @@ function! s:ConvertKatuyo(count)
       let &cmdheight = 2
     endif
     let s:is_katuyo = 1
-    let uniq = s:CandidateSearch(status . "¡½")
+    let uniq = s:CandidateSearch(status . '¡½')
     if uniq
       call s:FixCandidate()
     endif
@@ -842,6 +842,7 @@ function! s:ShowHelpSequence(ch, keyseq)
   execute "normal! :%s@. . @¡¦@g\<CR>"
   execute "normal! :%s@@ @ge\<CR>"
   execute "normal! 1GA    " . a:ch . "\<ESC>"
+  execute "normal! \<C-W>p"
 endfunction
 
 " Éô¼ó¹çÀ®¼­½ñ¤«¤é¡¢»ØÄê¤µ¤ì¤¿Ê¸»ú¤ò´Þ¤à¹Ô¤ò¸¡º÷¤·¤ÆÉ½¼¨¤¹¤ë
@@ -850,6 +851,7 @@ function! s:ShowHelpBushuDic(ch)
   if strlen(lines) > 0
     call s:OpenHelpBuffer()
     execute "normal! a" . lines . "\<ESC>1G"
+    execute "normal! \<C-W>p"
   endif
 endfunction
 
