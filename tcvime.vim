@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/16 12:39:06 $
+" Last Change: $Date: 2003/05/19 12:48:03 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -130,19 +130,26 @@ function! s:MappingOn()
     let set_mapleader = 1
   endif
   let s:mapleader = g:mapleader
-  inoremap <silent> <buffer> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
-  inoremap <silent> <buffer> <Leader>q <C-O>:call <SID>InputStart()<CR>
-  inoremap <silent> <buffer> <Leader><Space> <C-O>:call <SID>InputConvert()<CR>
-  inoremap <silent> <buffer> <Leader>o <C-O>:call <SID>InputConvertKatuyo()<CR>
-  inoremap <silent> <buffer> <Leader>b <C-O>:call <SID>InputConvertBushu(1)<CR>
-  nnoremap <silent> <buffer> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
-  nnoremap <silent> <buffer> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
-  nnoremap <silent> <buffer> <Leader>o :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
-  nnoremap <silent> <buffer> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
-  nnoremap <silent> <buffer> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
+  inoremap <silent> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
+  inoremap <silent> <Leader>q <C-O>:call <SID>InputStart()<CR>
+  inoremap <silent> <Leader><Space> <C-O>:call <SID>InputConvert()<CR>
+  inoremap <silent> <Leader>o <C-O>:call <SID>InputConvertKatuyo()<CR>
+  inoremap <silent> <Leader>b <C-O>:call <SID>InputConvertBushu(1)<CR>
+  nnoremap <silent> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
+  nnoremap <silent> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
+  nnoremap <silent> <Leader>o :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
+  nnoremap <silent> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
+  nnoremap <silent> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
   if set_mapleader
     unlet g:mapleader
   endif
+
+  augroup Tcvime
+  autocmd!
+  execute "autocmd BufReadCmd ".s:helpbufpat." call <SID>Help_BufReadCmd()"
+  augroup END
+
+  call s:StatusReset()
 endfunction
 
 "   マッピングを無効化
@@ -155,26 +162,30 @@ function! s:MappingOff()
     let save_mapleader = g:mapleader
   endif
   let g:mapleader = s:mapleader
-  silent! iunmap <buffer> <Leader><CR>
-  silent! iunmap <buffer> <Leader>q
-  silent! iunmap <buffer> <Leader><Space>
-  silent! iunmap <buffer> <Leader>o
-  silent! iunmap <buffer> <Leader>b
-  silent! nunmap <buffer> <Leader><CR>
-  silent! nunmap <buffer> <Leader><Space>
-  silent! nunmap <buffer> <Leader>o
-  silent! nunmap <buffer> <Leader>b
-  silent! nunmap <buffer> <Leader>?
+  silent! iunmap <Leader><CR>
+  silent! iunmap <Leader>q
+  silent! iunmap <Leader><Space>
+  silent! iunmap <Leader>o
+  silent! iunmap <Leader>b
+  silent! nunmap <Leader><CR>
+  silent! nunmap <Leader><Space>
+  silent! nunmap <Leader>o
+  silent! nunmap <Leader>b
+  silent! nunmap <Leader>?
   if set_mapleader
     unlet g:mapleader
   else
     let g:mapleader = save_mapleader
   endif
+
+  augroup Tcvime
+  autocmd!
+  augroup END
 endfunction
 
 " keymapを設定してTcvimeのMappingを有効にする
 function! s:TcvimeInit(keymapname)
-  if &iminsert == 0 && &keymap !=# a:keymapname
+  if &keymap !=# a:keymapname
     let &keymap = a:keymapname
     call s:MappingOn()
   endif
@@ -182,32 +193,15 @@ endfunction
 
 
 " 設定
-let s:helpbufname = "[TcvimeHelp]"
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 "echo "candidate_file: ".s:candidate_file
+let s:helpbufname = '[TcvimeHelp]'
+let s:helpbufpat = '\[TcvimeHelp\]'
 
 "==============================================================================
 "				    辞書検索
 "
-
-"
-" WinEnter/WinLeave hooks
-"
-"   WinEnter
-function! s:Candidate_WinEnter()
-  set ft=
-  if winbufnr(2) > 0
-  else
-    exe "quit!"
-  endif
-endfunction
-"   WinLeave
-function! s:Candidate_WinLeave()
-  setlocal nowrap
-  hide
-  "exe "normal! 1\<C-W>_"
-endfunction
 
 " 辞書データファイルをオープン
 function! s:Candidate_FileOpen()
@@ -215,11 +209,6 @@ function! s:Candidate_FileOpen()
     return 0
   endif
   if s:SelectWindowByName(s:candidate_file) < 0
-    execute "augroup Tcvime"
-    execute "autocmd!"
-    execute "autocmd WinEnter ".s:candidate_file." call <SID>Candidate_WinEnter()"
-    execute "autocmd WinLeave ".s:candidate_file." call <SID>Candidate_WinLeave()"
-    execute "augroup END"
     execute 'silent normal! :sv '.s:candidate_file."\<CR>"
   endif
   return 1
@@ -329,11 +318,6 @@ function! s:Bushu_FileOpen()
     return 0
   endif
   if s:SelectWindowByName(s:bushu_file) < 0
-    execute "augroup Tcvime"
-    execute "autocmd!"
-    execute "autocmd WinEnter ".s:bushu_file." call <SID>Candidate_WinEnter()"
-    execute "autocmd WinLeave ".s:bushu_file." call <SID>Candidate_WinLeave()"
-    execute "augroup END"
     execute 'silent normal! :sv '.s:bushu_file."\<CR>"
   endif
   return 1
@@ -785,18 +769,18 @@ endfunction
 "==============================================================================
 " ヘルプ表示
 
+" 空のヘルプ用バッファを作る
+function! s:Help_BufReadCmd()
+  set ft=
+  set buftype=nofile
+  set bufhidden=delete
+  set noswapfile
+endfunction
+
 " ヘルプ用バッファを開く
 function! s:OpenHelpBuffer()
   if s:SelectWindowByName(s:helpbufname) < 0
-    execute "augroup Tcvime"
-    execute "autocmd!"
-    execute "autocmd WinEnter ".s:helpbufname." call <SID>Candidate_WinEnter()"
-    execute "autocmd WinLeave ".s:helpbufname." call <SID>Candidate_WinLeave()"
-    execute "augroup END"
     execute "silent normal! :sp " . s:helpbufname . "\<CR>"
-    setlocal buftype=nofile
-    setlocal bufhidden=delete
-    setlocal noswapfile
   endif
   execute "normal! :%d\<CR>4\<C-W>\<C-_>"
 endfunction
@@ -812,7 +796,7 @@ endfunction
 
 " 指定された文字を入力するための打鍵を表示する
 function! s:ShowHelp(ch)
-  if &keymap == ""
+  if strlen(a:ch) == 0 || &keymap == ""
     return
   endif
   let keyseq = s:SearchKeymap(a:ch)
