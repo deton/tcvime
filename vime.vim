@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 23-Apr-2003.
+" Last Change: 24-Apr-2003.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -49,10 +49,6 @@ function! s:Candidate_FileOpen()
   return 1
 endfunction
 
-function! s:Candidate_GeneratePattern(keyword)
-  return '^'.a:keyword.' '
-endfunction
-
 " 検索に使用する状態変数
 let s:last_keyword = ''
 let s:last_found = 0
@@ -62,7 +58,7 @@ let s:last_candidate_num = 0
 
 " 辞書から未確定文字列を検索
 function! s:CandidateSearch(keyword)
-  let pat = s:Candidate_GeneratePattern(a:keyword)
+  let pat = '^'.a:keyword.' '
   let found_num = s:last_found
 
   " 検索文字列が前回と同じ時は省略
@@ -72,13 +68,15 @@ function! s:CandidateSearch(keyword)
       return 0
     endif
     let in_candidate_window = 1
+    " 見つからなくてエラーメッセージが表示されないようにダミーを入れておく
+    execute "silent normal! ggO" . a:keyword . " \<ESC>"
     " 実際の検索
-    execute "silent normal! gg/".pat."\<CR>"
+    execute "silent normal! 2G/".pat."\<CR>"
     let s:last_candidate = ''
     let s:last_candidate_str = substitute(getline('.'), pat, '', '')
     let s:last_candidate_num = 1
     let found_num = line('.')
-    execute "normal! \<C-w>p"
+    execute "normal! u\<C-w>p"
   else
     " 次の変換候補を探し出すため
     if s:last_candidate_num > 0 && s:last_candidate != ''
@@ -153,7 +151,8 @@ function! s:BushuAlternative(ch)
   if !s:Bushu_FileOpen()
     return a:ch
   endif
-  execute "silent normal! gg/^." . a:ch . "$\<CR>"
+  execute "silent normal! ggO." . a:ch . "\<ESC>"
+  execute "silent normal! 2G/^." . a:ch . "$\<CR>"
   let found_num = line('.')
   if found_num > 1
     execute "normal! l"
@@ -161,7 +160,7 @@ function! s:BushuAlternative(ch)
   else
     let retchar = a:ch
   endif
-  execute "normal! \<C-w>p"
+  execute "normal! u\<C-w>p"
   return retchar
 endfunction
 
@@ -171,7 +170,8 @@ function! s:BushuSearchCompose(char1, char2)
   if !s:Bushu_FileOpen()
     return ''
   endif
-  execute "silent normal! gg/^." . a:char1 . a:char2 . "\<CR>"
+  execute "silent normal! ggO." . a:char1 . a:char2 . "\<ESC>"
+  execute "silent normal! 2G/^." . a:char1 . a:char2 . "\<CR>"
   let found_num = line('.')
   if found_num > 1
     execute "normal! l"
@@ -179,7 +179,7 @@ function! s:BushuSearchCompose(char1, char2)
   else
     let retchar = ''
   endif
-  execute "normal! \<C-w>p"
+  execute "normal! u\<C-w>p"
   return retchar
 endfunction
 
@@ -190,7 +190,8 @@ function! s:BushuDecompose(ch)
   if !s:Bushu_FileOpen()
     return 0
   endif
-  execute "silent normal! gg/^" . a:ch . "..\<CR>"
+  execute "silent normal! ggO" . a:ch . "..\<ESC>"
+  execute "silent normal! 2G/^" . a:ch . "..\<CR>"
   let found_num = line('.')
   if found_num > 1
     let save_ve = &ve
@@ -209,8 +210,21 @@ function! s:BushuDecompose(ch)
   else
     let ret = 0
   endif
-  execute "normal! \<C-w>p"
+  execute "normal! u\<C-w>p"
   return ret
+endfunction
+
+" 合成後の文字が空でなく、元の文字でもないことを確認
+" @param ch 合成後の文字
+" @param char1 元の文字
+" @param char2 元の文字
+" @return 1: chが空でもchar1でもchar2でもない場合。0: それ以外の場合
+function! s:BushuCharOK(ch, char1, char2)
+  if a:ch !=# '' && a:ch !=# a:char1 && a:ch !=# a:char2
+    return 1
+  else
+    return 0
+  endif
 endfunction
 
 " 部首合成変換辞書を検索
@@ -221,7 +235,7 @@ function! s:BushuSearch(char1, char2)
   while i < 2
     " そのまま合成できる?
     let retchar = s:BushuSearchCompose(char1, char2)
-    if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+    if s:BushuCharOK(retchar, char1, char2)
       return retchar
     endif
 
@@ -233,7 +247,7 @@ function! s:BushuSearch(char1, char2)
       let ch2alt = s:BushuAlternative(char2)
     endif
     let retchar = s:BushuSearchCompose(ch1alt, ch2alt)
-    if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+    if s:BushuCharOK(retchar, char1, char2)
       return retchar
     endif
 
@@ -242,6 +256,8 @@ function! s:BushuSearch(char1, char2)
       if s:BushuDecompose(ch1alt) == 1
 	let ch1a1 = s:decomp1
 	let ch1a2 = s:decomp2
+	unlet s:decomp1
+	unlet s:decomp2
       else
 	let ch1a1 = ''
 	let ch1a2 = ''
@@ -251,6 +267,8 @@ function! s:BushuSearch(char1, char2)
       if s:BushuDecompose(ch2alt) == 1
 	let ch2a1 = s:decomp1
 	let ch2a2 = s:decomp2
+	unlet s:decomp1
+	unlet s:decomp2
       else
 	let ch2a1 = ''
 	let ch2a2 = ''
@@ -260,13 +278,13 @@ function! s:BushuSearch(char1, char2)
     " 引き算
     if ch1a1 !=# '' && ch1a2 !=# '' && ch1a2 ==# ch2alt
       let retchar = ch1a1
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1a1 !=# '' && ch1a2 !=# '' && ch1a1 ==# ch2alt
       let retchar = ch1a2
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
@@ -274,25 +292,25 @@ function! s:BushuSearch(char1, char2)
     " 一方が部品による足し算
     if ch1alt !=# '' && ch2a1 !=# ''
       let retchar = s:BushuSearchCompose(ch1alt, ch2a1)
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1alt !=# '' && ch2a2 !=# ''
       let retchar = s:BushuSearchCompose(ch1alt, ch2a2)
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1a1 !=# '' && ch2alt !=# ''
       let retchar = s:BushuSearchCompose(ch1a1, ch2alt)
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1a2 !=# '' && ch2alt !=# ''
       let retchar = s:BushuSearchCompose(ch1a2, ch2alt)
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
@@ -300,25 +318,25 @@ function! s:BushuSearch(char1, char2)
     " 両方が部品による足し算
     if ch1a1 !=# '' && ch2a1 !=# ''
       let retchar = s:BushuSearchCompose(ch1a1, ch2a1)
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1a1 !=# '' && ch2a2 !=# ''
       let retchar = s:BushuSearchCompose(ch1a1, ch2a2)
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1a2 !=# '' && ch2a1 !=# ''
       let retchar = s:BushuSearchCompose(ch1a2, ch2a1)
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1a2 !=# '' && ch2a2 !=# ''
       let retchar = s:BushuSearchCompose(ch1a2, ch2a2)
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
@@ -326,25 +344,25 @@ function! s:BushuSearch(char1, char2)
     " 部品による引き算
     if ch1a2 !=# '' && ch2a1 !=# '' && ch1a2 ==# ch2a1
       let retchar = ch1a1
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1a2 !=# '' && ch2a2 !=# '' && ch1a2 ==# ch2a2
       let retchar = ch1a1
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1a1 !=# '' && ch2a1 !=# '' && ch1a1 ==# ch2a1
       let retchar = ch1a2
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
     if ch1a1 !=# '' && ch2a2 !=# '' && ch1a1 ==# ch2a2
       let retchar = ch1a2
-      if retchar !=# '' && retchar !=# char1 && retchar !=# char2
+      if s:BushuCharOK(retchar, char1, char2)
 	return retchar
       endif
     endif
