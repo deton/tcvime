@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Revision: $Id: tcvime.vim,v 1.32 2004/06/20 14:31:18 deton Exp $
+" Revision: $Id: tcvime.vim,v 1.33 2005/03/09 13:39:19 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -16,6 +16,7 @@ scriptencoding cp932
 "   :TcvimeHelp       指定した文字のヘルプ表を表示する
 "   :TcvimeHelpBushu  指定した文字を含む行を部首合成変換辞書から検索して表示
 "   :TcvimeSetKeymap  keymapをsetする
+"   :TcvimeKanjiTable 漢字テーブルファイルを表示して、漢字を選んで入力
 "
 " imap:
 "   <Leader>q       交ぜ書き変換: 読みを開始
@@ -30,6 +31,7 @@ scriptencoding cp932
 "   [count]<Leader>o        交ぜ書き変換: [count]文字の活用する語の変換
 "   <Leader>b               部首合成変換: カーソル位置以前の2文字の部首合成変換
 "   <Leader>?               打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示
+"   <Leader>t               漢字テーブルファイル表示
 "
 " オプション:
 "    'tcvime_keyboard'
@@ -60,6 +62,7 @@ endif
 " 設定
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
+let s:kanjitable_file = globpath($VIM.','.&runtimepath, 'kanjitable.txt')
 let s:helpbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeHelp__'
 let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
 " 辞書ファイルが:ls等で表示されるようにするかどうか。0:表示されない,1:表示する
@@ -77,6 +80,8 @@ command! -nargs=1 TcvimeHelp call <SID>ShowHelp(<q-args>)
 " 指定された文字を含む行を部首合成変換辞書から検索して表示する
 " 引数: 対象の文字
 command! -nargs=1 TcvimeHelpBushu call <SID>ShowHelpBushuDic(<q-args>)
+" 漢字テーブルを表示する
+command! TcvimeKanjiTable call <SID>KanjiTable_FileOpen()
 
 " keymapを設定する
 function! s:SetKeymap(keymapname)
@@ -103,6 +108,7 @@ function! s:MappingOn()
   nnoremap <silent> <Leader>o :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
   nnoremap <silent> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
   nnoremap <silent> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
+  nnoremap <silent> <Leader>t :<C-U>call <SID>KanjiTable_FileOpen()<CR>
   if set_mapleader
     unlet g:mapleader
   endif
@@ -137,6 +143,7 @@ function! s:MappingOff()
   silent! nunmap <Leader>o
   silent! nunmap <Leader>b
   silent! nunmap <Leader>?
+  silent! nunmap <Leader>t
   if set_mapleader
     unlet g:mapleader
   else
@@ -840,4 +847,26 @@ function! s:BushuSearch(char1, char2)
 
   " 合成できなかった
   return ''
+endfunction
+
+"==============================================================================
+"				  漢字テーブル
+
+" 漢字テーブルファイルを開く
+function! s:KanjiTable_FileOpen()
+  if filereadable(s:kanjitable_file) != 1
+    echo '漢字テーブルファイルが読めません: <' . s:kanjitable_file . '>'
+    return
+  endif
+  if s:SelectWindowByName(s:kanjitable_file) < 0
+    execute 'silent normal! :sv '.s:kanjitable_file."\<CR>"
+  endif
+  nnoremap <buffer> <silent> <CR> :<C-U>call <SID>KanjiTable_CopyChar()<CR>
+  nnoremap <buffer> <silent> q :<C-U>quit<CR>
+endfunction
+
+" 漢字テーブルバッファから直近のバッファに漢字をコピーする
+function! s:KanjiTable_CopyChar()
+  let ch = matchstr(getline('.'), '\%' . col('.') . 'c.')
+  execute "normal! \<C-W>pa" . ch . "\<ESC>\<C-W>p"
 endfunction
