@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/19 14:38:42 $
+" Last Change: $Date: 2003/05/19 14:57:25 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -148,7 +148,7 @@ function! s:MappingOn()
 
   augroup Tcvime
   autocmd!
-  execute "autocmd BufReadCmd ".s:helpbufpat." call <SID>Help_BufReadCmd()"
+  execute "autocmd BufReadCmd ".s:helpbufname." call <SID>Help_BufReadCmd()"
   augroup END
 
   call s:StatusReset()
@@ -198,8 +198,7 @@ endfunction
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 "echo "candidate_file: ".s:candidate_file
-let s:helpbufname = '[TcvimeHelp]'
-let s:helpbufpat = '\[TcvimeHelp\]'
+let s:helpbufname = '\[TcvimeHelp\]'
 
 "==============================================================================
 "				    辞書検索
