@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 01-May-2003.
+" Last Change: 02-May-2003.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -403,6 +403,7 @@ endfunction
 "
 
 function! s:InputConvert()
+  let col = col("'^")
   let s:is_katuyo = 0
   let status = s:StatusGet()
   let len = strlen(status)
@@ -412,11 +413,13 @@ function! s:InputConvert()
     let s:last_keyword = ''
     call s:StatusReset()
   endif
+  execute "normal! " . col . "|"
 endfunction
 
 " 活用のある単語の変換を行う。
 " 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
 function! s:InputConvertKatuyo()
+  let col = col("'^")
   let status = s:StatusGet()
   let len = strlen(status)
   if len > 0
@@ -426,27 +429,27 @@ function! s:InputConvertKatuyo()
     let s:last_keyword = ''
     call s:StatusReset()
   endif
+  execute "normal! " . col . "|"
+endfunction
+
+" 確定しようとしている候補が問題ないかどうかチェック
+function! s:IsCandidateOK(str)
+  if strlen(a:str) > 0 && strlen(s:last_candidate) > 0
+    if s:is_katuyo && s:last_keyword ==# a:str . "―" || s:last_keyword ==# a:str
+      return 1
+    endif
+  endif
+  return 0
 endfunction
 
 function! s:InputCR()
-  if !s:StatusIsEnable()
-    execute "normal! gi\<CR>\<ESC>"
-  else
-    let str = s:StatusGet()
+  let str = s:StatusGet()
+  if s:IsCandidateOK(str)
     let len = strlen(str)
-    if len > 0
-      if s:is_katuyo
-	if s:last_keyword ==# str . "―"
-	  call s:CandidateSelect(len)
-	endif
-      else
-	if s:last_keyword ==# str
-	  call s:CandidateSelect(len)
-	endif
-      endif
-    else
-      execute "normal! gi\<CR>\<ESC>"
-    endif
+    call s:CandidateSelect(len)
+    execute "normal! " . s:status_column . "|"
+  else
+    execute "normal! gi\<CR>\<ESC>"
   endif
   call s:StatusReset()
 endfunction
@@ -460,7 +463,7 @@ function! s:InputStart()
 endfunction
 
 " 直前の2文字の部首合成変換を行う
-function! s:InputConvertBushu()
+function! s:InputConvertBushu(is_insert_mode)
   let col3 = col("'^")
   if col3 > 3
     let save_ve = &ve
@@ -469,8 +472,6 @@ function! s:InputConvertBushu()
     let col2 = col(".")
     execute "normal! h"
     let col1 = col(".")
-    execute "normal! " . col3 . "|"
-    let &ve = save_ve
     let str = getline('.')
     let char1 = strpart(str, col1 - 1, col2 - col1)
     let char2 = strpart(str, col2 - 1, col3 - col2)
@@ -478,14 +479,26 @@ function! s:InputConvertBushu()
     let len = strlen(retchar)
     if len > 0
       call s:BushuReplace(line("."), col1, col3, retchar)
+      if a:is_insert_mode
+	execute "normal! " . col2 . "|"
+      else
+	execute "normal! " . col1 . "|"
+      endif
+    else
+      if a:is_insert_mode
+	execute "normal! " . col3 . "|"
+      else
+	execute "normal! " . col2 . "|"
+      endif
     endif
+    let &ve = save_ve
   endif
 endfunction
 
 " 今の位置以前の2文字を部首合成変換する
 function! s:ConvertBushu()
   execute "normal! a\<ESC>"
-  call s:InputConvertBushu()
+  call s:InputConvertBushu(0)
 endfunction
 
 " 今の位置以前のcount文字を変換する
@@ -559,26 +572,13 @@ endfunction
 " ConvertCount()で変換を開始した候補を確定する
 function! s:FixCandidate()
   execute "normal! a\<ESC>"
-  if !s:StatusIsEnable()
-    execute "normal! \<CR>"
-  else
-    let str = s:StatusGet()
+  let str = s:StatusGet()
+  if s:IsCandidateOK(str)
     let len = strlen(str)
-    if len > 0
-      if s:is_katuyo
-	if s:last_keyword ==# str . "―"
-	  call s:CandidateSelect(len)
-	  execute "normal! " . (s:status_column - 1) . "|"
-	endif
-      else
-	if s:last_keyword ==# str
-	  call s:CandidateSelect(len)
-	  execute "normal! " . (s:status_column - 1) . "|"
-	endif
-      endif
-    else
-      execute "normal! \<CR>"
-    endif
+    call s:CandidateSelect(len)
+    execute "normal! " . s:status_column . "|"
+  else
+    execute "normal! \<CR>"
   endif
   call s:StatusReset()
 endfunction
@@ -593,7 +593,7 @@ function! s:MappingOn()
   inoremap <buffer> <C-L> <C-O>:call <SID>InputStart()<CR>
   inoremap <buffer> <Nul> <C-O>:call <SID>InputConvert()<CR>
   inoremap <buffer> <C-Q> <C-O>:call <SID>InputConvertKatuyo()<CR>
-  inoremap <buffer> <C-S> <C-O>:call <SID>InputConvertBushu()<CR>
+  inoremap <buffer> <C-S> <C-O>:call <SID>InputConvertBushu(1)<CR>
   nnoremap <buffer> <CR> :<C-U>call <SID>FixCandidate()<CR>
   nnoremap <buffer> <Nul> :<C-U>call <SID>ConvertCount(v:count)<CR>
   nnoremap <buffer> <C-Q> :<C-U>call <SID>ConvertKatuyo(v:count)<CR>
