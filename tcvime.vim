@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/23 09:47:38 $
+" Last Change: $Date: 2003/05/23 14:03:30 $
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -11,9 +11,10 @@ scriptencoding cp932
 
 " Description:
 " コマンド:
-"   :TcvimeOn    キーマッピングを有効化する
-"   :TcvimeOff   キーマッピングを無効化する
-"   :TcvimeHelp  指定した文字の打鍵表を表示する
+"   :TcvimeOn         キーマッピングを有効化する
+"   :TcvimeOff        キーマッピングを無効化する
+"   :TcvimeHelp       指定した文字の打鍵表を表示する
+"   :TcvimeSetKeymap  keymapをsetする
 "
 " 使用法:
 "   交ぜ書き変換辞書(mazegaki.dic)と部首合成変換辞書(bushu.rev)は
@@ -135,9 +136,19 @@ let s:buflisted = 0
 " Mapping
 command! TcvimeOn call <SID>MappingOn()
 command! TcvimeOff call <SID>MappingOff()
+" keymapを設定する
+" 引数: keymap名
+command! -nargs=1 TcvimeSetKeymap call <SID>SetKeymap(<args>)
 " 指定された文字の打鍵を表示する
 " 引数: 打鍵を表示する文字
 command! -nargs=1 TcvimeHelp call <SID>ShowHelp(<args>)
+
+" keymapを設定する
+function! s:SetKeymap(keymapname)
+  if &keymap !=# a:keymapname
+    let &keymap = a:keymapname
+  endif
+endfunction
 
 "   マッピングを有効化
 function! s:MappingOn()
