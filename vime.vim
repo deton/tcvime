@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 02-May-2003.
+" Last Change: 04-May-2003.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -67,18 +67,19 @@ function! s:CandidateSearch(keyword)
     if !s:Candidate_FileOpen()
       return 0
     endif
-    let save_undolevels = &undolevels
-    let &undolevels = 0
-    " 見つからなくてエラーメッセージが表示されないようにダミーを入れておく
-    execute "silent normal! ggO" . a:keyword . " \<ESC>"
+
     " 実際の検索
-    execute "silent normal! 2G/^" . a:keyword . " \<CR>"
-    let s:last_candidate = ''
-    let s:last_candidate_str = substitute(getline('.'), '^' . a:keyword . ' ', '', '')
-    let s:last_candidate_num = 1
-    let found_num = line('.')
-    execute "normal! u\<C-w>p"
-    let &undolevels = save_undolevels
+    let v:errmsg = ""
+    silent! execute "normal! gg/^" . a:keyword . " \<CR>"
+    if v:errmsg != ""
+      let found_num = 0
+    else
+      let s:last_candidate = ''
+      let s:last_candidate_str = substitute(getline('.'), '^' . a:keyword . ' ', '', '')
+      let s:last_candidate_num = 1
+      let found_num = line('.')
+    endif
+    execute "normal! \<C-w>p"
   else
     " 次の変換候補を探し出すため
     if s:last_candidate_num > 0 && s:last_candidate != ''
@@ -86,7 +87,7 @@ function! s:CandidateSearch(keyword)
     endif
   endif
 
-  if found_num > 1
+  if found_num > 0
     " 候補がみつかっているならば、順番に表示する
     let str = ''
     while strlen(str) < 1
@@ -154,19 +155,16 @@ function! s:BushuAlternative(ch)
   if !s:Bushu_FileOpen()
     return a:ch
   endif
-  let save_undolevels = &undolevels
-  let &undolevels = 0
-  execute "silent normal! ggO." . a:ch . "\<ESC>"
-  execute "silent normal! 2G/^." . a:ch . "$\<CR>"
-  let found_num = line('.')
-  if found_num > 1
+  let v:errmsg = ""
+  silent! execute "normal! gg/^." . a:ch . "$\<CR>"
+  if v:errmsg == ""
+    let found_num = line('.')
     execute "normal! l"
     let retchar = strpart(getline('.'), 0, col('.') - 1)
   else
     let retchar = a:ch
   endif
-  execute "normal! u\<C-w>p"
-  let &undolevels = save_undolevels
+  execute "normal! \<C-w>p"
   return retchar
 endfunction
 
@@ -176,19 +174,16 @@ function! s:BushuSearchCompose(char1, char2)
   if !s:Bushu_FileOpen()
     return ''
   endif
-  let save_undolevels = &undolevels
-  let &undolevels = 0
-  execute "silent normal! ggO." . a:char1 . a:char2 . "\<ESC>"
-  execute "silent normal! 2G/^." . a:char1 . a:char2 . "\<CR>"
-  let found_num = line('.')
-  if found_num > 1
+  let v:errmsg = ""
+  silent! execute "normal! gg/^." . a:char1 . a:char2 . "\<CR>"
+  if v:errmsg == ""
+    let found_num = line('.')
     execute "normal! l"
     let retchar = strpart(getline('.'), 0, col('.') - 1)
   else
     let retchar = ''
   endif
-  execute "normal! u\<C-w>p"
-  let &undolevels = save_undolevels
+  execute "normal! \<C-w>p"
   return retchar
 endfunction
 
@@ -199,12 +194,10 @@ function! s:BushuDecompose(ch)
   if !s:Bushu_FileOpen()
     return 0
   endif
-  let save_undolevels = &undolevels
-  let &undolevels = 0
-  execute "silent normal! ggO" . a:ch . "..\<ESC>"
-  execute "silent normal! 2G/^" . a:ch . "..\<CR>"
-  let found_num = line('.')
-  if found_num > 1
+  let v:errmsg = ""
+  silent! execute "normal! gg/^" . a:ch . "..\<CR>"
+  if v:errmsg == ""
+    let found_num = line('.')
     let save_ve = &ve
     let &ve = 'all'
     execute "normal! l"
@@ -221,8 +214,7 @@ function! s:BushuDecompose(ch)
   else
     let ret = 0
   endif
-  execute "normal! u\<C-w>p"
-  let &undolevels = save_undolevels
+  execute "normal! \<C-w>p"
   return ret
 endfunction
 
