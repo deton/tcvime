@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: $Date: 2003/05/11 13:31:36 $
+" Last Change: $Date: 2003/05/12 13:55:19 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -516,71 +516,87 @@ function! s:ConvertBushu()
   call s:InputConvertBushu(0)
 endfunction
 
+" 以前のConvertCount(), ConvertKatuyo()に渡されたcount引数の値。
+" countが0で実行された場合に以前のcount値を使うようにするため。
+let s:last_count = 0
+
 " 今の位置以前のcount文字を変換する
 function! s:ConvertCount(count)
-  if a:count < 1
-    call s:StatusReset()
-  else
-    let s:is_katuyo = 0
-    let s:status_line = line(".")
-    let save_col = col(".")
-    execute "normal! a\<ESC>"
-    let cnt = a:count - 1
-    if cnt > 0
-      execute "normal! " . cnt . "h"
+  let cnt = a:count
+  if cnt == 0
+    let cnt = s:last_count
+    if cnt == 0
+      let cnt = 1
     endif
-    let s:status_column = col(".")
-    execute "normal! " . save_col . "|"
+  endif
+  let s:last_count = cnt
 
-    let status = s:StatusGet()
-    let len = strlen(status)
-    if len > 0
-      let s:save_cmdheight = &cmdheight
-      if &cmdheight < 2
-	let &cmdheight = 2
-      endif
-      let uniq = s:CandidateSearch(status)
-      if uniq
-	call s:FixCandidate()
-      endif
-    else
-      let s:last_keyword = ''
-      call s:StatusReset()
+  let s:is_katuyo = 0
+  let s:status_line = line(".")
+  let save_col = col(".")
+  execute "normal! a\<ESC>"
+  let cnt = cnt - 1
+  if cnt > 0
+    execute "normal! " . cnt . "h"
+  endif
+  let s:status_column = col(".")
+  execute "normal! " . save_col . "|"
+
+  let status = s:StatusGet()
+  let len = strlen(status)
+  if len > 0
+    let s:save_cmdheight = &cmdheight
+    if &cmdheight < 2
+      let &cmdheight = 2
     endif
+    let uniq = s:CandidateSearch(status)
+    if uniq
+      call s:FixCandidate()
+    endif
+  else
+    let s:last_keyword = ''
+    let s:last_count = 0
+    call s:StatusReset()
   endif
 endfunction
 
 " 今の位置以前のcount文字を活用のある語として変換する
 function! s:ConvertKatuyo(count)
-  if a:count < 1
-    call s:StatusReset()
-  else
-    let s:status_line = line(".")
-    let save_col = col(".")
-    execute "normal! a\<ESC>"
-    let cnt = a:count - 1
-    if cnt > 0
-      execute "normal! " . cnt . "h"
+  let cnt = a:count
+  if cnt == 0
+    let cnt = s:last_count
+    if cnt == 0
+      let cnt = 1
     endif
-    let s:status_column = col(".")
-    execute "normal! " . save_col . "|"
+  endif
+  let s:last_count = cnt
 
-    let status = s:StatusGet()
-    let len = strlen(status)
-    if len > 0
-      let s:save_cmdheight = &cmdheight
-      if &cmdheight < 2
-	let &cmdheight = 2
-      endif
-      let s:is_katuyo = 1
-      let uniq = s:CandidateSearch(status . "―")
-      if uniq
-	call s:FixCandidate()
-      endif
-    else
-      let s:last_keyword = ''
-      call s:StatusReset()
+  let s:status_line = line(".")
+  let save_col = col(".")
+  execute "normal! a\<ESC>"
+  let cnt = cnt - 1
+  if cnt > 0
+    execute "normal! " . cnt . "h"
+  endif
+  let s:status_column = col(".")
+  execute "normal! " . save_col . "|"
+
+  let status = s:StatusGet()
+  let len = strlen(status)
+  if len > 0
+    let s:save_cmdheight = &cmdheight
+    if &cmdheight < 2
+      let &cmdheight = 2
     endif
+    let s:is_katuyo = 1
+    let uniq = s:CandidateSearch(status . "―")
+    if uniq
+      call s:FixCandidate()
+    endif
+  else
+    let s:last_keyword = ''
+    let s:last_count = 0
+    call s:StatusReset()
   endif
 endfunction
 
@@ -593,6 +609,7 @@ function! s:FixCandidate()
     call s:CandidateSelect(len)
     execute "normal! " . (s:status_column - 1) . "|"
   endif
+  let s:last_count = 0
   call s:StatusReset()
 endfunction
 
