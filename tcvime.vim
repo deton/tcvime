@@ -3,7 +3,7 @@
 " tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/21 13:30:46 $
+" Last Change: $Date: 2003/05/21 13:50:55 $
 " Maintainer: deton(KIHARA Hideto)@m1.interq.or.jp
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -599,6 +599,7 @@ function! s:InputConvert(katuyo)
   execute "normal! " . col . "|"
   if exists('found')
     if found == 2
+      redraw
       echo 'CANDIDATE: ' . s:last_candidate
     elseif found == 1
       call s:InputFix(1)
@@ -719,13 +720,14 @@ function! s:ConvertCount(count, katuyo)
   let status = s:StatusGet()
   let len = strlen(status)
   if len > 0
-    call s:SetCmdheight()
+    "call s:SetCmdheight()
     let s:is_katuyo = a:katuyo
     if s:is_katuyo
       let status = status . '―'
     endif
     let found = s:CandidateSearch(status)
     if found == 2
+      redraw
       echo 'CANDIDATE: ' . s:last_candidate
     elseif found == 1
       call s:FixCandidate()
@@ -781,7 +783,12 @@ endfunction
 
 " 指定された文字を入力するための打鍵を表示する
 function! s:ShowHelp(ch)
-  if strlen(a:ch) == 0 || strlen(&keymap) == 0
+  if strlen(a:ch) == 0
+    echo '打鍵ヘルプ表示に指定された文字が空です。無視します'
+    return
+  endif
+  if strlen(&keymap) == 0
+    echo 'keymapオプションが設定されていないので、打鍵ヘルプ表示ができません'
     return
   endif
   let keyseq = s:SearchKeymap(a:ch)
@@ -821,6 +828,9 @@ function! s:ShowHelpBushuDic(ch)
     call s:OpenHelpBuffer()
     execute "normal! a" . lines . "\<ESC>1G"
     execute "normal! \<C-W>p"
+  else
+    redraw
+    echo '打鍵ヘルプで表示できる情報がありません'
   endif
 endfunction
 
