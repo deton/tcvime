@@ -2,11 +2,12 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: $Date: 2003/05/06 13:50:05 $
+" Last Change: $Date: 2003/05/07 13:31:54 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
 let s:verbose = 0
+let s:helpbufname = "[VImeHelp]"
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 "echo "candidate_file: ".s:candidate_file
@@ -572,12 +573,53 @@ function! s:FixCandidate()
 endfunction
 
 "==============================================================================
+" ヘルプ表示
+
+" ヘルプ用バッファを開く
+function! s:OpenHelpBuffer()
+  execute "augroup VIme"
+  execute "autocmd!"
+  execute "autocmd WinEnter ".s:helpbufname." call <SID>Candidate_WinEnter()"
+  execute "autocmd WinLeave ".s:helpbufname." call <SID>Candidate_WinLeave()"
+  execute "augroup END"
+  execute "normal! :sp " . s:helpbufname . "\<CR>"
+  setlocal buftype=nofile
+  setlocal bufhidden=delete
+  setlocal noswapfile
+  execute "normal! 4\<C-W>\<C-_>"
+endfunction
+
+" 指定された文字を入力するための打鍵を表示する
+function! s:ShowHelp(ch)
+  call s:OpenHelpBuffer()
+  execute "normal! i" . a:ch . "\<ESC>"
+  execute "normal! o" . s:SearchKeymap(a:ch) . "\<ESC>"
+endfunction
+
+" 指定された文字を入力するための打鍵をkeymapファイルから検索する
+function! s:SearchKeymap(ch)
+  let tmpfile = tempname()
+  execute "redir! > " . tmpfile
+  silent lmap
+  redir END
+  execute "normal! :sv " . tmpfile . "\<CR>"
+  silent! execute "normal! gg/" . a:ch . "/\<CR>"
+  if v:errmsg == ""
+    let keyseq = substitute(getline('.'), '^.*l  \([^ 	][^ 	]*\)[ 	][ 	]*\*@' . a:ch . '.*$', '\1', '')
+  else
+    let keyseq = ""
+  endif
+  quit!
+  return keyseq
+endfunction
+
+"==============================================================================
 "				  キートラップ
 "
 
 "   マッピングを有効化
 if !exists('g:mapleader')
-  let g:mapleader = "\<C-\>"
+  let g:mapleader = "\<C-k>"
 endif
 function! s:MappingOn()
   inoremap <buffer> <Leader><CR> <C-O>:call <SID>InputFix()<CR>
@@ -593,15 +635,15 @@ endfunction
 
 "   マッピングを無効化
 function! s:MappingOff()
-  iunmap <buffer> <Leader><CR>
-  iunmap <buffer> <Leader>q
-  iunmap <buffer> <Leader><Space>
-  iunmap <buffer> <Leader>o
-  iunmap <buffer> <Leader>b
-  nunmap <buffer> <Leader><CR>
-  nunmap <buffer> <Leader><Space>
-  nunmap <buffer> <Leader>o
-  nunmap <buffer> <Leader>b
+  silent! iunmap <buffer> <Leader><CR>
+  silent! iunmap <buffer> <Leader>q
+  silent! iunmap <buffer> <Leader><Space>
+  silent! iunmap <buffer> <Leader>o
+  silent! iunmap <buffer> <Leader>b
+  silent! nunmap <buffer> <Leader><CR>
+  silent! nunmap <buffer> <Leader><Space>
+  silent! nunmap <buffer> <Leader>o
+  silent! nunmap <buffer> <Leader>b
 endfunction
 
 " keymapが指定されたkeymapnameでない場合はkeymapを設定する。
@@ -679,7 +721,8 @@ command! VImeOn :call <SID>MappingOn()
 command! VImeOff :call <SID>MappingOff()
 " keymap名を引数に取る
 command! -nargs=1 VImeToggle :call <SID>MappingToggle(<f-args>)
+command! -nargs=1 VImeHelp :call <SID>ShowHelp(<args>)
 
 " $HOME/.vimrcに以下のようなmapを入れると使用できる。
-" map <C-J> <C-^>:VImeToggle tutcode<CR>
-" imap <C-J> <C-^><C-O>:VImeToggle tutcode<CR>
+" map <C-\> <C-^>:VImeToggle tutcode<CR>
+" imap <C-\> <C-^><C-O>:VImeToggle tutcode<CR>
