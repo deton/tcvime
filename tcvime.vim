@@ -1,10 +1,10 @@
 " vi:set ts=8 sts=2 sw=2 tw=0:
 "
 " tcvime.vim - tcode,tutcode等の漢字直接入力keymapでの入力補助機能:
-"              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
+"              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
-" Last Change: $Date: 2003/05/23 16:39:48 $
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
+" Revision: $Id: tcvime.vim,v 1.25 2003/05/24 14:29:57 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -13,16 +13,26 @@ scriptencoding cp932
 " コマンド:
 "   :TcvimeOn         キーマッピングを有効化する
 "   :TcvimeOff        キーマッピングを無効化する
-"   :TcvimeHelp       指定した文字の打鍵表を表示する
+"   :TcvimeHelp       指定した文字のヘルプ表を表示する
 "   :TcvimeSetKeymap  keymapをsetする
 "
-" 準備:
-"   交ぜ書き変換辞書(mazegaki.dic)と部首合成変換辞書(bushu.rev)は
-"   $VIMか'runtimepath'で示されるディレクトリに置いておいてください。
+" imap:
+"   <Leader>q       交ぜ書き変換: 読みを開始
+"   <Leader><Space> 交ぜ書き変換: 変換実行
+"   <Leader><CR>    交ぜ書き変換: 候補確定
+"   <Leader>o       交ぜ書き変換: 活用する語の変換実行
+"   <Leader>b       部首合成変換: 直前の2文字の部首合成変換実行
+"
+" nmap:
+"   [count]<Leader><Space>  交ぜ書き変換: カーソル位置以前の[count]文字の変換
+"   <Leader><CR>            交ぜ書き変換: 候補確定
+"   [count]<Leader>o        交ぜ書き変換: [count]文字の活用する語の変換
+"   <Leader>b               部首合成変換: カーソル位置以前の2文字の部首合成変換
+"   <Leader>?               打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示
 "
 " オプション:
 "    'tcvime_keyboard'
-"       打鍵ヘルプ表示用のキーボード配列を表す文字列。
+"       文字ヘルプ表用のキーボード配列を表す文字列。
 "       キーの後にスペース、を2回ずつ記述する。
 "       例:
 "         let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
@@ -59,8 +69,8 @@ command! TcvimeOff call <SID>MappingOff()
 " keymapを設定する
 " 引数: keymap名
 command! -nargs=1 TcvimeSetKeymap call <SID>SetKeymap(<args>)
-" 指定された文字の打鍵を表示する
-" 引数: 打鍵を表示する文字
+" 指定された文字のヘルプ表を表示する
+" 引数: 対象の文字
 command! -nargs=1 TcvimeHelp call <SID>ShowHelp(<args>)
 
 " keymapを設定する
@@ -146,9 +156,9 @@ function! s:InputStart()
 endfunction
 
 " Insert modeで交ぜ書き変換を行う。
-" 活用のある語の変換の場合は、
+" 活用する語の変換の場合は、
 " 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
-" @param katuyo 活用のある語の変換かどうか。0:活用なし, 1:活用あり
+" @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! s:InputConvert(katuyo)
   let col = col("'^")
   let s:is_katuyo = 0
@@ -251,7 +261,7 @@ let s:last_count = 0
 
 " 今の位置以前のcount文字を変換する
 " @param count 変換する文字列の長さ
-" @param katuyo 活用のある語の変換かどうか。0:活用なし, 1:活用あり
+" @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! s:ConvertCount(count, katuyo)
   let cnt = a:count
   if cnt == 0
@@ -380,7 +390,7 @@ function! s:OpenHelpBuffer()
   execute "normal! :%d\<CR>4\<C-W>\<C-_>"
 endfunction
 
-" カーソル位置の文字の打鍵を表示する
+" カーソル位置の文字のヘルプ表を表示する
 function! s:ShowStrokeHelp()
   let col1 = col(".")
   execute "normal! a\<ESC>"
@@ -389,14 +399,14 @@ function! s:ShowStrokeHelp()
   call s:ShowHelp(ch)
 endfunction
 
-" 指定された文字を入力するための打鍵を表示する
+" 指定された文字のヘルプ表を表示する
 function! s:ShowHelp(ch)
   if strlen(a:ch) == 0
-    echo '打鍵ヘルプ表示に指定された文字が空です。無視します'
+    echo '文字ヘルプ表表示に指定された文字が空です。無視します'
     return
   endif
   if strlen(&keymap) == 0
-    echo 'keymapオプションが設定されていないので、打鍵ヘルプ表示ができません'
+    echo 'keymapオプションが設定されていないので、文字ヘルプ表表示ができません'
     return
   endif
   let keyseq = s:SearchKeymap(a:ch)
@@ -407,7 +417,7 @@ function! s:ShowHelp(ch)
   endif
 endfunction
 
-" 指定された文字とその打鍵を表にして表示する
+" 指定された文字とそのストロークを表にして表示する
 function! s:ShowHelpSequence(ch, keyseq)
   call s:OpenHelpBuffer()
   execute "normal! ggO" . g:tcvime_keyboard . "\<ESC>"
@@ -438,7 +448,7 @@ function! s:ShowHelpBushuDic(ch)
     execute "normal! \<C-W>p"
   else
     redraw
-    echo '打鍵ヘルプで表示できる情報がありません'
+    echo '文字ヘルプで表示できる情報がありません: <' . a:ch . '>'
   endif
 endfunction
 
@@ -467,7 +477,7 @@ function! s:SearchBushuDic(ch)
   return lines
 endfunction
 
-" 指定された文字を入力するための打鍵をkeymapファイルから検索する
+" 指定された文字を入力するためのストロークをkeymapファイルから検索する
 function! s:SearchKeymap(ch)
   let kmfile = globpath(&rtp, "keymap/" . &keymap . "_" . &encoding . ".vim")
   if filereadable(kmfile) != 1

@@ -1,8 +1,8 @@
-*tcvime.txt*   tcode,tutcode等の漢字直接入力keymapでの入力補助機能.
+*tcvime.txt*   mazegaki/bushu conversion for tcode/tutcode keymaps.
 
 			  tcvime説明書
 
-漢字直接入力補助機能プラグイン			*tcvime*
+漢字直接入力の補助機能プラグイン		*tcvime*
 
 1. 概要					|tcvime-overview|
 2. 操作法				|tcvime-usage|
@@ -15,7 +15,7 @@
 1. 概要						*tcvime-overview*
 
 tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供するプラグインです。
-次の3つの機能を提供します。交ぜ書き変換、部首合成変換、打鍵ヘルプ表示。
+次の3つの機能を提供します: 交ぜ書き変換、部首合成変換、文字ヘルプ表表示。
 
 ==============================================================================
 2. 操作法					*tcvime-usage*
@@ -31,29 +31,28 @@ tcvimeの機能は'mapleader'で指定されたキーの後に'q'などのキーを入力することで
 |tcvime-normal-mazegaki|	Normal Modeでの交ぜ書き変換
 |tcvime-normal-mazegaki-katuyo|	Normal Modeでの交ぜ書き変換(活用する語)
 |tcvime-normal-bushu|		Normal Modeでの部首合成変換
-|tcvime-normal-help|		打鍵ヘルプ表示(Normal Mode)
+|tcvime-normal-help|		文字ヘルプ表表示(Normal Mode)
 
 
 Insert Modeでの交ぜ書き変換			*tcvime-insert-mazegaki*
 ---------------------------
-<Leader>q	変換対象文字列の始まりをマークします。
+<Leader>q	読みの始まりをマークします。
 		確定直後など、何もマークされていない場合は、<Leader><Space>
 		でもマークできます。
 
 <Leader><Space>	交ぜ書き変換を行います。
 		<Leader>q でマークした位置から現在のカーソル位置の間にある
 		文字列を読みとして交ぜ書き変換辞書を検索します。
-	        候補が一つしかない場合は変換対象文字列を置き換えます。
-	        候補が複数ある場合は、コマンド行の上にCANDIDATE: で
-		候補が表示されます。この状態で<Leader><Space>を続けて打つと、
-	        候補を順に表示していきます。候補のリストの最後まで行くと
-		リストの最初に戻ります。
+	        候補が一つしかない場合は読みを置き換えます。
+	        候補が複数ある場合は、コマンド行の上にCANDIDATE: で候補を
+		表示します。この状態で<Leader><Space>を続けて打つと、候補を
+		順に表示していきます。候補のリストの最後まで行くとリストの
+		最初に戻ります。
 
-<Leader><CR>	CANDIDATE: として表示されている候補を選択して、変換対象文字列
-		を置き換えます。
+<Leader><CR>	CANDIDATE: として表示されている候補を選択して、読みを置き
+		換えます。
 
-例: "<Leader>qあい<Leader><Space>"と打つと、
-    "CANDIDATE: 娃"と表示されます。
+例: "<Leader>qあい<Leader><Space>"と打つと、"CANDIDATE: 娃"と表示されます。
     さらに"<Leader><Space>"を打つと"CANDIDATE: 哀"となります。
     この状態で"<Leader><CR>"を打つと、"あい"が"哀"に置き換えられます。
 
@@ -62,9 +61,10 @@ Insert Modeでの交ぜ書き変換(活用する語)		*tcvime-insert-mazegaki-katuyo*
 ---------------------------------------
 基本的には活用しない語の交ぜ書き変換と同じです。
 活用しない部分まで入力してから、<Leader>o で変換します。
+候補の確定は<Leader><CR>です。
 
-<Leader>o は<Leader>q でマークした位置から現在のカーソル位置の間の文字列に
-"―"を付加した文字列を読みとして交ぜ書き変換辞書から検索します。
+<Leader>o  <Leader>q でマークした位置から現在のカーソル位置の間の文字列に
+	   "―"を付加した文字列を読みとして交ぜ書き変換辞書から検索します。
 
 例: "<Leader>qながめ<Leader>o"と打つと、"CANDIDATE: 眺め"と表示されます。
     "<Leader><CR>"と打つと、"ながめ"が"眺め"に置き換えられます。
@@ -72,7 +72,7 @@ Insert Modeでの交ぜ書き変換(活用する語)		*tcvime-insert-mazegaki-katuyo*
 
 Insert Modeでの部首合成変換			*tcvime-insert-bushu*
 ---------------------------
-<Leader>b でカーソル位置の直前の2文字の部首合成変換を行います。
+<Leader>b	カーソル位置の直前の2文字の部首合成変換を行います。
 
 例: "木口<Leader>b"と打つと、"木口"が"杏"に置き換えられます。
 
@@ -82,7 +82,7 @@ Normal Modeでの交ぜ書き変換			*tcvime-normal-mazegaki*
 [count]<Leader><Space>	カーソル位置以前の[count]文字の交ぜ書き変換を行います。
 
 <Leader><CR>		CANDIDATE: として表示されている候補を選択して、
-			変換対象文字列を置き換えます。
+			読みを置き換えます。
 
 例: "あい"と表示されているとき、"い"の上にカーソルを置いて
     "2<Leader><Space>"と打つと、"CANDIDATE: 娃"と表示されます。
@@ -108,9 +108,9 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
     "<Leader>b"と打つと、"木口"が"杏"に置き換えられます。
 
 
-打鍵ヘルプ表示(Normal Mode)			*tcvime-normal-help*
+文字ヘルプ表表示(Normal Mode)			*tcvime-normal-help*
 ---------------------------
-<Leader>?	カーソル位置の文字の打鍵を表示します。使用中のkeymapで
+<Leader>?	カーソル位置の文字のヘルプ表を表示します。使用中のkeymapで
 		直接入力できない文字の場合は、部首合成変換辞書を検索して、
 		指定された文字が含まれる行を表示します。
 
@@ -126,8 +126,9 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
 3. オプション					*tcvime-option*
 
 'tcvime_keyboard'				*'tcvime_keyboard'*
-  打鍵ヘルプ表示用のキーボード配列を表す文字列。
-  キーの後にスペース、を2回ずつ記述する。
+  文字ヘルプ表用のキーボード配列を表す文字列。
+  キーの後にスペース、を2回ずつ記述します。
+  例:
 	let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 
 'mapleader'
@@ -136,13 +137,13 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
 	let mapleader = "\<C-K>"
 
 'plugin_tcvime_disable'
-  このプラグインを読み込みたくない場合に次のように設定する。
+  このプラグインを読み込みたくない場合に次のように設定します。
 	let plugin_tcvime_disable = 1
 
 ==============================================================================
 4. 問題点					*tcvime-problem*
 
-- 交ぜ書き変換のCANDIDATE: 表示がすぐ消えてしまって見れないことがある。
+- 交ぜ書き変換のCANDIDATE: 表示がすぐ消えてしまって見れないことがあります。
   特に複数のウィンドウを開いている場合。
 
 ==============================================================================
