@@ -2,7 +2,7 @@
 "
 " vime.vim - 簡易SKK-IME
 "
-" Last Change: 20-Apr-2003.
+" Last Change: 21-Apr-2003.
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -29,8 +29,8 @@ endfunction
 "   WinLeave
 function! s:Candidate_WinLeave()
   setlocal nowrap
-  hide
-  "exe "normal! 1\<C-W>_"
+  "hide
+  exe "normal! 1\<C-W>_"
 endfunction
 
 " 辞書データファイルをオープン
@@ -148,12 +148,29 @@ function! s:Bushu_FileOpen()
   return 1
 endfunction
 
-" 部首合成変換辞書を検索
-function! s:BushuSearch(char1, char2)
+" 等価文字を検索して返す。等価文字がない場合はもとの文字そのものを返す
+function! s:BushuAlternative(ch)
   if !s:Bushu_FileOpen()
-    return 0
+    return a:ch
   endif
-  " 実際の検索
+  execute "silent normal! gg/^." . a:ch . "$\<CR>"
+  let found_num = line('.')
+  if found_num > 1
+    execute "normal! l"
+    let retchar = strpart(getline('.'), 0, col('.') - 1)
+  else
+    let retchar = a:ch
+  endif
+  execute "normal! \<C-w>p"
+  return retchar
+endfunction
+
+" char1とchar2をこの順番で合成してできる文字を検索して返す。
+" 見つからない場合は''を返す
+function! s:BushuSearchCompose(char1, char2)
+  if !s:Bushu_FileOpen()
+    return ''
+  endif
   execute "silent normal! gg/^." . a:char1 . a:char2 . "\<CR>"
   let found_num = line('.')
   if found_num > 1
@@ -163,8 +180,28 @@ function! s:BushuSearch(char1, char2)
     let retchar = ''
   endif
   execute "normal! \<C-w>p"
-
   return retchar
+endfunction
+
+" 部首合成変換辞書を検索
+function! s:BushuSearch(char1, char2)
+  " そのまま合成できる?
+  let retchar = s:BushuSearchCompose(a:char1, a:char2)
+  if retchar !=# '' && retchar !=# a:char1 && retchar !=# a:char2
+    return retchar
+  endif
+
+  " 等価文字どうしで合成できる?
+  let ch1alt = s:BushuAlternative(a:char1)
+  let ch2alt = s:BushuAlternative(a:char2)
+  let retchar = s:BushuSearchCompose(ch1alt, ch2alt)
+  if retchar !=# '' && retchar !=# a:char1 && retchar !=# a:char2
+    return retchar
+  endif
+
+  " 引き算
+  " XXX:
+  return ''
 endfunction
 
 " 部首合成した文字をバッファに挿入
