@@ -1,5 +1,6 @@
-tcvime - 漢字直接入力補助機能プラグインスクリプトの説明書
-					KIHARA, Hideto <deton@m1.interq.or.jp>
+tcvime - 漢字直接入力補助機能プラグインスクリプト
+							     Version: 1.0
+							     Date: 2003-5-25
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -52,4 +53,7 @@ UNIXでの使用上の注意
   - mazegaki.dic, bushu.revはEmacs用のTコード入力環境tc2(tc-2.3.1)に
     含まれているものです。
 
-$Id: README_j.txt,v 1.4 2003/05/25 03:30:45 deton Exp $
+-- 
+木原 英人 / KIHARA, Hideto / deton@m1.interq.or.jp
+http://www1.interq.or.jp/~deton/tcvime/
+$Id: README_j.txt,v 1.5 2003/05/25 04:48:07 deton Exp $
