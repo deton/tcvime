@@ -1,9 +1,9 @@
 " vi:set ts=8 sts=2 sw=2 tw=0:
 "
-" tcvime.vim - tcode.vim等の漢字直接入力keymapでの入力補助機能:
+" tcvime.vim - tcode,tutcode等の漢字直接入力keymapでの入力補助機能:
 "              交ぜ書き変換、部首合成変換、打鍵ヘルプ表示機能。
 "
-" Last Change: $Date: 2003/05/23 14:03:30 $
+" Last Change: $Date: 2003/05/23 16:39:48 $
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
@@ -16,89 +16,9 @@ scriptencoding cp932
 "   :TcvimeHelp       指定した文字の打鍵表を表示する
 "   :TcvimeSetKeymap  keymapをsetする
 "
-" 使用法:
+" 準備:
 "   交ぜ書き変換辞書(mazegaki.dic)と部首合成変換辞書(bushu.rev)は
 "   $VIMか'runtimepath'で示されるディレクトリに置いておいてください。
-"
-"   :TcvimeOnコマンドでマッピングが有効になります。
-"   tcvimeの機能は'mapleader'で指定されたキーの後に
-"   'q'などのキーを入力することで実行されます。
-"   'mapleader'のデフォルトは"\<C-K>"(CTRLキーを押しながらk)です。
-"   以降の説明中の<Leader>という文字列はmapleaderを表しています。
-"   つまり、mapleaderが"\<C-K>"の場合、<Leader>q は CTRL-Jの後にqを入力する、
-"   ということです。
-"   また、<Space>はスペースキー、<CR>はエンターキーです。
-"
-"  Insert Modeでの交ぜ書き変換:
-"    <Leader>q で変換対象文字列の始まりをマークします。
-"    <Leader><Space> で交ぜ書き変換を行います。
-"      <Leader>q でマークした位置から現在のカーソル位置の間にある文字列を
-"      読みとしてmazegaki.dicで検索します。
-"      候補が一つしかない場合は変換対象文字列を置き換えます。
-"      候補が複数ある場合は、コマンド行の上にCANDIDATE: で候補が表示されます。
-"      同じ変換対象文字列に対して<Leader><Space>を繰り返し打つと、
-"      候補を順に表示していきます。
-"      候補のリストの最後まで行くとリストの最初に戻ります。
-"    <Leader><CR> でCANDIDATE: として表示されている候補を選択して
-"      変換対象文字列を置き換えます。
-"
-"    例: "<Leader>qあい<Leader><Space>"と打つと、
-"        "CANDIDATE: 娃"と表示されます。
-"        さらに"<Leader><Space>"を打つと"CANDIDATE: 哀"となります。
-"        この状態で"<Leader><CR>"を打つと、"あい"が"哀"に置き換えられます。
-"
-"  Insert Modeでの交ぜ書き変換(活用する語):
-"    基本的には活用しない語の交ぜ書き変換と同じです。
-"    "―"をつけて<Leader><Space>で変換するか、活用しない部分まで入力してから、
-"    <Leader>o で変換します。
-"    <Leader>o は<Leader>q でマークした位置から現在のカーソル位置の間の文字列に
-"    "―"を付加した文字列を読みとしてmazegaki.dicから検索します。
-"
-"    例: "<Leader>qながめ<Leader>o"と打つと、"CANDIDATE: 眺め"と表示されます。
-"        "<Leader><CR>"と打つと、"ながめ"が"眺め"に置き換えられます。
-"
-"  Insert Modeでの部首合成変換:
-"    <Leader>b でカーソル位置の直前の2文字の部首合成変換を行います。
-"
-"    例: "木口<Leader>b"と打つと、"木口"が"杏"に置き換えられます。
-"
-"  Normal Modeでの交ぜ書き変換:
-"    [count]<Leader><Space> カーソル位置以前の[count]文字の交ぜ書き変換を
-"      行います。
-"    <Leader><CR> でCANDIDATE: として表示されている候補を選択して
-"      変換対象文字列を置き換えます。
-"
-"    例: "あい"と表示されているとき、"い"の上にカーソルを置いて
-"        "2<Leader><Space>"と打つと、"CANDIDATE: 娃"と表示されます。
-"        さらに"<Leader><Space>"と打つと、"CANDIDATE: 哀"と表示されます。
-"        この状態で"<Leader><CR>"を打つと、"あい"が"哀"に置き換えられます。
-"
-"  Normal Modeでの交ぜ書き変換(活用しない語):
-"    [count]<Leader>o カーソル位置以前の[count]文字に"―"を付加した文字列を
-"      読みとしてmazegaki.dicから検索します。
-"
-"    例: "ながめ"と表示されているとき、"め"の上にカーソルを置いて
-"        "3<Leader>o"と打つと、"CANDIDATE: 眺め"と表示されます。
-"        "<Leader><CR>"と打つと、"ながめ"が"眺め"に置き換えられます。
-"
-"  Normal Modeでの部首合成変換:
-"    <Leader>b カーソル位置以前の2文字の部首合成変換を行います。
-"
-"    例: "木口"と表示されているとき、"口"の上にカーソルを置いて
-"        "<Leader>b"と打つと、"木口"が"杏"に置き換えられます。
-"
-" 打鍵ヘルプ表示(Normal Mode):
-"    <Leader>? でカーソル位置の文字の打鍵を表示します。
-"      使用中のkeymapで直接入力できない文字の場合は、
-"      部首合成変換辞書を検索して、指定された文字が含まれる行を表示します。
-"
-"    例: "鍵"という文字の上にカーソルを置いて"<Leader>?"と打つと、
-"        "[TcvimeHelp]"というバッファが開いて次のように表示されます
-"        (keymapがtutcodeの場合)。
-"        ・・・・    ・・・・    鍵
-"        ・・・・  3 ・・・・
-"        ・・・・    ・・・・
-"        ・・1 2     ・・・・
 "
 " オプション:
 "    'tcvime_keyboard'
