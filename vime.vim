@@ -109,7 +109,7 @@ endfunction
 function! s:CandidateSelect(len)
   if strlen(s:last_candidate) > 0
     let str = getline(s:status_line)
-    let str = strpart(str, 0, s:status_column - 1).s:last_candidate.strpart(str, s:status_column + a:len)
+    let str = strpart(str, 0, s:status_column - 1).s:last_candidate.strpart(str, s:status_column - 1 + a:len)
     call setline(s:status_line, str)
     let s:status_column = s:status_column + strlen(s:last_candidate)
     let s:last_candidate = ''
@@ -158,21 +158,68 @@ endfunction
 function! s:InputCR()
   if !s:StatusIsEnable()
     execute "normal! a\<CR>\<ESC>"
-    call s:StatusReset()
   else
     let str = s:StatusGet()
     let len = strlen(str)
     if len > 0
       if s:last_keyword ==# str
 	call s:CandidateSelect(len)
-	call s:StatusReset()
-      else
-	call s:StatusReset()
       endif
     else
       execute "normal! a\<CR>\<ESC>"
     endif
   endif
+  call s:StatusReset()
+endfunction
+
+" 今の位置以前のcount文字を変換する
+function! s:ConvertCount(count)
+  if a:count < 1
+    call s:StatusReset()
+    execute "normal! 1 "
+  else
+    let s:status_line = line(".")
+    let s:save_col = col(".")
+    execute "normal! a\<ESC>"
+    let s:count = a:count - 1
+    if s:count > 0
+      execute "normal! " . s:count . "h"
+    endif
+    let s:status_column = col(".")
+    execute "normal! " . s:save_col . "|"
+    if !s:StatusIsEnable()
+      call s:StatusReset()
+    else
+      let status = s:StatusGet()
+      let len = strlen(status)
+      if len > 0
+	call s:CandidateSearch(status)
+      else
+	let s:last_keyword = ''
+	call s:StatusReset()
+      endif
+    endif
+  endif
+endfunction
+
+" ConvertCount()で変換を開始した候補を確定する
+function! s:FixCandidate()
+  execute "normal! a\<ESC>"
+  if !s:StatusIsEnable()
+    execute "normal! \<CR>"
+  else
+    let str = s:StatusGet()
+    let len = strlen(str)
+    if len > 0
+      if s:last_keyword ==# str
+	call s:CandidateSelect(len)
+	execute "normal! " . (s:status_column - 1) . "|"
+      endif
+    else
+      execute "normal! \<CR>"
+    endif
+  endif
+  call s:StatusReset()
 endfunction
 
 function! s:InputStart()
@@ -189,20 +236,14 @@ function! s:MappingOn()
   inoremap <buffer> M <C-O>:call <SID>InputStart()<CR>
   inoremap <buffer> <Space> <C-O>:call <SID>InputConvert()<CR>
   inoremap <buffer> <S-Space> <Space><C-O>:call <SID>InputNullSpace()<CR>
-
-"  let normal_hook = 'iIaACRS'
-"  let i = 0
-"  let len = strlen(normal_hook)
-"  while i < len
-"    let char = normal_hook[i]
-"    let i = i + 1
-"    execute "nnoremap <buffer> ".char." ".char."\<C-O>:call <SID>InputStart()\<CR>"
-"  endwhile
+  nnoremap <buffer> <CR> :<C-U>call <SID>FixCandidate()<CR>
+  nnoremap <buffer> <Space> :<C-U>call <SID>ConvertCount(v:count)<CR>
 endfunction
 
 "   マッピングを無効化
 function! s:MappingOff()
   imapclear <buffer>
+  nmapclear <buffer>
 endfunction
 
 "==============================================================================
