@@ -2,7 +2,7 @@
 "
 " vime.vim - ´Ê°×SKK-IME
 "
-" Last Change: $Date: 2003/05/12 13:55:19 $
+" Last Change: $Date: 2003/05/13 14:22:27 $
 " Written By:  Muraoka Taro <koron@tka.att.ne.jp>
 "
 
@@ -666,7 +666,7 @@ function! s:ShowHelpSequence(ch, keyseq)
     let i = i + 1
     let key = strpart(keyseq, 0, 1)
     let keyseq = strpart(keyseq, 1)
-    execute "normal! :%s@" . key . " @" . i . "@\<CR>"
+    execute "normal! :%s@\\V" . key . " @" . i . "@\<CR>"
   endwhile
   execute "normal! :%s@^\\(....................\\). . @\\1@e\<CR>"
   execute "normal! :%s@^\\(................\\). . @\\1@e\<CR>"
