@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Revision: $Id: tcvime.vim,v 1.30 2004/06/06 13:21:15 deton Exp $
+" Revision: $Id: tcvime.vim,v 1.31 2004/06/19 13:03:41 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -231,10 +231,9 @@ endfunction
 function! s:InputConvertBushu(col)
   let inschars = ''
   if a:col > 2
-    let str = strpart(getline('.'), 0, a:col - 1)
-    let chars = matchstr(str, "..$")
-    let char1 = matchstr(chars, "^.")
-    let char2 = matchstr(chars, ".$")
+    let chars = matchstr(getline('.'), '..\%' . a:col . 'c')
+    let char1 = matchstr(chars, '^.')
+    let char2 = matchstr(chars, '.$')
     let retchar = s:BushuSearch(char1, char2)
     let len = strlen(retchar)
     if len > 0
@@ -274,8 +273,7 @@ function! s:ConvertCount(count, katuyo)
   let s:is_katuyo = 0
   let s:status_line = line(".")
   execute "normal! a\<ESC>"
-  let str = strpart(getline('.'), 0, col("'^") - 1)
-  let chars = matchstr(str, mstr . "$")
+  let chars = matchstr(getline('.'), mstr . '\%' . col("'^") . 'c')
 
   let len = strlen(chars)
   if len > 0
