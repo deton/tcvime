@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Revision: $Id: tcvime.vim,v 1.33 2005/03/09 13:39:19 deton Exp $
+" Revision: $Id: tcvime.vim,v 1.34 2011/12/11 08:30:24 deton Exp $
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -118,9 +118,9 @@ function! s:MappingOn()
   execute "autocmd BufReadCmd ".s:helpbufname." call <SID>Help_BufReadCmd()"
   augroup END
 
-  if !exists('s:save_cmdheight')
-    let s:save_cmdheight = &cmdheight
-  endif
+  "if !exists('s:save_cmdheight')
+  "  let s:save_cmdheight = &cmdheight
+  "endif
 endfunction
 
 "   マッピングを無効化
@@ -153,7 +153,7 @@ function! s:MappingOff()
   augroup Tcvime
   autocmd!
   augroup END
-  unlet s:save_cmdheight
+  "unlet s:save_cmdheight
 endfunction
 
 TcvimeOn
@@ -223,12 +223,15 @@ function! s:InputFix(col)
     endif
   endif
   call s:StatusReset()
-  let &cmdheight = s:save_cmdheight
+  if exists('s:save_cmdheight')
+    let &cmdheight = s:save_cmdheight
+  endif
   return inschars
 endfunction
 
 " &cmdheightが2より小さかったら2に設定する。CANDIDATE:表示のため。
 function! s:SetCmdheight()
+  let s:save_cmdheight = &cmdheight
   if &cmdheight < 2
     let &cmdheight = 2
   endif
@@ -326,7 +329,7 @@ endfunction
 function! s:InsertString(inschars)
   if strlen(a:inschars) > 0
     let save_bs = &backspace
-    set backspace+=start
+    set backspace=2
     execute "normal! a" . a:inschars . "\<ESC>"
     let &backspace = save_bs
   endif
