@@ -1,6 +1,6 @@
 " Vim Keymap file for Japanese (TUT-Code with katakana mode toggle)
 " Maintainer: KIHARA, Hideto <deton@m1.interq.or.jp>
-" Last Change: 2004-07-20.
+" Last Change: 2011-12-11.
 
 scriptencoding cp932
  
@@ -209,7 +209,9 @@ ALK	ヮ
 q<Space>	“
 w<Space>	〒
 e<Space>	ー
+e<S-Space>	ー
 E<Space>	ー
+E<S-Space>	ー
 r<Space>	【
 t<Space>	「
 y<Space>	」
