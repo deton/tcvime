@@ -1,6 +1,6 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
-							     Version: 1.2
-							     Date: 2005-03-10
+							     Version: 1.2.1
+							     Date: 2011-12-12
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -14,8 +14,9 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
 必要条件
   Vim 6.1以降。
   日本語の表示ができることと、tcode/tutcode keymapでの入力ができること。
-  tcode/tutcodeのkeymapファイルは、香り屋版Vim<http://www.kaoriya.net/#VIM>
-  に含まれています。
+  tcode/tutcodeのkeymapファイルは、香り屋版Vim
+  <http://www.kaoriya.net/software/vim>に含まれています。
+  なお、tutcode keymapはこのtcvimeのアーカイブにも含まれています。
 
 UNIXでの使用上の注意
   keymapを使うために、configure時に--with-features=bigを指定して
@@ -60,6 +61,19 @@ UNIXでの使用上の注意
     含まれているものです。
 
 更新履歴
+  - 1.2.1 (2011-12-12)
+   - backspaceオプションが数値の場合にエラーが発生する問題を修正。
+   - cmdheight値の退避は変更直前に行うように変更。
+     tcvime読込後に設定値が変更された場合に対応するため。
+   - カタカナ単語をシフトキーを使って入力する際に、単語中の
+     「ー」もシフトキーを押しっぱなしで入力できるように以下の定義を
+     tutcodek_cp932.vimに追加。
+       e<S-Space>     ー
+       E<S-Space>     ー
+   - 香り屋版vimに含まれているtutcode_cp932.vimにある、
+     シーケンス最初の文字のみが大文字のカタカナ定義(例:Rk	ア)を
+     tutcodek_cp932.vimに追加。
+
   - 1.2 (2005-03-10)
    - 漢字テーブルファイルを表示して、文字を選択して入力する機能を追加。
 
@@ -75,6 +89,6 @@ UNIXでの使用上の注意
     最初のリリース。
 
 -- 
-木原 英人 / KIHARA, Hideto / deton@m1.interq.or.jp
+木原 英人 / KIHARA, Hideto
 http://www1.interq.or.jp/~deton/tcvime/
-$Id: README_j.txt,v 1.8 2005/03/09 14:02:29 deton Exp $
+$Id: README_j.txt,v 1.9 2011/12/11 12:05:20 deton Exp $
