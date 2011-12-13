@@ -50,6 +50,25 @@ UNIXでの使用上の注意
 使い方
   tcvime.txtを参照してください。
 
+~/.vimrcの設定例
+  <C-J>でtutcodeを有効にし、<C-L>でtutcodeを無効にする設定の例です。
+  (<C-^>でのトグル操作における、現在の状態を意識する負担を無くしたい場合用)
+
+  if has('keymap')
+    set iminsert=0 imsearch=0
+    " 切替時にインデントが解除されるのを回避するため、1<C-H>
+    imap <C-J> 1<C-H><C-O>:call <SID>SetKeymap('tutcodek')<CR>
+    imap <C-L> 1<C-H><C-O>:set iminsert=0<CR>
+    imap <silent> <ESC> <ESC>:set imsearch=0<CR>
+  endif
+  function! s:SetKeymap(keymapname)
+    if &keymap !=# a:keymapname
+      let &keymap = a:keymapname
+    else
+      let &iminsert = 1
+    endif
+  endfunction
+
 謝辞
   - 村岡さんのvime.vimをベースにさせていただいています。
     tcvime.vimの交ぜ書き変換部分はほとんどvime.vimそのものです。
@@ -91,4 +110,4 @@ UNIXでの使用上の注意
 -- 
 木原 英人 / KIHARA, Hideto
 http://www1.interq.or.jp/~deton/tcvime/
-$Id: README_j.txt,v 1.9 2011/12/11 12:05:20 deton Exp $
+$Id: README_j.txt,v 1.10 2011/12/12 11:18:18 deton Exp $
