@@ -1,6 +1,6 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
 							     Version: 1.2.1
-							     Date: 2011-12-12
+							     Date: 2011-12-13
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -80,7 +80,7 @@ UNIXでの使用上の注意
     含まれているものです。
 
 更新履歴
-  - 1.2.1 (2011-12-12)
+  - 1.2.1 (2011-12-13)
    - backspaceオプションが数値の場合にエラーが発生する問題を修正。
    - cmdheight値の退避は変更直前に行うように変更。
      tcvime読込後に設定値が変更された場合に対応するため。
@@ -110,4 +110,4 @@ UNIXでの使用上の注意
 -- 
 木原 英人 / KIHARA, Hideto
 http://www1.interq.or.jp/~deton/tcvime/
-$Id: README_j.txt,v 1.10 2011/12/12 11:18:18 deton Exp $
+$Id: README_j.txt,v 1.11 2011/12/13 11:27:51 deton Exp $
