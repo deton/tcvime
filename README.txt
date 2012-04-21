@@ -1,62 +1,62 @@
-tcvime - �������ړ��͕⏕�@�\�v���O�C���X�N���v�g
-							     Version: 1.2.1
-							     Date: 2011-12-13
+tcvime - 漢字直接入力補助機能プラグインスクリプト
+							     Version: 1.2.2
+							     Date: 2012-05-XX
 
-���
-  tcode,tutcode���̊������ړ���keymap�p�̓��͕⏕�@�\��񋟂���
-  �v���O�C���X�N���v�g�ł��B
-  4�̋@�\��񋟂��܂�:
-   * ���������ϊ�: ���Ȋ����ϊ��ŁA���ȕ����Ɋ������������Ă��Ă��ϊ�
-   * ���񍇐��ϊ�: �������� �̂悤�ɕ���̑����Z/�����Z���s���Ċ���������
-   * �����w���v�\�\��: ���镶������͂���ۂ̃L�[�̈ʒu�Ɠ��͏�����\��
-   * �����e�[�u���t�@�C���̕\���ƕ����I���ɂ�����
+解説
+  tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
+  プラグインスクリプトです。
+  4つの機能を提供します:
+   * 交ぜ書き変換: かな漢字変換で、かな部分に漢字が交じっていても変換
+   * 部首合成変換: 口未→味 のように部首の足し算/引き算を行って漢字を合成
+   * 文字ヘルプ表表示: ある文字を入力する際のキーの位置と入力順序を表示
+   * 漢字テーブルファイルの表示と文字選択による入力
 
-�K�v����
-  Vim 6.1�ȍ~�B
-  ���{��̕\�����ł��邱�ƂƁAtcode/tutcode keymap�ł̓��͂��ł��邱�ƁB
-  tcode/tutcode��keymap�t�@�C���́A���艮��Vim
-  http://www.kaoriya.net/software/vim �Ɋ܂܂�Ă��܂��B
-  �Ȃ��Atutcode keymap�͂���tcvime�̃A�[�J�C�u�ɂ��܂܂�Ă��܂��B
+必要条件
+  Vim 6.1以降。
+  日本語の表示ができることと、tcode/tutcode keymapでの入力ができること。
+  tcode/tutcodeのkeymapファイルは、香り屋版Vim
+  http://www.kaoriya.net/software/vim に含まれています。
+  なお、tutcode keymapはこのtcvimeのアーカイブにも含まれています。
 
-UNIX�ł̎g�p��̒���
-  keymap���g�����߂ɁAconfigure����--with-features=big���w�肵��
-  �R���p�C�����Ă����Ă��������B
+UNIXでの使用上の注意
+  keymapを使うために、configure時に--with-features=bigを指定して
+  コンパイルしておいてください。
 
-  tcvime.vim, mazegaki.dic, bushu.rev, kanjitable.txt��cp932�G���R�[�f�B���O
-  �ɂȂ��Ă��܂��B
-  ���������̂܂܎g���ɂ́AVim��iconv����ō���Ă���A
-  ���A(���艮�łɊ܂܂�Ă���vimrc�Őݒ肳��Ă���悤��)�Afileencodings��
-  cp932���܂܂�Ă���K�v������܂��B
+  tcvime.vim, mazegaki.dic, bushu.rev, kanjitable.txtはcp932エンコーディング
+  になっています。
+  これらをそのまま使うには、Vimがiconv入りで作られており、
+  かつ、(香り屋版に含まれているvimrcで設定されているように)、fileencodingsに
+  cp932が含まれている必要があります。
 
-  ���邢�́A�����̃t�@�C���̃G���R�[�f�B���O��
-  euc-jp�Ȃǂɕϊ����Ă����Ă��������B
-  (���̏ꍇ�A�X�N���v�g(*.vim)����scriptencoding cp932�̕ύX�����Y��Ȃ��B)
+  あるいは、これらのファイルのエンコーディングを
+  euc-jpなどに変換しておいてください。
+  (その場合、スクリプト(*.vim)中のscriptencoding cp932の変更もお忘れなく。)
 
-����
-  �A�[�J�C�u�Ɋ܂܂��t�@�C�������̏ꏊ�ɒu���Ă��������B
+準備
+  アーカイブに含まれるファイルを次の場所に置いてください。
 
-    �t�@�C��            �u���ꏊ              �t�@�C���̐���
-  plugin/tcvime.vim   'runtimepath'/plugin  �v���O�C���X�N���v�g�{��
-  doc/tcvime.txt      'runtimepath'/doc     �X�N���v�g�̐�����
-  mazegaki.dic        'runtimepath'��$VIM   ���������ϊ��p����
-  bushu.rev           'runtimepath'��$VIM   ���񍇐��ϊ��p����
-  kanjitable.txt      'runtimepath'��$VIM   �����e�[�u���t�@�C��
-  keymap/tutcodek.vim 'runtimepath'/keymap  '�łЂ炪��/�J�^�J�i���[�h�؂�ւ�
-					    ���ł���悤�ɂ���tutcode��keymap
+    ファイル            置く場所              ファイルの説明
+  plugin/tcvime.vim   'runtimepath'/plugin  プラグインスクリプト本体
+  doc/tcvime.txt      'runtimepath'/doc     スクリプトの説明書
+  mazegaki.dic        'runtimepath'か$VIM   交ぜ書き変換用辞書
+  bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
+  kanjitable.txt      'runtimepath'か$VIM   漢字テーブルファイル
+  keymap/tutcodek.vim 'runtimepath'/keymap  'でひらがな/カタカナモード切り替え
+					    ができるようにしたtutcodeのkeymap
 
-  'runtimepath'��$VIM�Ŏ������f�B���N�g���́AVim���
-  :echo &runtimepath �� :echo $VIM �����s���邱�ƂŊm�F�ł��܂��B
+  'runtimepath'や$VIMで示されるディレクトリは、Vim上で
+  :echo &runtimepath や :echo $VIM を実行することで確認できます。
 
-�g����
-  tcvime.txt���Q�Ƃ��Ă��������B
+使い方
+  tcvime.txtを参照してください。
 
-~/.vimrc�̐ݒ��
-  <C-J>��tutcode��L���ɂ��A<C-L>��tutcode�𖳌��ɂ���ݒ�̗�ł��B
-  (<C-^>�ł̃g�O������ɂ�����A���݂̏�Ԃ��ӎ����镉�S�𖳂��������ꍇ�p)
+~/.vimrcの設定例
+  <C-J>でtutcodeを有効にし、<C-L>でtutcodeを無効にする設定の例です。
+  (<C-^>でのトグル操作における、現在の状態を意識する負担を無くしたい場合用)
 
   if has('keymap')
     set iminsert=0 imsearch=0
-    " �ؑ֎��ɃC���f���g�����������̂�������邽�߁A1<C-H>
+    " 切替時にインデントが解除されるのを回避するため、1<C-H>
     imap <C-J> 1<C-H><C-O>:call <SID>SetKeymap('tutcodek')<CR>
     imap <C-L> 1<C-H><C-O>:set iminsert=0<CR>
     imap <silent> <ESC> <ESC>:set imsearch=0<CR>
@@ -69,48 +69,48 @@ UNIX�ł̎g�p��̒���
     endif
   endfunction
 
-�ӎ�
-  - ���������vime.vim���x�[�X�ɂ����Ă��������Ă��܂��B
-    tcvime.vim�̌��������ϊ������͂قƂ��vime.vim���̂��̂ł��B
+謝辞
+  - 村岡さんのvime.vimをベースにさせていただいています。
+    tcvime.vimの交ぜ書き変換部分はほとんどvime.vimそのものです。
 
-  - tserv�̕��񍇐��A���S���Y�����g���Ă��܂��B
-    ���Ƃ��Ƃ�Emacs�p��T�R�[�h���͊�tc�Ŏg���Ă����A���S���Y���̂悤�ł��B
+  - tservの部首合成アルゴリズムを使っています。
+    もともとはEmacs用のTコード入力環境tcで使われていたアルゴリズムのようです。
 
-  - mazegaki.dic, bushu.rev��Emacs�p��T�R�[�h���͊�tc2(tc-2.3.1)��
-    �܂܂�Ă�����̂ł��B
+  - mazegaki.dic, bushu.revはEmacs用のTコード入力環境tc2(tc-2.3.1)に
+    含まれているものです。
 
-�X�V����
+更新履歴
   - 1.2.2 (2012-05-XX)
-   - tutcodek_cp932.vim��tutcodek.vim�ɕύX�B
-     (_cp932�t������&encoding��cp932�̏ꍇ�����ǂݍ��܂�Ȃ��̂�)
+   - tutcodek_cp932.vimをtutcodek.vimに変更。
+     (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
 
   - 1.2.1 (2011-12-13)
-   - backspace�I�v�V���������l�̏ꍇ�ɃG���[��������������C���B
-   - cmdheight�l�̑ޔ��͕ύX���O�ɍs���悤�ɕύX�B
-     tcvime�Ǎ���ɐݒ�l���ύX���ꂽ�ꍇ�ɑΉ����邽�߁B
-   - �J�^�J�i�P����V�t�g�L�[���g���ē��͂���ۂɁA�P�ꒆ��
-     �u�[�v���V�t�g�L�[���������ςȂ��œ��͂ł���悤�Ɉȉ��̒�`��
-     tutcodek_cp932.vim�ɒǉ��B
-       e<S-Space>     �[
-       E<S-Space>     �[
-   - ���艮��vim�Ɋ܂܂�Ă���tutcode_cp932.vim�ɂ���A
-     �V�[�P���X�ŏ��̕����݂̂��啶���̃J�^�J�i��`(��:Rk	�A)��
-     tutcodek_cp932.vim�ɒǉ��B
+   - backspaceオプションが数値の場合にエラーが発生する問題を修正。
+   - cmdheight値の退避は変更直前に行うように変更。
+     tcvime読込後に設定値が変更された場合に対応するため。
+   - カタカナ単語をシフトキーを使って入力する際に、単語中の
+     「ー」もシフトキーを押しっぱなしで入力できるように以下の定義を
+     tutcodek_cp932.vimに追加。
+       e<S-Space>     ー
+       E<S-Space>     ー
+   - 香り屋版vimに含まれているtutcode_cp932.vimにある、
+     シーケンス最初の文字のみが大文字のカタカナ定義(例:Rk	ア)を
+     tutcodek_cp932.vimに追加。
 
   - 1.2 (2005-03-10)
-   - �����e�[�u���t�@�C����\�����āA������I�����ē��͂���@�\��ǉ��B
+   - 漢字テーブルファイルを表示して、文字を選択して入力する機能を追加。
 
   - 1.1 (2004-08-13)
-   - �^�u�̂���s�ŕ��񍇐��ϊ������ł��Ȃ��o�O���C���B
+   - タブのある行で部首合成変換等ができないバグを修正。
 
   - 1.0.1 (2003-09-04)
-   - �w���v�o�b�t�@����"[TcvimeHelp]"����"__TcvimeHelp__"�ɕύX�B
-   - TcvimeHelpBushu�R�}���h��ǉ�:
-     �w�肵���������܂ލs�𕔎񍇐��ϊ��������猟�����ĕ\���B
+   - ヘルプバッファ名を"[TcvimeHelp]"から"__TcvimeHelp__"に変更。
+   - TcvimeHelpBushuコマンドを追加:
+     指定した文字を含む行を部首合成変換辞書から検索して表示。
 
   - 1.0 (2003-05-25)
-    �ŏ��̃����[�X�B
+    最初のリリース。
 
 -- 
-�،� �p�l / KIHARA, Hideto
+木原 英人 / KIHARA, Hideto
 http://www1.interq.or.jp/~deton/tcvime/
