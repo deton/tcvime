@@ -110,4 +110,3 @@ UNIXÇ≈ÇÃégópè„ÇÃíçà”
 -- 
 ñÿå¥ âpêl / KIHARA, Hideto
 http://www1.interq.or.jp/~deton/tcvime/
-$Id: README_j.txt,v 1.11 2011/12/13 11:27:51 deton Exp $
