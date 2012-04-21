@@ -110,7 +110,3 @@ UNIXでの使用上の注意
 
   - 1.0 (2003-05-25)
     最初のリリース。
-
--- 
-木原 英人 / KIHARA, Hideto
-http://www1.interq.or.jp/~deton/tcvime/
