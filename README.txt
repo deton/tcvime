@@ -15,7 +15,7 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
   Vim 6.1以降。
   日本語の表示ができることと、tcode/tutcode keymapでの入力ができること。
   tcode/tutcodeのkeymapファイルは、香り屋版Vim
-  <http://www.kaoriya.net/software/vim>に含まれています。
+  http://www.kaoriya.net/software/vim に含まれています。
   なお、tutcode keymapはこのtcvimeのアーカイブにも含まれています。
 
 UNIXでの使用上の注意
@@ -36,12 +36,12 @@ UNIXでの使用上の注意
   アーカイブに含まれるファイルを次の場所に置いてください。
 
     ファイル            置く場所              ファイルの説明
-  tcvime.vim          'runtimepath'/plugin  プラグインスクリプト本体
-  tcvime.txt          'runtimepath'/doc     スクリプトの説明書
+  plugin/tcvime.vim   'runtimepath'/plugin  プラグインスクリプト本体
+  doc/tcvime.txt      'runtimepath'/doc     スクリプトの説明書
   mazegaki.dic        'runtimepath'か$VIM   交ぜ書き変換用辞書
   bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
   kanjitable.txt      'runtimepath'か$VIM   漢字テーブルファイル
-  tutcodek_cp932.vim  'runtimepath'/keymap  'でひらがな/カタカナモード切り替え
+  keymap/tutcodek.vim 'runtimepath'/keymap  'でひらがな/カタカナモード切り替え
 					    ができるようにしたtutcodeのkeymap
 
   'runtimepath'や$VIMで示されるディレクトリは、Vim上で
@@ -80,6 +80,10 @@ UNIXでの使用上の注意
     含まれているものです。
 
 更新履歴
+  - 1.2.2 (2012-05-XX)
+   - tutcodek_cp932.vimをtutcodek.vimに変更。
+     (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
+
   - 1.2.1 (2011-12-13)
    - backspaceオプションが数値の場合にエラーが発生する問題を修正。
    - cmdheight値の退避は変更直前に行うように変更。
