@@ -80,21 +80,35 @@ let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
 let s:buflisted = 0
 
 " Mapping
-command! TcvimeOn call <SID>MappingOn()
-command! TcvimeOff call <SID>MappingOff()
+if !exists(":TcvimeOn")
+  command TcvimeOn :call <SID>MappingOn()
+endif
+if !exists(":TcvimeOff")
+  command TcvimeOff :call <SID>MappingOff()
+endif
 " keymapを設定する
 " 引数: keymap名
-command! -nargs=1 TcvimeSetKeymap call <SID>SetKeymap(<args>)
-" 指定された文字列のヘルプ表を表示する
-" 引数: 対象の文字列
-command! -nargs=1 TcvimeHelp call <SID>ShowHelpForStr(<q-args>, 0)
-" 指定された文字列内の各文字を含む行を部首合成変換辞書から検索して表示する
-" 引数: 対象の文字列
-command! -nargs=1 TcvimeHelpBushu call <SID>ShowHelpForStr(<q-args>, 1)
+if !exists(":TcvimeSetKeymap")
+  command -nargs=1 TcvimeSetKeymap :call <SID>SetKeymap(<args>)
+endif
+" 指定された文字のヘルプ表を表示する
+" 引数: 対象の文字
+if !exists(":TcvimeHelp")
+  command! -nargs=1 TcvimeHelp call <SID>ShowHelpForStr(<q-args>, 0)
+endif
+" 指定された文字を含む行を部首合成変換辞書から検索して表示する
+" 引数: 対象の文字
+if !exists(":TcvimeHelpBushu")
+  command! -nargs=1 TcvimeHelpBushu call <SID>ShowHelpForStr(<q-args>, 1)
+endif
 " 漢字テーブルを表示する
-command! TcvimeKanjiTable call <SID>KanjiTable_FileOpen()
+if !exists(":TcvimeKanjiTable")
+  command! TcvimeKanjiTable call <SID>KanjiTable_FileOpen()
+endif
 " ヘルプ用バッファを閉じる
-command! TcvimeCloseHelp call <SID>CloseHelpBuffer()
+if !exists(":TcvimeCloseHelp")
+  command! TcvimeCloseHelp call <SID>CloseHelpBuffer()
+endif
 
 " keymapを設定する
 function! s:SetKeymap(keymapname)
@@ -111,18 +125,57 @@ function! s:MappingOn()
     let set_mapleader = 1
   endif
   let s:mapleader = g:mapleader
-  inoremap <silent> <Leader><CR> <C-R>=<SID>InputFix(col('.'))<CR>
-  inoremap <silent> <Leader>q <C-R>=<SID>InputStart()<CR>
-  inoremap <silent> <Leader><Space> <C-R>=<SID>InputConvert(0)<CR>
-  inoremap <silent> <Leader>o <C-R>=<SID>InputConvert(1)<CR>
-  inoremap <silent> <Leader>b <C-R>=<SID>InputConvertBushu(col('.'))<CR>
-  nnoremap <silent> <Leader><CR> :<C-U>call <SID>FixCandidate()<CR>
-  nnoremap <silent> <Leader><Space> :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
-  nnoremap <silent> <Leader>o :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
-  nnoremap <silent> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
-  nnoremap <silent> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
-  nnoremap <silent> <Leader>t :<C-U>call <SID>KanjiTable_FileOpen()<CR>
-  vnoremap <silent> <Leader>? :<C-U>call <SID>ShowHelpVisual()<CR>
+
+  if !hasmapto('<Plug>TcvimeIFix')
+    imap <unique> <silent> <Leader><CR> <Plug>TcvimeIFix
+  endif
+  if !hasmapto('<Plug>TcvimeIStart')
+    imap <unique> <silent> <Leader>q <Plug>TcvimeIStart
+  endif
+  if !hasmapto('<Plug>TcvimeIConvert')
+    imap <unique> <silent> <Leader><Space> <Plug>TcvimeIConvert
+  endif
+  if !hasmapto('<Plug>TcvimeIKatuyo')
+    imap <unique> <silent> <Leader>o <Plug>TcvimeIKatuyo
+  endif
+  if !hasmapto('<Plug>TcvimeIBushu')
+    imap <unique> <silent> <Leader>b <Plug>TcvimeIBushu
+  endif
+  if !hasmapto('<Plug>TcvimeNFix')
+    nmap <unique> <silent> <Leader><CR> <Plug>TcvimeNFix
+  endif
+  if !hasmapto('<Plug>TcvimeNConvert')
+    nmap <unique> <silent> <Leader><Space> <Plug>TcvimeNConvert
+  endif
+  if !hasmapto('<Plug>TcvimeNKatuyo')
+    nmap <unique> <silent> <Leader>o <Plug>TcvimeNKatuyo
+  endif
+  if !hasmapto('<Plug>TcvimeNBushu')
+    nmap <unique> <silent> <Leader>b <Plug>TcvimeNBushu
+  endif
+  if !hasmapto('<Plug>TcvimeNHelp')
+    nmap <unique> <silent> <Leader>? <Plug>TcvimeNHelp
+  endif
+  if !hasmapto('<Plug>TcvimeNKanjiTable')
+    nmap <unique> <silent> <Leader>t <Plug>TcvimeNKanjiTable
+  endif
+  if !hasmapto('<Plug>TcvimeVHelp')
+    vmap <unique> <silent> <Leader>? <Plug>TcvimeVHelp
+  endif
+
+  inoremap <script> <silent> <Plug>TcvimeIFix <C-R>=<SID>InputFix(col('.'))<CR>
+  inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=<SID>InputStart()<CR>
+  inoremap <script> <silent> <Plug>TcvimeIConvert <C-R>=<SID>InputConvert(0)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=<SID>InputConvert(1)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIBushu <C-R>=<SID>InputConvertBushu(col('.'))<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNFix :<C-U>call <SID>FixCandidate()<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNKatuyo :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNBushu :<C-U>call <SID>ConvertBushu()<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNHelp :<C-U>call <SID>ShowStrokeHelp()<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNKanjiTable :<C-U>call <SID>KanjiTable_FileOpen()<CR>
+  vnoremap <script> <silent> <Plug>TcvimeVHelp :<C-U>call <SID>ShowHelpVisual()<CR>
+
   if set_mapleader
     unlet g:mapleader
   endif
