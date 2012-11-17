@@ -83,6 +83,8 @@ UNIXでの使用上の注意
   - 1.2.2 (2012-12-XX)
    - Visual modeで選択した複数文字に対してヘルプ表を表示する機能を追加(issue #1)
    - :TcvimeHelpや:TcvimeHelpBushuの引数として文字列に対応(1文字だけでなく)
+   - 'tcvime_keymap_for_help'オプション変数を追加:
+     &keymapが未設定の場合にヘルプ表の表示に使うkeymap。
    - tutcodek_cp932.vimをtutcodek.vimに変更。
      (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
    - Vim6対応を終了。要Vim7
