@@ -33,6 +33,9 @@ scriptencoding cp932
 "   <Leader>?               打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示
 "   <Leader>t               漢字テーブルファイル表示
 "
+" vmap:
+"   <Leader>?               打鍵ヘルプ表示: 選択中の(複数)文字のヘルプ表を表示
+"
 " オプション:
 "    'tcvime_keyboard'
 "       文字ヘルプ表用のキーボード配列を表す文字列。
@@ -109,6 +112,7 @@ function! s:MappingOn()
   nnoremap <silent> <Leader>b :<C-U>call <SID>ConvertBushu()<CR>
   nnoremap <silent> <Leader>? :<C-U>call <SID>ShowStrokeHelp()<CR>
   nnoremap <silent> <Leader>t :<C-U>call <SID>KanjiTable_FileOpen()<CR>
+  vnoremap <silent> <Leader>? :<C-U>call <SID>ShowHelpVisual()<CR>
   if set_mapleader
     unlet g:mapleader
   endif
@@ -417,6 +421,14 @@ function! s:ShowStrokeHelp()
   call s:ShowHelp([ch], 0)
 endfunction
 
+" Visual modeで選択されている文字列のヘルプ表を表示する
+function! s:ShowHelpVisual()
+  let save_reg = @@
+  silent execute 'normal! `<' . visualmode() . '`>y'
+  call s:ShowHelpForStr(substitute(@@, '\n', '', 'g'), 0)
+  let @@ = save_reg
+endfunction
+
 " 指定された文字列の各文字のヘルプ表を表示する
 function! s:ShowHelpForStr(str, forcebushu)
   let ar = split(a:str, '\zs')
@@ -459,7 +471,7 @@ function! s:ShowHelp(ar, forcebushu)
   endif
   if len(skipchars) > 0
     redraw
-    echo '文字ヘルプで表示できる情報がありません: <' . join(skipchars) . '>'
+    echo '文字ヘルプで表示できる情報がありません: <' . join(skipchars, ',') . '>'
   endif
 endfunction
 
