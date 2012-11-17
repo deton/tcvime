@@ -7,7 +7,8 @@
 1. 概要					|tcvime-overview|
 2. 操作法				|tcvime-usage|
 3. オプション				|tcvime-option|
-4. 問題点				|tcvime-problem|
+4. コマンド				|tcvime-command|
+5. 問題点				|tcvime-problem|
 
 {Vi does not have any of these features}
 
@@ -160,7 +161,28 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
 	let plugin_tcvime_disable = 1
 
 ==============================================================================
-4. 問題点					*tcvime-problem*
+4. コマンド					*tcvime-command*
+
+:TcvimeOn					*:TcvimeOn*
+  キーマッピングを有効化する
+
+:TcvimeOff					*:TcvimeOff*
+  キーマッピングを無効化する
+
+:TcvimeHelp {str}				*:TcvimeHelp*
+  指定した文字列内の各文字のヘルプ表を表示する
+
+:TcvimeHelpBushu {str}				*:TcvimeHelpBushu*
+  指定した文字列内の各文字を含む行を部首合成変換辞書から検索して表示する
+
+:TcvimeSetKeymap {keymap}			*:TcvimeSetKeymap*
+  &keymapに{keymap}をsetする
+
+:TcvimeKanjiTable				*:TcvimeKanjiTable*
+  漢字テーブルファイルを表示して、漢字を選んで入力
+
+==============================================================================
+5. 問題点					*tcvime-problem*
 
 - 交ぜ書き変換のCANDIDATE: 表示がすぐ消えてしまって見れないことがあります。
   特に複数のウィンドウを開いている場合。
