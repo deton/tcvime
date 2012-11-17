@@ -1,6 +1,6 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
 							     Version: 1.2.2
-							     Date: 2012-05-XX
+							     Date: 2012-12-XX
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -80,7 +80,9 @@ UNIXでの使用上の注意
     含まれているものです。
 
 更新履歴
-  - 1.2.2 (2012-05-XX)
+  - 1.2.2 (2012-12-XX)
+   - Visual modeで選択した複数文字に対してヘルプ表を表示する機能を追加(issue #1)
+   - :TcvimeHelpや:TcvimeHelpBushuの引数として文字列に対応(1文字だけでなく)
    - tutcodek_cp932.vimをtutcodek.vimに変更。
      (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
 
