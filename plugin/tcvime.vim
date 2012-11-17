@@ -4,7 +4,7 @@
 "              Œğ‚º‘‚«•ÏŠ·A•”ñ‡¬•ÏŠ·A•¶šƒwƒ‹ƒv•\•\¦‹@”\B
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2011-12-11
+" Last Change: 2012-11-17
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -74,12 +74,12 @@ command! TcvimeOff call <SID>MappingOff()
 " keymap‚ğİ’è‚·‚é
 " ˆø”: keymap–¼
 command! -nargs=1 TcvimeSetKeymap call <SID>SetKeymap(<args>)
-" w’è‚³‚ê‚½•¶š‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
-" ˆø”: ‘ÎÛ‚Ì•¶š
-command! -nargs=1 TcvimeHelp call <SID>ShowHelp(<q-args>)
-" w’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğ•”ñ‡¬•ÏŠ·«‘‚©‚çŒŸõ‚µ‚Ä•\¦‚·‚é
-" ˆø”: ‘ÎÛ‚Ì•¶š
-command! -nargs=1 TcvimeHelpBushu call <SID>ShowHelpBushuDic(<q-args>)
+" w’è‚³‚ê‚½•¶š—ñ‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+" ˆø”: ‘ÎÛ‚Ì•¶š—ñ
+command! -nargs=1 TcvimeHelp call <SID>ShowHelpForStr(<q-args>, 0)
+" w’è‚³‚ê‚½•¶š—ñ“à‚ÌŠe•¶š‚ğŠÜ‚Şs‚ğ•”ñ‡¬•ÏŠ·«‘‚©‚çŒŸõ‚µ‚Ä•\¦‚·‚é
+" ˆø”: ‘ÎÛ‚Ì•¶š—ñ
+command! -nargs=1 TcvimeHelpBushu call <SID>ShowHelpForStr(<q-args>, 1)
 " Š¿šƒe[ƒuƒ‹‚ğ•\¦‚·‚é
 command! TcvimeKanjiTable call <SID>KanjiTable_FileOpen()
 
@@ -404,62 +404,110 @@ function! s:OpenHelpBuffer()
   execute "normal! :%d _\<CR>4\<C-W>\<C-_>"
 endfunction
 
+" ƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğ•Â‚¶‚é
+function! s:CloseHelpBuffer()
+  if s:SelectWindowByName(s:helpbufname) > 0
+    bwipeout!
+  endif
+endfunction
+
 " ƒJ[ƒ\ƒ‹ˆÊ’u‚Ì•¶š‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
 function! s:ShowStrokeHelp()
   let ch = matchstr(getline('.'), '\%' . col('.') . 'c.')
-  call s:ShowHelp(ch)
+  call s:ShowHelp([ch], 0)
 endfunction
 
-" w’è‚³‚ê‚½•¶š‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
-function! s:ShowHelp(ch)
-  if strlen(a:ch) == 0
-    echo '•¶šƒwƒ‹ƒv•\•\¦‚Éw’è‚³‚ê‚½•¶š‚ª‹ó‚Å‚·B–³‹‚µ‚Ü‚·'
-    return
-  endif
+" w’è‚³‚ê‚½•¶š—ñ‚ÌŠe•¶š‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+function! s:ShowHelpForStr(str, forcebushu)
+  let ar = split(a:str, '\zs')
+  call s:ShowHelp(ar, a:forcebushu)
+endfunction
+
+" w’è‚³‚ê‚½•¶š”z—ñ‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+function! s:ShowHelp(ar, forcebushu)
   if strlen(&keymap) == 0
     echo 'keymapƒIƒvƒVƒ‡ƒ“‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÅA•¶šƒwƒ‹ƒv•\•\¦‚ª‚Å‚«‚Ü‚¹‚ñ'
     return
   endif
-  let keyseq = s:SearchKeymap(a:ch)
-  if strlen(keyseq) > 0
-    call s:ShowHelpSequence(a:ch, keyseq)
+  let keymap = &keymap " ƒoƒbƒtƒ@ƒ[ƒJƒ‹‚È‚Ì‚Å•Û‘¶
+  call s:OpenHelpBuffer()
+  let numch = 0
+  let skipchars = []
+  for ch in a:ar
+    if strlen(ch) == 0 || ch == "\<CR>"
+      " echo '•¶šƒwƒ‹ƒv•\•\¦‚Éw’è‚³‚ê‚½•¶š‚ª‹ó‚Å‚·B–³‹‚µ‚Ü‚·'
+      continue
+    endif
+    call cursor(line('$'), 1)
+    if a:forcebushu == 1
+      let ret = s:ShowHelpBushuDic(ch)
+    else
+      let ret = s:ShowHelpChar(ch, keymap)
+    endif
+    if ret == 0
+      let numch += 1
+    else
+      call add(skipchars, ch)
+    endif
+  endfor
+  if numch == 0
+    call s:CloseHelpBuffer()
   else
-    call s:ShowHelpBushuDic(a:ch)
+    $-1,$d _ " ––”ö‚Ì—]•ª‚È‹ós2s‚ğíœ
+    normal 1G
+    wincmd p
+  endif
+  if len(skipchars) > 0
+    redraw
+    echo '•¶šƒwƒ‹ƒv‚Å•\¦‚Å‚«‚éî•ñ‚ª‚ ‚è‚Ü‚¹‚ñ: <' . join(skipchars) . '>'
+  endif
+endfunction
+
+" w’è‚³‚ê‚½•¶š‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+function! s:ShowHelpChar(ch, keymap)
+  let keyseq = s:SearchKeymap(a:ch, a:keymap)
+  if strlen(keyseq) > 0
+    call s:SelectWindowByName(s:helpbufname)
+    return s:ShowHelpSequence(a:ch, keyseq)
+  else
+    return s:ShowHelpBushuDic(a:ch)
   endif
 endfunction
 
 " w’è‚³‚ê‚½•¶š‚Æ‚»‚ÌƒXƒgƒ[ƒN‚ğ•\‚É‚µ‚Ä•\¦‚·‚é
 function! s:ShowHelpSequence(ch, keyseq)
-  call s:OpenHelpBuffer()
-  execute "normal! ggO" . g:tcvime_keyboard . "\<ESC>"
+  let from = line('$')
+  execute 'normal! O' . g:tcvime_keyboard . "\<CR>\<ESC>"
+  let to = line('$')
+  let range = from . ',' . to
   let keyseq = a:keyseq
   let i = 0
   while strlen(keyseq) > 0
     let i = i + 1
     let key = strpart(keyseq, 0, 1)
     let keyseq = strpart(keyseq, 1)
-    execute "normal! :%s@\\V" . key . " @" . i . "@\<CR>"
+    silent! execute range . 's@\V' . key . ' @' . i . '@'
   endwhile
-  execute "normal! :%s@^\\(....................\\). . @\\1@e\<CR>"
-  execute "normal! :%s@^\\(................\\). . @\\1@e\<CR>"
-  execute "normal! :%s@\\(.\\)\\(.\\)@\\1\\2@ge\<CR>"
-  execute "normal! :%s@\\(.\\). @\\1@ge\<CR>"
-  execute "normal! :%s@. . @E@g\<CR>"
-  execute "normal! :%s@@ @ge\<CR>"
-  execute "normal! 1GA    " . a:ch . "\<ESC>"
-  execute "normal! \<C-W>p"
+  silent! execute range . 's@^\(....................\). . @\1@e'
+  silent! execute range . 's@^\(................\). . @\1@e'
+  silent! execute range . 's@\(.\)\(.\)@\1\2@ge'
+  silent! execute range . 's@\(.\). @\1@ge'
+  silent! execute range . 's@. . @E@g'
+  silent! execute range . 's@@ @ge'
+  call cursor(from, 1)
+  execute 'normal! A    ' . a:ch . "\<ESC>"
+  return 0
 endfunction
 
 " •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚µ‚Ä•\¦‚·‚é
 function! s:ShowHelpBushuDic(ch)
   let lines = s:SearchBushuDic(a:ch)
+  call s:SelectWindowByName(s:helpbufname)
   if strlen(lines) > 0
-    call s:OpenHelpBuffer()
-    execute "normal! a" . lines . "\<ESC>1G"
-    execute "normal! \<C-W>p"
+    execute "normal! O" . lines . "\<CR>\<ESC>"
+    return 0
   else
-    redraw
-    echo '•¶šƒwƒ‹ƒv‚Å•\¦‚Å‚«‚éî•ñ‚ª‚ ‚è‚Ü‚¹‚ñ: <' . a:ch . '>'
+    return -3
   endif
 endfunction
 
@@ -481,10 +529,10 @@ function! s:SearchBushuDic(ch)
 endfunction
 
 " w’è‚³‚ê‚½•¶š‚ğ“ü—Í‚·‚é‚½‚ß‚ÌƒXƒgƒ[ƒN‚ğkeymapƒtƒ@ƒCƒ‹‚©‚çŒŸõ‚·‚é
-function! s:SearchKeymap(ch)
-  let kmfile = globpath(&rtp, "keymap/" . &keymap . "_" . &encoding . ".vim")
+function! s:SearchKeymap(ch, keymap)
+  let kmfile = globpath(&rtp, "keymap/" . a:keymap . "_" . &encoding . ".vim")
   if filereadable(kmfile) != 1
-    let kmfile = globpath(&rtp, "keymap/" . &keymap . ".vim")
+    let kmfile = globpath(&rtp, "keymap/" . a:keymap . ".vim")
     if filereadable(kmfile) != 1
       return ""
     endif
