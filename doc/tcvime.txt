@@ -145,6 +145,11 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
   例:
 	let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 
+'tcvime_keymap_for_help'			*'tcvime_keymap_for_help'*
+  文字ヘルプ表示に使うkeymap。現在のバッファで&keymapが未設定の場合に使用。
+  設定例:
+	let tcvime_keymap_for_help = 'tutcode'
+
 'mapleader'
   キーマッピングのプレフィックス。|mapleader|を参照。省略値: CTRL-K
   CTRL-Kを指定する場合の例:

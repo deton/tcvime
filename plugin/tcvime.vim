@@ -43,6 +43,9 @@ scriptencoding cp932
 "       例:
 "         let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 "
+"    'tcvime_keymap_for_help'
+"       文字ヘルプ表示に使うkeymap。現在のバッファで&keymapが未設定の場合に使用
+"
 "    'mapleader'
 "       キーマッピングのプレフィックス。|mapleader|を参照。省略値: CTRL-K
 "       CTRL-Kを指定する場合の例:
@@ -54,6 +57,10 @@ scriptencoding cp932
 
 if exists('plugin_tcvime_disable')
   finish
+endif
+
+if !exists("tcvime_keymap_for_help")
+  let tcvime_keymap_for_help = &keymap
 endif
 
 if !exists("tcvime_keyboard")
@@ -437,11 +444,14 @@ endfunction
 
 " 指定された文字配列のヘルプ表を表示する
 function! s:ShowHelp(ar, forcebushu)
-  if strlen(&keymap) == 0
-    echo 'keymapオプションが設定されていないので、文字ヘルプ表表示ができません'
-    return
+  let keymap = &keymap
+  if strlen(keymap) == 0
+    let keymap = g:tcvime_keymap_for_help
+    if strlen(keymap) == 0
+      echo 'tcvime文字ヘルプ表示には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
+      return
+    endif
   endif
-  let keymap = &keymap " バッファローカルなので保存
   call s:OpenHelpBuffer()
   let numch = 0
   let skipchars = []
