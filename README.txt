@@ -12,7 +12,7 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
    * 漢字テーブルファイルの表示と文字選択による入力
 
 必要条件
-  Vim 6.1以降。
+  Vim 7以降。
   日本語の表示ができることと、tcode/tutcode keymapでの入力ができること。
   tcode/tutcodeのkeymapファイルは、香り屋版Vim
   http://www.kaoriya.net/software/vim に含まれています。
@@ -85,6 +85,7 @@ UNIXでの使用上の注意
    - :TcvimeHelpや:TcvimeHelpBushuの引数として文字列に対応(1文字だけでなく)
    - tutcodek_cp932.vimをtutcodek.vimに変更。
      (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
+   - Vim6対応を終了。要Vim7
 
   - 1.2.1 (2011-12-13)
    - backspaceオプションが数値の場合にエラーが発生する問題を修正。
