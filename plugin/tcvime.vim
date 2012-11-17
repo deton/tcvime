@@ -412,7 +412,8 @@ function! s:OpenHelpBuffer()
       set nobuflisted
     endif
   endif
-  execute "normal! :%d _\<CR>4\<C-W>\<C-_>"
+  %d _
+  5wincmd _
 endfunction
 
 " ƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğ•Â‚¶‚é
@@ -453,6 +454,10 @@ function! s:ShowHelp(ar, forcebushu)
     endif
   endif
   call s:OpenHelpBuffer()
+  let winwidth = winwidth(0)
+  let lastcol = 0
+  let lastfrom = 1
+  let width = 0
   let numch = 0
   let skipchars = []
   for ch in a:ar
@@ -466,16 +471,37 @@ function! s:ShowHelp(ar, forcebushu)
     else
       let ret = s:ShowHelpChar(ch, keymap)
     endif
-    if ret == 0
-      let numch += 1
-    else
+    if ret == -1 " ƒXƒgƒ[ƒN•\‚à•”ñ‡¬«‘‚à•\¦‚Å‚«‚È‚©‚Á‚½ê‡
       call add(skipchars, ch)
+      continue
     endif
+    let numch += 1
+    if ret == 0 " ShowHelpBushuDic
+      continue
+    endif
+    " •\‚ğ‰¡‚É•À‚×‚é
+    if lastcol == 0 " Å‰‚Ì•\‚Ìê‡‚Í•Ï”‰Šú‰»‚¾‚¯
+      let lastcol = col('$')
+      let lastfrom = line('.')
+      let width = lastcol + 2
+      continue
+    endif
+    if lastcol + width >= winwidth " ‚³‚ç‚É•À‚×‚é‚Æ‚Í‚İo‚·ê‡‚Í‚»‚Ì‚Ü‚Ü‚É
+      let lastcol = col('$')
+      let lastfrom = line('.')
+      continue
+    endif
+    let ln = line('.')
+    let save_reg = @@
+    execute "normal! \<C-V>GkI  \<ESC>\<C-V>Gk$x" . lastfrom . "G$p"
+    let @@ = save_reg
+    let lastcol = col('$')
+    silent! execute ln . ',$-1d _'
   endfor
   if numch == 0
     call s:CloseHelpBuffer()
   else
-    $-1,$d _ " ––”ö‚Ì—]•ª‚È‹ós2s‚ğíœ
+    silent! $g/^$/d _ " ––”ö‚Ì—]•ª‚È‹ós‚ğíœ
     normal 1G
     wincmd p
   endif
@@ -516,9 +542,10 @@ function! s:ShowHelpSequence(ch, keyseq)
   silent! execute range . 's@\(.\). @\1@ge'
   silent! execute range . 's@. . @E@g'
   silent! execute range . 's@@ @ge'
-  call cursor(from, 1)
+  call cursor(to - 1, 1)
   execute 'normal! A    ' . a:ch . "\<ESC>"
-  return 0
+  call cursor(from, 1)
+  return 1
 endfunction
 
 " •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚µ‚Ä•\¦‚·‚é
@@ -526,10 +553,14 @@ function! s:ShowHelpBushuDic(ch)
   let lines = s:SearchBushuDic(a:ch)
   call s:SelectWindowByName(s:helpbufname)
   if strlen(lines) > 0
-    execute "normal! O" . lines . "\<CR>\<ESC>"
+    " ƒoƒbƒtƒ@“ª‚Å‚È‚¯‚ê‚Î‹æØ‚è‚Ì‹ós‘}“üB’¼‘O‚ª•¡”s‚Ì•”ñ«‘“à—e‚Ì•K—v
+    if line('.') > 1
+      execute "normal! o\<ESC>"
+    endif
+    execute 'normal! O' . lines . "\<ESC>"
     return 0
   else
-    return -3
+    return -1
   endif
 endfunction
 
