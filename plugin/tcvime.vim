@@ -260,6 +260,7 @@ function! s:InputConvertBushu(col)
     let len = strlen(retchar)
     if len > 0
       let inschars = "\<BS>\<BS>" . retchar
+      call s:ShowAutoHelp(chars, retchar)
     else
       echo '•”ñ‡¬•ÏŠ·‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½: <' . char1 . '>, <' . char2 . '>'
     endif
