@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-11-17
+" Last Change: 2012-11-18
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -229,6 +229,7 @@ function! s:InputFix(col)
   if s:IsCandidateOK(str)
     let inschars = s:CandidateSelect()
     if strlen(inschars) > 0
+      call s:ShowAutoHelp(str, inschars)
       let bs = substitute(str, '.', "\<BS>", "g")
       let inschars = bs . inschars
     endif
@@ -435,6 +436,15 @@ function! s:ShowHelpVisual()
   silent execute 'normal! `<' . visualmode() . '`>y'
   call s:ShowHelpForStr(substitute(@@, '\n', '', 'g'), 0)
   let @@ = save_reg
+endfunction
+
+" 変換で確定した文字列のヘルプ表を表示する
+function! s:ShowAutoHelp(yomi, str)
+  let yomichars = split(a:yomi, '\zs')
+  let chars = split(a:str, '\zs')
+  " 読みで入力した漢字はヘルプ表示不要なので取り除く
+  call filter(chars, 'index(yomichars, v:val) == -1')
+  call s:ShowHelp(chars, 0)
 endfunction
 
 " 指定された文字列の各文字のヘルプ表を表示する
