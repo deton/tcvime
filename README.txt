@@ -82,6 +82,8 @@ UNIXでの使用上の注意
 更新履歴
   - 1.2.2 (2012-12-XX)
    - Visual modeで選択した複数文字に対してヘルプ表を表示する機能を追加(issue #1)
+   - 自動ヘルプ機能追加(issue #2):
+     部首合成変換や交ぜ書き変換で確定した文字列のヘルプ表を表示。
    - :TcvimeHelpや:TcvimeHelpBushuの引数として文字列に対応(1文字だけでなく)
    - 'tcvime_keymap_for_help'オプション変数を追加:
      &keymapが未設定の場合にヘルプ表の表示に使うkeymap。
