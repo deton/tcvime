@@ -453,6 +453,7 @@ function! s:ShowHelp(ar, forcebushu)
       return
     endif
   endif
+  let curbuf = bufnr('')
   call s:OpenHelpBuffer()
   let winwidth = winwidth(0)
   let lastcol = 0
@@ -503,7 +504,8 @@ function! s:ShowHelp(ar, forcebushu)
   else
     silent! $g/^$/d _ " ––”ö‚Ì—]•ª‚È‹ós‚ðíœ
     normal 1G
-    wincmd p
+    " wincmd p
+    execute bufwinnr(curbuf) . 'wincmd w'
   endif
   if len(skipchars) > 0
     redraw
@@ -610,9 +612,9 @@ endfunction
 " SelectWindowByName(name)
 "   Acitvate selected window by a:name.
 function! s:SelectWindowByName(name)
-  let num = bufwinnr(a:name)
-  if num >= 0 && num != winnr()
-    execute 'normal! ' . num . "\<C-W>\<C-W>"
+  let num = bufwinnr('^' . a:name . '$')
+  if num > 0 && num != winnr()
+    execute num . 'wincmd w'
   endif
   return num
 endfunction
