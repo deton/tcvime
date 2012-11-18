@@ -17,6 +17,7 @@ scriptencoding cp932
 "   :TcvimeHelpBushu  指定した文字を含む行を部首合成変換辞書から検索して表示
 "   :TcvimeSetKeymap  keymapをsetする
 "   :TcvimeKanjiTable 漢字テーブルファイルを表示して、漢字を選んで入力
+"   :TcvimeCloseHelp  ヘルプ用バッファを閉じる
 "
 " imap:
 "   <Leader>q       交ぜ書き変換: 読みを開始
@@ -92,6 +93,8 @@ command! -nargs=1 TcvimeHelp call <SID>ShowHelpForStr(<q-args>, 0)
 command! -nargs=1 TcvimeHelpBushu call <SID>ShowHelpForStr(<q-args>, 1)
 " 漢字テーブルを表示する
 command! TcvimeKanjiTable call <SID>KanjiTable_FileOpen()
+" ヘルプ用バッファを閉じる
+command! TcvimeCloseHelp call <SID>CloseHelpBuffer()
 
 " keymapを設定する
 function! s:SetKeymap(keymapname)

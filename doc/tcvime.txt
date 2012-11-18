@@ -181,6 +181,9 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
 :TcvimeKanjiTable				*:TcvimeKanjiTable*
   漢字テーブルファイルを表示して、漢字を選んで入力
 
+:TcvimeCloseHelp				*:TcvimeCloseHelp*
+  ヘルプ用バッファを閉じる
+
 ==============================================================================
 5. 問題点					*tcvime-problem*
 
