@@ -37,6 +37,48 @@ scriptencoding cp932
 " vmap:
 "   <Leader>?               打鍵ヘルプ表示: 選択中の(複数)文字のヘルプ表を表示
 "
+" キー設定オプション:
+"  imap:
+"    '<Plug>TcvimeIFix'
+"       交ぜ書き変換: 候補確定キー。省略値: <Leader><CR>
+"       <Leader><CR>を指定する場合の例:
+"         imap <Leader><CR> <Plug>TcvimeIFix
+"    '<Plug>TcvimeIStart'
+"       交ぜ書き変換: 読みを開始するキー。省略値: <Leader>q
+"    '<Plug>TcvimeIConvert'
+"       交ぜ書き変換: 変換実行キー。省略値: <Leader><Space>
+"    '<Plug>TcvimeIKatuyo'
+"       交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
+"    '<Plug>TcvimeIBushu'
+"       部首合成変換: 直前の2文字の部首合成変換実行キー。省略値: <Leader>b
+"
+"  nmap:
+"    '<Plug>TcvimeNFix'
+"       交ぜ書き変換: 候補確定キー。省略値: <Leader><CR>
+"       <Leader><CR>を指定する場合の例:
+"         nmap <Leader><CR> <Plug>TcvimeNFix
+"    '<Plug>TcvimeNConvert'
+"       交ぜ書き変換: カーソル位置以前の[count]文字の変換を行うキー。
+"       省略値: <Leader><Space>
+"    '<Plug>TcvimeNKatuyo'
+"       交ぜ書き変換: [count]文字の活用する語の変換を行うキー。
+"       省略値: <Leader>o
+"    '<Plug>TcvimeNBushu'
+"       部首合成変換: カーソル位置以前の2文字の部首合成変換を行うキー。
+"       省略値: <Leader>b
+"    '<Plug>TcvimeNHelp'
+"       打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示するキー。
+"       省略値: <Leader>?
+"    '<Plug>TcvimeNKanjiTable'
+"       漢字テーブルファイル表示を行うキー。省略値: <Leader>t
+"
+"  vmap:
+"    '<Plug>TcvimeVHelp'
+"       打鍵ヘルプ表示: 選択中の(複数)文字のヘルプ表を表示するキー。
+"       省略値: <Leader>?
+"       <Leader>? を指定する場合の例:
+"         vmap <Leader>? <Plug>TcvimeVHelp
+"
 " オプション:
 "    'tcvime_keyboard'
 "       文字ヘルプ表用のキーボード配列を表す文字列。

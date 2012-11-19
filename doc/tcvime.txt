@@ -160,6 +160,62 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
   このプラグインを読み込みたくない場合に次のように設定します。
 	let plugin_tcvime_disable = 1
 
+キー設定オプション(Insert Mode)
+-------------------------------
+
+'<Plug>TcvimeIFix'				*'<Plug>TcvimeIFix'*
+   交ぜ書き変換: 候補確定キー。省略値: <Leader><CR>
+   <Leader><CR>を指定する場合の例:
+     imap <Leader><CR> <Plug>TcvimeIFix
+
+'<Plug>TcvimeIStart'				*'<Plug>TcvimeIStart'*
+   交ぜ書き変換: 読みを開始するキー。省略値: <Leader>q
+
+'<Plug>TcvimeIConvert'				*'<Plug>TcvimeIConvert'*
+   交ぜ書き変換: 変換実行キー。省略値: <Leader><Space>
+
+'<Plug>TcvimeIKatuyo'				*'<Plug>TcvimeIKatuyo'*
+   交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
+
+'<Plug>TcvimeIBushu'				*'<Plug>TcvimeIBushu'*
+   部首合成変換: 直前の2文字の部首合成変換実行キー。省略値: <Leader>b
+
+キー設定オプション(Normal Mode)
+-------------------------------
+
+'<Plug>TcvimeNFix'				*'<Plug>TcvimeNFix'*
+   交ぜ書き変換: 候補確定キー。省略値: <Leader><CR>
+   <Leader><CR>を指定する場合の例:
+     nmap <Leader><CR> <Plug>TcvimeNFix
+
+'<Plug>TcvimeNConvert'				*'<Plug>TcvimeNConvert'*
+   交ぜ書き変換: カーソル位置以前の[count]文字の変換を行うキー。
+   省略値: <Leader><Space>
+
+'<Plug>TcvimeNKatuyo'				*'<Plug>TcvimeNKatuyo'*
+   交ぜ書き変換: [count]文字の活用する語の変換を行うキー。
+   省略値: <Leader>o
+
+'<Plug>TcvimeNBushu'				*'<Plug>TcvimeNBushu'*
+   部首合成変換: カーソル位置以前の2文字の部首合成変換を行うキー。
+   省略値: <Leader>b
+
+'<Plug>TcvimeNHelp'				*'<Plug>TcvimeNHelp'*
+   打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示するキー。
+   省略値: <Leader>?
+
+'<Plug>TcvimeNKanjiTable'			*'<Plug>TcvimeNKanjiTable'*
+   漢字テーブルファイル表示を行うキー。省略値: <Leader>t
+
+キー設定オプション(Visual Mode)
+-------------------------------
+
+'<Plug>TcvimeVHelp'				*'<Plug>TcvimeVHelp'*
+   打鍵ヘルプ表示: 選択中の(複数)文字のヘルプ表を表示するキー。
+   省略値: <Leader>?
+   <Leader>? を指定する場合の例:
+     vmap <Leader>? <Plug>TcvimeVHelp
+
 ==============================================================================
 4. コマンド					*tcvime-command*
 

@@ -87,6 +87,7 @@ UNIXでの使用上の注意
    - :TcvimeHelpや:TcvimeHelpBushuの引数として文字列に対応(1文字だけでなく)
    - 'tcvime_keymap_for_help'オプション変数を追加:
      &keymapが未設定の場合にヘルプ表の表示に使うkeymap。
+   - 変換開始等のキーを<Plug>で設定可能にした。
    - tutcodek_cp932.vimをtutcodek.vimに変更。
      (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
    - Vim6対応を終了。要Vim7
