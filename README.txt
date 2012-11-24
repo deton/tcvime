@@ -64,6 +64,8 @@ UNIXでの使用上の注意
   function! s:SetKeymap(keymapname)
     if &keymap !=# a:keymapname
       let &keymap = a:keymapname
+      " alaで後置型部首合成変換(TUT-Code用)
+      " lmap ala <Plug>TcvimeIBushu
     else
       let &iminsert = 1
     endif
@@ -88,6 +90,8 @@ UNIXでの使用上の注意
    - 'tcvime_keymap_for_help'オプション変数を追加:
      &keymapが未設定の場合にヘルプ表の表示に使うkeymap。
    - 変換開始等のキーを<Plug>で設定可能にした。
+     (ただし、keymapファイル内に<Plug>を書いても効かないようなので、
+     lmapで使いたい場合は、上記~/.vimrc設定例のように後で設定する必要あり)
    - tutcodek_cp932.vimをtutcodek.vimに変更。
      (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
    - Vim6対応を終了。要Vim7
