@@ -42,6 +42,8 @@ endfunction
 
 loadkeymap
 '	<C-R>=<SID>ToggleKana()<CR>
+"alg	<C-R>=<SID>ToKatakana()<CR>
+"alh	<C-R>=<SID>ToHiragana()<CR>
 rk	<C-R>=<SID>InsertKana("Ç†","ÉA")<CR>
 ri	<C-R>=<SID>InsertKana("Ç¢","ÉC")<CR>
 ru	<C-R>=<SID>InsertKana("Ç§","ÉE")<CR>
