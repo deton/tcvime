@@ -13,10 +13,20 @@ let s:is_katakana = 0
 " ひらがな/カタカナモードの切り替え
 function! s:ToggleKana()
   if s:is_katakana
-    let s:is_katakana = 0
-  else
-    let s:is_katakana = 1
+    return s:ToHiragana()
   endif
+  return s:ToKatakana()
+endfunction
+
+" ひらがなモードに切り替え
+function! s:ToHiragana()
+  let s:is_katakana = 0
+  return ''
+endfunction
+
+" カタカナモードに切り替え
+function! s:ToKatakana()
+  let s:is_katakana = 1
   return ''
 endfunction
 
