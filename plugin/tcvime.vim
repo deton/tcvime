@@ -66,6 +66,9 @@ scriptencoding cp932
 "    '<Plug>TcvimeNBushu'
 "       部首合成変換: カーソル位置以前の2文字の部首合成変換を行うキー。
 "       省略値: <Leader>b
+"    '<Plug>TcvimeNKatakana'
+"       カタカナ変換: カーソル位置以前の[count]文字のカタカナへの変換を行うキー
+"       省略値: (無し:未割当て)
 "    '<Plug>TcvimeNHelp'
 "       打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示するキー。
 "       省略値: <Leader>?
@@ -213,6 +216,7 @@ function! s:MappingOn()
   nnoremap <script> <silent> <Plug>TcvimeNFix :<C-U>call <SID>FixCandidate()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKatuyo :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNKatakana :<C-U>call <SID>ConvertKatakana(v:count)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNBushu :<C-U>call <SID>ConvertBushu()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNHelp :<C-U>call <SID>ShowStrokeHelp()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKanjiTable :<C-U>call <SID>KanjiTable_FileOpen()<CR>
@@ -426,6 +430,18 @@ function! s:FixCandidate()
   execute "normal! a\<ESC>"
   let inschars = s:InputFix(col("'^"))
   let s:last_count = 0
+  call s:InsertString(inschars)
+endfunction
+
+" 今の位置以前のcount文字をカタカナに変換する
+" @param count 変換する文字列の長さ
+function! s:ConvertKatakana(count)
+  let cnt = a:count
+  if cnt == 0
+    let cnt = 1
+  endif
+  execute "normal! a\<ESC>"
+  let inschars = tcvime#tcvime#InputConvertKatakanaPos(col("'^"), cnt)
   call s:InsertString(inschars)
 endfunction
 

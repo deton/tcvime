@@ -200,6 +200,10 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
    部首合成変換: カーソル位置以前の2文字の部首合成変換を行うキー。
    省略値: <Leader>b
 
+'<Plug>TcvimeNKatakana'				*'<Plug>TcvimeNKatakana'*
+   カタカナ変換: カーソル位置以前の[count]文字のカタカナへの変換を行うキー。
+   省略値: (無し:未割当て)
+
 '<Plug>TcvimeNHelp'				*'<Plug>TcvimeNHelp'*
    打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示するキー。
    省略値: <Leader>?

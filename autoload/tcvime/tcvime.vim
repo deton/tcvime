@@ -19,9 +19,12 @@ scriptencoding cp932
 "     lmap al8 <C-R>=tcvime#tcvime#InputConvertKatakana(8)<CR>
 "     lmap al9 <C-R>=tcvime#tcvime#InputConvertKatakana(9)<CR>
 function! tcvime#tcvime#InputConvertKatakana(n)
-  let col = col('.')
+  return tcvime#tcvime#InputConvertKatakanaPos(col('.'), a:n)
+endfunction
+
+function! tcvime#tcvime#InputConvertKatakanaPos(col, n)
   let inschars = ''
-  if col > a:n
+  if a:col > a:n
     " w’è‚³‚ê‚½•¶š”‚Ì•¶š—ñ‚ğæ“¾
     let pat = ''
     let i = 0
@@ -29,7 +32,7 @@ function! tcvime#tcvime#InputConvertKatakana(n)
       let pat .= '.'
       let i += 1
     endwhile
-    let chars = matchstr(getline('.'), pat . '\%' . col . 'c')
+    let chars = matchstr(getline('.'), pat . '\%' . a:col . 'c')
     let subst = substitute(chars, '.', '\=tcvime#tcvime#hira2kata(submatch(0))', 'g')
     let inschars = substitute(pat, '\.', "\<BS>", 'g') . subst
   endif
