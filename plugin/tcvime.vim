@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-11-18
+" Last Change: 2012-11-25
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -441,7 +441,7 @@ function! s:ConvertKatakana(count)
     let cnt = 1
   endif
   execute "normal! a\<ESC>"
-  let inschars = tcvime#tcvime#InputConvertKatakanaPos(col("'^"), cnt)
+  let inschars = tcvime#InputConvertKatakanaPos(col("'^"), cnt)
   call s:InsertString(inschars)
 endfunction
 

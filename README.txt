@@ -68,12 +68,12 @@ UNIXでの使用上の注意
       " alaで後置型部首合成変換(TUT-Code用)
       " lmap ala <Plug>TcvimeIBushu
       " 後置型カタカナ変換(TUT-Code用)
-      " lmap al1 <C-R>=tcvime#tcvime#InputConvertKatakana(1)<CR>
-      " lmap al2 <C-R>=tcvime#tcvime#InputConvertKatakana(2)<CR>
-      " lmap al3 <C-R>=tcvime#tcvime#InputConvertKatakana(3)<CR>
-      " lmap al4 <C-R>=tcvime#tcvime#InputConvertKatakana(4)<CR>
-      " lmap al5 <C-R>=tcvime#tcvime#InputConvertKatakana(5)<CR>
-      " lmap al6 <C-R>=tcvime#tcvime#InputConvertKatakana(6)<CR>
+      " lmap al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
+      " lmap al2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
+      " lmap al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
+      " lmap al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
+      " lmap al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
+      " lmap al6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
     else
       let &iminsert = 1
     endif
@@ -101,7 +101,7 @@ UNIXでの使用上の注意
      (ただし、keymapファイル内に<Plug>を書いても効かないようなので、
      lmapで使いたい場合は、上記~/.vimrc設定例のように後で設定する必要あり)
    - 後置型カタカナ変換機能を追加:
-     - insert mode用関数: tcvime#tcvime#InputConvertKatakana()。上記~/.vimrc参照
+     - insert mode用関数: tcvime#InputConvertKatakana()。上記~/.vimrc参照
      - normal mode用<Plug>TcvimeNKatakana
    - tutcodek_cp932.vimをtutcodek.vimに変更。
      (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
