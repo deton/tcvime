@@ -230,10 +230,6 @@ function! s:MappingOn()
   autocmd!
   execute "autocmd BufReadCmd ".s:helpbufname." call <SID>Help_BufReadCmd()"
   augroup END
-
-  "if !exists('s:save_cmdheight')
-  "  let s:save_cmdheight = &cmdheight
-  "endif
 endfunction
 
 "   マッピングを無効化
@@ -266,7 +262,6 @@ function! s:MappingOff()
   augroup Tcvime
   autocmd!
   augroup END
-  "unlet s:save_cmdheight
 endfunction
 
 TcvimeOn
@@ -276,7 +271,6 @@ TcvimeOn
 
 " 読みの入力を開始
 function! s:InputStart()
-  call s:SetCmdheight()
   call s:StatusSet()
   return ''
 endfunction
@@ -295,21 +289,18 @@ function! s:InputConvert(katuyo)
     if s:is_katuyo
       let status = status . '―'
     endif
-    let found = s:CandidateSearch(status)
+    let ncands = s:CandidateSearch(status)
+    if ncands > 0
+      " TODO: 自動ヘルプ。どの候補が選択されたか取得するには?
+      call complete(s:status_column, s:last_candidate_list)
+    elseif ncands == 0
+      echo '交ぜ書き辞書中には見つかりません: <' . status . '>'
+    else
+      echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
+    endif
   else
     let s:last_keyword = ''
     call s:InputStart()
-  endif
-  if exists('found')
-    if found == 2
-      echo 'CANDIDATE: ' . s:last_candidate
-    elseif found == 1
-      let inschars = s:InputFix(col('.'))
-    elseif found == 0
-      echo '交ぜ書き辞書中には見つかりません: <' . status . '>'
-    elseif found == -1
-      echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
-    endif
   endif
   return inschars
 endfunction
@@ -337,18 +328,7 @@ function! s:InputFix(col)
     endif
   endif
   call s:StatusReset()
-  if exists('s:save_cmdheight')
-    let &cmdheight = s:save_cmdheight
-  endif
   return inschars
-endfunction
-
-" &cmdheightが2より小さかったら2に設定する。CANDIDATE:表示のため。
-function! s:SetCmdheight()
-  let s:save_cmdheight = &cmdheight
-  if &cmdheight < 2
-    let &cmdheight = 2
-  endif
 endfunction
 
 " 直前の2文字の部首合成変換を行う
@@ -403,19 +383,25 @@ function! s:ConvertCount(count, katuyo)
   let len = strlen(chars)
   if len > 0
     let s:status_column = col("'^") - len
-    "call s:SetCmdheight()
     let s:is_katuyo = a:katuyo
     if s:is_katuyo
       let chars = chars . '―'
     endif
-    let found = s:CandidateSearch(chars)
-    if found == 2
-      echo 'CANDIDATE: ' . s:last_candidate
-    elseif found == 1
+    let ncands = s:CandidateSearch(chars)
+    if ncands > 1
+      let lst = map(copy(s:last_candidate_list), '(v:key + 1) . " " . v:val')
+      " 'lines'より多いとMoreプロンプト表示時に0番目が画面に収まらないので、
+      " 見れなくても問題ない文字列を最初に入れておく。TODO:3画面以上ある場合
+      call insert(lst, '変換候補:')
+      let idx = inputlist(lst)
+      let s:last_candidate = s:last_candidate_list[idx - 1]
       call s:FixCandidate()
-    elseif found == 0
+    elseif ncands == 1
+      let s:last_candidate = s:last_candidate_list[0]
+      call s:FixCandidate()
+    elseif ncands == 0
       echo '交ぜ書き辞書中には見つかりません: <' . chars . '>'
-    elseif found == -1
+    else
       echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
     endif
   else
@@ -756,76 +742,29 @@ endfunction
 
 " 検索に使用する状態変数
 let s:last_keyword = ''
-let s:last_found = 0
 let s:last_candidate = ''
-let s:last_candidate_str = ''
-let s:last_candidate_num = 0
+let s:last_candidate_list = []
 let s:is_katuyo = 0
 
 " 辞書から未確定文字列を検索
 " @return -1:辞書が開けない場合, 0:文字列が見つからない場合,
 "   1:候補が1つだけ見つかった場合, 2:候補が2つ以上見つかった場合
 function! s:CandidateSearch(keyword)
-  let found_num = s:last_found
-  let uniq = 0
-  let ret = 0
-
-  " 検索文字列が前回と同じ時は省略
-  if s:last_keyword !=# a:keyword
-    let s:last_keyword = a:keyword
-    if !s:Candidate_FileOpen()
-      return -1
-    endif
-
-    " 実際の検索
-    if search('^' . a:keyword . ' ', 'w') == 0
-      let found_num = 0
-    else
-      let s:last_candidate = ''
-      let s:last_candidate_str = substitute(getline('.'), '^' . a:keyword . ' ', '', '')
-      let s:last_candidate_num = 1
-      let found_num = line('.')
-      if s:last_candidate_str =~# '^/[^/]\+/$'
-	let uniq = 1
-      endif
-    endif
-    quit!
-  else
-    " 次の変換候補を探し出すため
-    if s:last_candidate_num > 0 && s:last_candidate != ''
-      let s:last_candidate_num = s:last_candidate_num + strlen(s:last_candidate) + 1
-    endif
-    " 前回変換した文字列を再度変換する場合、候補数をチェックし直す
-    if s:last_candidate_num == 1 && s:last_candidate == ''
-      if s:last_candidate_str =~# '^/[^/]\+/$'
-	let uniq = 1
-      endif
-    endif
+  let s:last_keyword = a:keyword
+  if !s:Candidate_FileOpen()
+    return -1
   endif
 
-  if found_num > 0
-    " 候補がみつかっているならば、順番に表示する
-    let str = ''
-    while strlen(str) < 1
-      let str = matchstr(s:last_candidate_str, '[^/]\+', s:last_candidate_num)
-      if strlen(str) < 1
-	let s:last_candidate_num = 1
-      endif
-    endwhile
-    let s:last_candidate = str
-    if uniq
-      let ret = 1
-    else
-      let ret = 2
-    endif
-  else
-    " 候補がみつからなかった時、リセット
-    let s:last_candidate = ''
-    let s:last_candidate_str = ''
-    let s:last_candidate_num = 0
+  let s:last_candidate = ''
+  if search('^' . a:keyword . ' ', 'cw') == 0
+    let s:last_candidate_list = []
     let ret = 0
+  else
+    let candstr = substitute(getline('.'), '^' . a:keyword . ' ', '', '')
+    let s:last_candidate_list = split(candstr, '/')
+    let ret = len(s:last_candidate_list)
   endif
-  let s:last_found = found_num
+  quit!
   return ret
 endfunction
 
@@ -837,7 +776,6 @@ function! s:CandidateSelect()
     let inschars = inschars . s:last_candidate
     let s:status_column = s:status_column + strlen(s:last_candidate)
     let s:last_candidate = ''
-    let s:last_candidate_num = 1
   endif
   return inschars
 endfunction
