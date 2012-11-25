@@ -36,12 +36,13 @@ UNIXでの使用上の注意
   アーカイブに含まれるファイルを次の場所に置いてください。
 
     ファイル            置く場所              ファイルの説明
-  plugin/tcvime.vim   'runtimepath'/plugin  プラグインスクリプト本体
-  doc/tcvime.txt      'runtimepath'/doc     スクリプトの説明書
+  plugin/tcvime.vim   'runtimepath'/plugin/ プラグインスクリプト本体
+  doc/tcvime.txt      'runtimepath'/doc/    スクリプトの説明書
   mazegaki.dic        'runtimepath'か$VIM   交ぜ書き変換用辞書
   bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
   kanjitable.txt      'runtimepath'か$VIM   漢字テーブルファイル
-  keymap/tutcodek.vim 'runtimepath'/keymap  'でひらがな/カタカナモード切り替え
+  autoload/tcvime.vim 'runtimepath'/autoload/ 後置型カタカナ変換用関数
+  keymap/tutcodek.vim 'runtimepath'/keymap/ 'でひらがな/カタカナモード切り替え
 					    ができるようにしたtutcodeのkeymap
 
   'runtimepath'や$VIMで示されるディレクトリは、Vim上で
