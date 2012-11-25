@@ -1,6 +1,6 @@
 " Vim Keymap file for Japanese (TUT-Code with katakana mode toggle)
 " Maintainer: KIHARA, Hideto <deton@m1.interq.or.jp>
-" Last Change: 2011-12-11.
+" Last Change: 2012-11-24.
 
 scriptencoding cp932
  
@@ -8,15 +8,25 @@ scriptencoding cp932
 let b:keymap_name = "tutcodek"
 
 " カタカナモードかどうか
-let s:is_katakana = 1
+let s:is_katakana = 0
 
 " ひらがな/カタカナモードの切り替え
 function! s:ToggleKana()
   if s:is_katakana
-    let s:is_katakana = 0
-  else
-    let s:is_katakana = 1
+    return s:ToHiragana()
   endif
+  return s:ToKatakana()
+endfunction
+
+" ひらがなモードに切り替え
+function! s:ToHiragana()
+  let s:is_katakana = 0
+  return ''
+endfunction
+
+" カタカナモードに切り替え
+function! s:ToKatakana()
+  let s:is_katakana = 1
   return ''
 endfunction
 
@@ -25,15 +35,15 @@ endfunction
 " @param kata カタカナ
 function! s:InsertKana(hira, kata)
   if s:is_katakana
-    let ch = a:hira
-  else
-    let ch = a:kata
+    return a:kata
   endif
-  return ch
+  return a:hira
 endfunction
 
 loadkeymap
 '	<C-R>=<SID>ToggleKana()<CR>
+"alg	<C-R>=<SID>ToKatakana()<CR>
+"alh	<C-R>=<SID>ToHiragana()<CR>
 rk	<C-R>=<SID>InsertKana("あ","ア")<CR>
 ri	<C-R>=<SID>InsertKana("い","イ")<CR>
 ru	<C-R>=<SID>InsertKana("う","ウ")<CR>
