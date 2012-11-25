@@ -121,6 +121,8 @@ let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 let s:kanjitable_file = globpath($VIM.','.&runtimepath, 'kanjitable.txt')
 let s:helpbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeHelp__'
 let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
+let s:candbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeCand__'
+let s:candbufname = substitute(s:candbufname, '\\', '/', 'g')
 " 辞書ファイルが:ls等で表示されるようにするかどうか。0:表示されない,1:表示する
 let s:buflisted = 0
 
@@ -389,13 +391,8 @@ function! s:ConvertCount(count, katuyo)
     endif
     let ncands = s:CandidateSearch(chars)
     if ncands > 1
-      let lst = map(copy(s:last_candidate_list), '(v:key + 1) . " " . v:val')
-      " 'lines'より多いとMoreプロンプト表示時に0番目が画面に収まらないので、
-      " 見れなくても問題ない文字列を最初に入れておく。TODO:3画面以上ある場合
-      call insert(lst, '変換候補:')
-      let idx = inputlist(lst)
-      let s:last_candidate = s:last_candidate_list[idx - 1]
-      call s:FixCandidate()
+      call s:Candwin_SetCands(s:last_candidate_list)
+      call s:SelectWindowByName(s:candbufname)
     elseif ncands == 1
       let s:last_candidate = s:last_candidate_list[0]
       call s:FixCandidate()
@@ -1034,4 +1031,45 @@ endfunction
 function! s:KanjiTable_CopyChar()
   let ch = matchstr(getline('.'), '\%' . col('.') . 'c.')
   execute "normal! \<C-W>pa" . ch . "\<ESC>\<C-W>p"
+endfunction
+
+"==============================================================================
+" 候補選択バッファ
+
+" 候補選択バッファを開く
+function! s:Candwin_Open()
+  if s:SelectWindowByName(s:candbufname) < 0
+    execute "silent normal! :sp " . s:candbufname . "\<CR>"
+    set buftype=nofile
+    set bufhidden=delete
+    set noswapfile
+    if !s:buflisted
+      set nobuflisted
+    endif
+  endif
+  %d _
+  nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
+  nnoremap <buffer> <silent> q :<C-U>quit<CR>
+endfunction
+
+" 候補選択バッファを閉じる
+function! s:Candwin_Close()
+  if s:SelectWindowByName(s:candbufname) > 0
+    bwipeout!
+  endif
+endfunction
+
+" 候補をセットする
+function! s:Candwin_SetCands(candlist)
+  call s:Candwin_Open()
+  execute 'normal! a' . join(a:candlist, "\n") . "\<ESC>"
+  normal! 1G
+  wincmd p
+endfunction
+
+" 現在行の候補を確定する
+function! s:Candwin_Select()
+  let s:last_candidate = getline('.')
+  bwipeout!
+  call s:FixCandidate()
 endfunction
