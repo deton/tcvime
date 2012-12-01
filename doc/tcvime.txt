@@ -84,7 +84,7 @@ Normal Modeでの交ぜ書き変換			*tcvime-normal-mazegaki*
 
 例: "あい"と表示されているとき、"い"の上にカーソルを置いて
     "2<Leader><Space>"と打つと、"__TcvimeCand__"というバッファが開いて
-    候補文字列が各行に表示されます。__TcvimeCand__バッファ内で"<CR>"を打つと、
+    候補文字列が各行に表示されます。__TcvimeCand__バッファ内でCTRL-Yを打つと、
     "あい"が該当行の候補に置き換えられます。
 
 
@@ -95,7 +95,7 @@ Normal Modeでの交ぜ書き変換(活用する語)		*tcvime-normal-mazegaki-katuyo*
 
 例: "あお"と表示されているとき、"お"の上にカーソルを置いて
     "2<Leader>o"と打つと、"__TcvimeCand__"というバッファが開いて、
-    候補文字列が各行に表示されます。__TcvimeCand__バッファ内で"<CR>"を打つと、
+    候補文字列が各行に表示されます。__TcvimeCand__バッファ内でCTRL-Yを打つと、
     "あお"が該当行の候補に置き換えられます。
 
 

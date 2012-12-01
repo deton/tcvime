@@ -1069,7 +1069,9 @@ function! s:Candwin_Open()
   endif
   %d _
   nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
+  nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>Candwin_Select()<CR>
   nnoremap <buffer> <silent> q :<C-U>quit<CR>
+  nnoremap <buffer> <silent> <C-E> :<C-U>quit<CR>
 endfunction
 
 " 候補選択バッファを閉じる
