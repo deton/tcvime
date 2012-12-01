@@ -4,10 +4,14 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-11-25
+" Last Change: 2012-12-01
 
 let s:save_cpo = &cpo
 set cpo&vim
+
+" 後置型カタカナ変換で、文字数が指定されていない際に、
+" このパターンにマッチする文字が続く間はカタカナに変換する。
+let g:tcvime#hira2kata_pat = '[ぁ-んー・=]*'
 
 let g:tcvime#hira2kata_table = {
   \'あ':'ア','い':'イ','う':'ウ','え':'エ','お':'オ',
@@ -32,7 +36,19 @@ let g:tcvime#hira2kata_table = {
 
 " insert mode時に、直前の指定された文字数のひらがな→カタカナ変換を行う
 " ための文字列を返す。
+"
+" 文字数として0を指定すると、
+" g:tcvime#hira2kata_patにマッチする文字が続く間はカタカナ変換を行う。
+" (tutcode keymapの場合、以下のようにカタカナ入力が可能。
+"  「RKtltugiehe siqljflall」アぷりけーしょん→アプリケーション
+" 最初の文字だけシフトキーを押しながら打鍵してカタカナで入力して、
+" 後はシフトキー無しでひらがなで入力して、最後に後置型カタカナ変換で、
+" 最初にカタカナで入力した文字までをまとめてカタカナ変換)
+" (カタカナモードに切り替えたり「'rktltugiehe siqljfl'」、
+" 全てシフトキーを押しながら打鍵したり「RKTLTUGIEHe SIQLJFL」よりも楽かも)
+"
 " tutcode keymapで後置型カタカナ変換を行うための設定例:
+"     lmap all <C-R>=tcvime#InputConvertKatakana(0)<CR>
 "     lmap al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
 "     lmap al2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
 "     lmap al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
@@ -47,8 +63,11 @@ function! tcvime#InputConvertKatakana(n)
 endfunction
 
 function! tcvime#InputConvertKatakanaPos(col, n)
-  let inschars = ''
-  if a:col > a:n
+  if a:n == 0
+    " g:tcvime#hira2kata_patにマッチする文字を取得
+    let chars = matchstr(getline('.'), g:tcvime#hira2kata_pat . '\%' . a:col . 'c')
+    let bs = substitute(chars, '.', "\<BS>", 'g')
+  elseif a:col > a:n
     " 指定された文字数の文字列を取得
     let pat = ''
     let i = 0
@@ -57,10 +76,12 @@ function! tcvime#InputConvertKatakanaPos(col, n)
       let i += 1
     endwhile
     let chars = matchstr(getline('.'), pat . '\%' . a:col . 'c')
-    let subst = substitute(chars, '.', '\=tcvime#hira2kata(submatch(0))', 'g')
-    let inschars = substitute(pat, '\.', "\<BS>", 'g') . subst
+    let bs = substitute(pat, '\.', "\<BS>", 'g')
+  else
+    return ''
   endif
-  return inschars
+  let subst = substitute(chars, '.', '\=tcvime#hira2kata(submatch(0))', 'g')
+  return bs . subst
 endfunction
 
 function! tcvime#hira2kata(s)

@@ -69,8 +69,9 @@ UNIXでの使用上の注意
       " alaで後置型部首合成変換(TUT-Code用)
       " lmap ala <Plug>TcvimeIBushu
       " 後置型カタカナ変換(TUT-Code用)
-      " lmap al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
-      " lmap al2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
+      " lmap all <C-R>=tcvime#InputConvertKatakana(0)<CR> " ひらがなが続く間
+      " lmap al1 <C-R>=tcvime#InputConvertKatakana(1)<CR> " 1文字
+      " lmap al2 <C-R>=tcvime#InputConvertKatakana(2)<CR> " 2文字
       " lmap al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
       " lmap al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
       " lmap al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>

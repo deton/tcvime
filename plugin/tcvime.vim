@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-11-25
+" Last Change: 2012-12-01
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -436,12 +436,8 @@ endfunction
 " 今の位置以前のcount文字をカタカナに変換する
 " @param count 変換する文字列の長さ
 function! s:ConvertKatakana(count)
-  let cnt = a:count
-  if cnt == 0
-    let cnt = 1
-  endif
   execute "normal! a\<ESC>"
-  let inschars = tcvime#InputConvertKatakanaPos(col("'^"), cnt)
+  let inschars = tcvime#InputConvertKatakanaPos(col("'^"), a:count)
   call s:InsertString(inschars)
 endfunction
 
