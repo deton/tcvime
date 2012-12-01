@@ -309,6 +309,7 @@ function! s:OnCursorMovedI()
   if status == s:completeyomi
     return
   endif
+  " XXX: ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[–³Œø‚Ìê‡A©“®ƒwƒ‹ƒv•\¦‚Å‚«‚È‚¢
   call s:ShowAutoHelp(s:completeyomi, status)
   let s:completeyomi = ''
 endfunction
@@ -584,6 +585,9 @@ function! s:ShowHelp(ar, forcebushu)
     if ret == -1 " ƒXƒgƒ[ƒN•\‚à•”ñ‡¬«‘‚à•\¦‚Å‚«‚È‚©‚Á‚½ê‡
       call add(skipchars, ch)
       continue
+    elseif ret == -2 " XXX: ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[–³Œø
+      call s:CloseHelpBuffer()
+      return
     endif
     let numch += 1
     if ret == 0 " ShowHelpBushuDic
@@ -636,7 +640,11 @@ endfunction
 " w’è‚³‚ê‚½•¶š‚Æ‚»‚ÌƒXƒgƒ[ƒN‚ğ•\‚É‚µ‚Ä•\¦‚·‚é
 function! s:ShowHelpSequence(ch, keyseq)
   let from = line('$')
-  execute 'normal! O' . g:tcvime_keyboard . "\<CR>\<ESC>"
+  let v:errmsg = ''
+  silent! execute 'normal! O' . g:tcvime_keyboard . "\<CR>\<ESC>"
+  if v:errmsg != '' " XXX: ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[–³ŒøAE523: Not allowed here
+    return -2
+  endif
   let to = line('$')
   let range = from . ',' . to
   let keyseq = a:keyseq
@@ -654,7 +662,7 @@ function! s:ShowHelpSequence(ch, keyseq)
   silent! execute range . 's@. . @E@g'
   silent! execute range . 's@@ @ge'
   call cursor(to - 1, 1)
-  execute 'normal! A    ' . a:ch . "\<ESC>"
+  silent! execute 'normal! A    ' . a:ch . "\<ESC>"
   call cursor(from, 1)
   return 1
 endfunction
@@ -666,9 +674,13 @@ function! s:ShowHelpBushuDic(ch)
   if strlen(lines) > 0
     " ƒoƒbƒtƒ@“ª‚Å‚È‚¯‚ê‚Î‹æØ‚è‚Ì‹ós‘}“üB’¼‘O‚ª•¡”s‚Ì•”ñ«‘“à—e‚Ì•K—v
     if line('.') > 1
-      execute "normal! o\<ESC>"
+      silent! execute "normal! o\<ESC>"
     endif
-    execute 'normal! O' . lines . "\<ESC>"
+    let v:errmsg = ''
+    silent! execute 'normal! O' . lines . "\<ESC>"
+    if v:errmsg != '' " XXX: ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[–³ŒøAE523: Not allowed here
+      return -2
+    endif
     return 0
   else
     return -1
