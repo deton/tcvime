@@ -298,7 +298,9 @@ function! s:InputConvert(katuyo)
       let key = status
     endif
     let ncands = s:CandidateSearch(key)
-    if ncands > 0
+    if ncands == 1
+      let inschars = s:InputFix(col('.'))
+    elseif ncands > 0
       let s:completeyomi = status
       call complete(s:status_column, s:last_candidate_list)
     elseif ncands == 0
@@ -322,7 +324,6 @@ function! s:OnCursorMovedI()
   if status == s:completeyomi
     return
   endif
-  " TODO: 候補数1個で自動確定された場合にヘルプ表示エラー
   call s:ShowAutoHelp(s:completeyomi, status)
   let s:completeyomi = ''
 endfunction
@@ -414,7 +415,6 @@ function! s:ConvertCount(count, katuyo)
       call s:Candwin_SetCands(s:last_candidate_list)
       call s:SelectWindowByName(s:candbufname)
     elseif ncands == 1
-      let s:last_candidate = s:last_candidate_list[0]
       call s:FixCandidate()
     elseif ncands == 0
       echo '交ぜ書き辞書中には見つかりません: <' . chars . '>'
@@ -780,6 +780,9 @@ function! s:CandidateSearch(keyword)
     let candstr = substitute(getline('.'), '^' . a:keyword . ' ', '', '')
     let s:last_candidate_list = split(candstr, '/')
     let ret = len(s:last_candidate_list)
+    if ret > 0
+      let s:last_candidate = s:last_candidate_list[0]
+    endif
   endif
   quit!
   return ret
