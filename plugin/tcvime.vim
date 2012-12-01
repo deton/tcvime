@@ -231,6 +231,7 @@ function! s:MappingOn()
   augroup Tcvime
   autocmd!
   execute "autocmd BufReadCmd ".s:helpbufname." call <SID>Help_BufReadCmd()"
+  autocmd CursorMovedI * call <SID>OnCursorMovedI()
   augroup END
 endfunction
 
@@ -277,6 +278,8 @@ function! s:InputStart()
   return ''
 endfunction
 
+let s:completeyomi = ''
+
 " Insert modeで交ぜ書き変換を行う。
 " 活用する語の変換の場合は、
 " 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
@@ -284,16 +287,19 @@ endfunction
 function! s:InputConvert(katuyo)
   let inschars = ''
   let s:is_katuyo = 0
+  let s:completeyomi = ''
   let status = s:StatusGet(col('.'))
   let len = strlen(status)
   if len > 0
     let s:is_katuyo = a:katuyo
     if s:is_katuyo
-      let status = status . '―'
+      let key = status . '―'
+    else
+      let key = status
     endif
-    let ncands = s:CandidateSearch(status)
+    let ncands = s:CandidateSearch(key)
     if ncands > 0
-      " TODO: 自動ヘルプ。どの候補が選択されたか取得するには?
+      let s:completeyomi = status
       call complete(s:status_column, s:last_candidate_list)
     elseif ncands == 0
       echo '交ぜ書き辞書中には見つかりません: <' . status . '>'
@@ -305,6 +311,20 @@ function! s:InputConvert(katuyo)
     call s:InputStart()
   endif
   return inschars
+endfunction
+
+" complete()で選択された候補を取得して、自動ヘルプを表示する
+function! s:OnCursorMovedI()
+  if s:completeyomi == ''
+    return
+  endif
+  let status = s:StatusGet(col('.'))
+  if status == s:completeyomi
+    return
+  endif
+  " TODO: 候補数1個で自動確定された場合にヘルプ表示エラー
+  call s:ShowAutoHelp(s:completeyomi, status)
+  let s:completeyomi = ''
 endfunction
 
 " 確定しようとしている候補が問題ないかどうかチェック
