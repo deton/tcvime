@@ -37,11 +37,11 @@ UNIXでの使用上の注意
 
     ファイル            置く場所              ファイルの説明
   plugin/tcvime.vim   'runtimepath'/plugin/ プラグインスクリプト本体
+  autoload/tcvime.vim 'runtimepath'/autoload/ プラグインから呼び出す関数
   doc/tcvime.txt      'runtimepath'/doc/    スクリプトの説明書
   mazegaki.dic        'runtimepath'か$VIM   交ぜ書き変換用辞書
   bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
   kanjitable.txt      'runtimepath'か$VIM   漢字テーブルファイル
-  autoload/tcvime.vim 'runtimepath'/autoload/ 後置型カタカナ変換用関数
   keymap/tutcodek.vim 'runtimepath'/keymap/ 'でひらがな/カタカナモード切り替え
 					    ができるようにしたtutcodeのkeymap
 
