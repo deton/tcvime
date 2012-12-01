@@ -59,7 +59,16 @@ let g:tcvime#hira2kata_table = {
 "     lmap al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
 "     lmap al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
 function! tcvime#InputConvertKatakana(n)
-  return tcvime#InputConvertKatakanaPos(col('.'), a:n)
+  let col = col('.')
+  let cnt = a:n
+  if cnt == 0
+    " 前置型交ぜ書き変換の読みとして指定された文字列があれば、変換対象とする
+    let yomi = s:StatusGet('.', col)
+    if yomi != ''
+      let cnt = strlen(substitute(yomi, '.', 'x', 'g'))
+    endif
+  endif
+  return tcvime#InputConvertKatakanaPos(col, cnt)
 endfunction
 
 function! tcvime#InputConvertKatakanaPos(col, n)
