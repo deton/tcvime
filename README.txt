@@ -68,6 +68,10 @@ UNIXでの使用上の注意
       let &keymap = a:keymapname
       " alaで後置型部首合成変換(TUT-Code用)
       " lmap ala <Plug>TcvimeIBushu
+      " aljで前置型交ぜ書き変換の読み入力開始(TUT-Code用)
+      " lmap alj <Plug>TcvimeIStart
+      " al<Space>で前置型交ぜ書き変換(TUT-Code用)
+      " lmap al<Space> <Plug>TcvimeIConvert
       " 後置型カタカナ変換(TUT-Code用)
       " lmap all <C-R>=tcvime#InputConvertKatakana(0)<CR> " ひらがなが続く間
       " lmap al1 <C-R>=tcvime#InputConvertKatakana(1)<CR> " 1文字

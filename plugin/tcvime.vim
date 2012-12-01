@@ -39,14 +39,20 @@ scriptencoding cp932
 "  imap:
 "    '<Plug>TcvimeIStart'
 "       交ぜ書き変換: 読みを開始するキー。省略値: <Leader>q
-"       <Leader><CR>を指定する場合の例:
-"         imap <Leader>q <Plug>TcvimeIStart
+"       例(aljを指定する場合):
+"         lmap alj <Plug>TcvimeIStart
 "    '<Plug>TcvimeIConvert'
 "       交ぜ書き変換: 変換実行キー。省略値: <Leader><Space>
+"       例(al<Space>を指定する場合):
+"         lmap al<Space> <Plug>TcvimeIConvert
 "    '<Plug>TcvimeIKatuyo'
 "       交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
+"       例(aloを指定する場合):
+"         lmap alo <Plug>TcvimeIKatuyo
 "    '<Plug>TcvimeIBushu'
 "       部首合成変換: 直前の2文字の部首合成変換実行キー。省略値: <Leader>b
+"       例(alaを指定する場合):
+"         lmap ala <Plug>TcvimeIBushu
 "
 "  nmap:
 "    '<Plug>TcvimeNConvert'
