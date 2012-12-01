@@ -273,7 +273,7 @@ function! s:InputConvert(katuyo)
   let inschars = ''
   let s:is_katuyo = 0
   let s:completeyomi = ''
-  let status = s:StatusGet(col('.'))
+  let status = s:StatusGet('.', col('.'))
   let len = strlen(status)
   if len > 0
     let s:is_katuyo = a:katuyo
@@ -305,7 +305,15 @@ function! s:OnCursorMovedI()
   if s:completeyomi == ''
     return
   endif
-  let status = s:StatusGet(col('.'))
+  let col = col('.')
+  if col == 1
+    " <CR>で確定して改行が挿入されて行頭になった場合。TODO: autoindent対応
+    let lnum = line('.') - 1
+    let col = col([lnum, '$'])
+    let status = s:StatusGet(lnum, col)
+  else
+    let status = s:StatusGet('.', col)
+  endif
   if status == s:completeyomi
     return
   endif
@@ -327,7 +335,7 @@ endfunction
 " 候補を確定して、確定した文字列を返す
 function! s:InputFix(col)
   let inschars = ''
-  let str = s:StatusGet(a:col)
+  let str = s:StatusGet('.', a:col)
   if s:IsCandidateOK(str)
     let inschars = s:CandidateSelect()
     if strlen(inschars) > 0
@@ -451,8 +459,12 @@ endfunction
 "			     未確定文字管理用関数群
 
 "   未確定文字列が存在するかチェックする
-function! s:StatusIsEnable(col)
-  if s:status_line != line('.') || s:status_column <= 0 || s:status_column > a:col
+function! s:StatusIsEnable(lnum, col)
+  let ln = a:lnum
+  if ln == '.'
+    let ln = line(ln)
+  endif
+  if s:status_line != ln || s:status_column <= 0 || s:status_column > a:col
     return 0
   endif
   return 1
@@ -472,22 +484,22 @@ function! s:StatusReset()
 endfunction
 
 "   未確定文字列を「状態」として取得する
-function! s:StatusGet(col)
-  if !s:StatusIsEnable(a:col)
+function! s:StatusGet(lnum, col)
+  if !s:StatusIsEnable(a:lnum, a:col)
     return ''
   endif
 
   " 必要なパラメータを収集
   let stpos = s:status_column - 1
   let len = a:col - s:status_column
-  let str = getline('.')
+  let str = getline(a:lnum)
 
   return strpart(str, stpos, len)
 endfunction
 
 "   未確定文字列の開始位置と終了位置を表示(デバッグ用)
 function! s:StatusEcho(...)
-  echo '読み入力開始;<Leader><Space>:変換,<Leader>o:活用する語の変換,<Leader><CR>:確定'
+  echo '読み入力開始;<Leader><Space>:変換,<Leader>o:活用する語の変換'
   "echo "New conversion (line=".s:status_line." column=".s:status_column.")"
 endfunction
 
