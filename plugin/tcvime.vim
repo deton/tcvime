@@ -512,6 +512,7 @@ function! s:OpenHelpBuffer()
     if !s:buflisted
       set nobuflisted
     endif
+    nnoremap <buffer> <silent> q :<C-U>quit<CR>
   endif
   %d _
   5wincmd _
