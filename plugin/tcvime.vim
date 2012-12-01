@@ -22,13 +22,11 @@ scriptencoding cp932
 " imap:
 "   <Leader>q       交ぜ書き変換: 読みを開始
 "   <Leader><Space> 交ぜ書き変換: 変換実行
-"   <Leader><CR>    交ぜ書き変換: 候補確定
 "   <Leader>o       交ぜ書き変換: 活用する語の変換実行
 "   <Leader>b       部首合成変換: 直前の2文字の部首合成変換実行
 "
 " nmap:
 "   [count]<Leader><Space>  交ぜ書き変換: カーソル位置以前の[count]文字の変換
-"   <Leader><CR>            交ぜ書き変換: 候補確定
 "   [count]<Leader>o        交ぜ書き変換: [count]文字の活用する語の変換
 "   <Leader>b               部首合成変換: カーソル位置以前の2文字の部首合成変換
 "   <Leader>?               打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示
@@ -39,12 +37,10 @@ scriptencoding cp932
 "
 " キー設定オプション:
 "  imap:
-"    '<Plug>TcvimeIFix'
-"       交ぜ書き変換: 候補確定キー。省略値: <Leader><CR>
-"       <Leader><CR>を指定する場合の例:
-"         imap <Leader><CR> <Plug>TcvimeIFix
 "    '<Plug>TcvimeIStart'
 "       交ぜ書き変換: 読みを開始するキー。省略値: <Leader>q
+"       <Leader><CR>を指定する場合の例:
+"         imap <Leader>q <Plug>TcvimeIStart
 "    '<Plug>TcvimeIConvert'
 "       交ぜ書き変換: 変換実行キー。省略値: <Leader><Space>
 "    '<Plug>TcvimeIKatuyo'
@@ -53,13 +49,11 @@ scriptencoding cp932
 "       部首合成変換: 直前の2文字の部首合成変換実行キー。省略値: <Leader>b
 "
 "  nmap:
-"    '<Plug>TcvimeNFix'
-"       交ぜ書き変換: 候補確定キー。省略値: <Leader><CR>
-"       <Leader><CR>を指定する場合の例:
-"         nmap <Leader><CR> <Plug>TcvimeNFix
 "    '<Plug>TcvimeNConvert'
 "       交ぜ書き変換: カーソル位置以前の[count]文字の変換を行うキー。
 "       省略値: <Leader><Space>
+"       <Leader><Space>を指定する場合の例:
+"         nmap <Leader><Space> <Plug>TcvimeNConvert
 "    '<Plug>TcvimeNKatuyo'
 "       交ぜ書き変換: [count]文字の活用する語の変換を行うキー。
 "       省略値: <Leader>o
@@ -173,9 +167,6 @@ function! s:MappingOn()
   endif
   let s:mapleader = g:mapleader
 
-  if !hasmapto('<Plug>TcvimeIFix')
-    imap <unique> <silent> <Leader><CR> <Plug>TcvimeIFix
-  endif
   if !hasmapto('<Plug>TcvimeIStart')
     imap <unique> <silent> <Leader>q <Plug>TcvimeIStart
   endif
@@ -187,9 +178,6 @@ function! s:MappingOn()
   endif
   if !hasmapto('<Plug>TcvimeIBushu')
     imap <unique> <silent> <Leader>b <Plug>TcvimeIBushu
-  endif
-  if !hasmapto('<Plug>TcvimeNFix')
-    nmap <unique> <silent> <Leader><CR> <Plug>TcvimeNFix
   endif
   if !hasmapto('<Plug>TcvimeNConvert')
     nmap <unique> <silent> <Leader><Space> <Plug>TcvimeNConvert
@@ -210,12 +198,10 @@ function! s:MappingOn()
     vmap <unique> <silent> <Leader>? <Plug>TcvimeVHelp
   endif
 
-  inoremap <script> <silent> <Plug>TcvimeIFix <C-R>=<SID>InputFix(col('.'))<CR>
   inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=<SID>InputStart()<CR>
   inoremap <script> <silent> <Plug>TcvimeIConvert <C-R>=<SID>InputConvert(0)<CR>
   inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=<SID>InputConvert(1)<CR>
   inoremap <script> <silent> <Plug>TcvimeIBushu <C-R>=<SID>InputConvertBushu(col('.'))<CR>
-  nnoremap <script> <silent> <Plug>TcvimeNFix :<C-U>call <SID>FixCandidate()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKatuyo :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKatakana :<C-U>call <SID>ConvertKatakana(v:count)<CR>
@@ -245,17 +231,16 @@ function! s:MappingOff()
     let save_mapleader = g:mapleader
   endif
   let g:mapleader = s:mapleader
-  silent! iunmap <Leader><CR>
   silent! iunmap <Leader>q
   silent! iunmap <Leader><Space>
   silent! iunmap <Leader>o
   silent! iunmap <Leader>b
-  silent! nunmap <Leader><CR>
   silent! nunmap <Leader><Space>
   silent! nunmap <Leader>o
   silent! nunmap <Leader>b
   silent! nunmap <Leader>?
   silent! nunmap <Leader>t
+  silent! vunmap <Leader>?
   if set_mapleader
     unlet g:mapleader
   else

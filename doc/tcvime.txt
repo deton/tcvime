@@ -47,17 +47,15 @@ Insert Modeでの交ぜ書き変換			*tcvime-insert-mazegaki*
 		<Leader>q でマークした位置から現在のカーソル位置の間にある
 		文字列を読みとして交ぜ書き変換辞書を検索します。
 	        候補が一つしかない場合は読みを置き換えます。
-	        候補が複数ある場合は、コマンド行の上にCANDIDATE: で候補を
-		表示します。この状態で<Leader><Space>を続けて打つと、候補を
-		順に表示していきます。候補のリストの最後まで行くとリストの
-		最初に戻ります。
+	        候補が複数ある場合は、|complete()|を使って
+		補完候補としてポップアップメニーで表示します。
+		普通の補完と同様に、CTRL-NやCTRL-Pで候補を選択して、
+		CTRL-Yで確定、CTRL-Eでキャンセルできます。
 
-<Leader><CR>	CANDIDATE: として表示されている候補を選択して、読みを置き
-		換えます。
-
-例: "<Leader>qあい<Leader><Space>"と打つと、"CANDIDATE: 娃"と表示されます。
-    さらに"<Leader><Space>"を打つと"CANDIDATE: 哀"となります。
-    この状態で"<Leader><CR>"を打つと、"あい"が"哀"に置き換えられます。
+例: "<Leader>qあい<Leader><Space>"と打つと、
+    候補がポップアップメニューで表示されます。
+    CTRL-Nを打って"哀"を選択してCTRL-Yを打つと、
+    "あい"が"哀"に置き換えられます。
 
 
 Insert Modeでの交ぜ書き変換(活用する語)		*tcvime-insert-mazegaki-katuyo*
@@ -69,8 +67,8 @@ Insert Modeでの交ぜ書き変換(活用する語)		*tcvime-insert-mazegaki-katuyo*
 <Leader>o  <Leader>q でマークした位置から現在のカーソル位置の間の文字列に
 	   "―"を付加した文字列を読みとして交ぜ書き変換辞書から検索します。
 
-例: "<Leader>qながめ<Leader>o"と打つと、"CANDIDATE: 眺め"と表示されます。
-    "<Leader><CR>"と打つと、"ながめ"が"眺め"に置き換えられます。
+例: "<Leader>qあお<Leader>o"と打つと、ポップアップメニューで"仰"等の候補が
+    表示されます。CTRL-Yを打つと、"あお"が"仰"に置き換えられます。
 
 
 Insert Modeでの部首合成変換			*tcvime-insert-bushu*
@@ -84,13 +82,10 @@ Normal Modeでの交ぜ書き変換			*tcvime-normal-mazegaki*
 ---------------------------
 [count]<Leader><Space>	カーソル位置以前の[count]文字の交ぜ書き変換を行います。
 
-<Leader><CR>		CANDIDATE: として表示されている候補を選択して、
-			読みを置き換えます。
-
 例: "あい"と表示されているとき、"い"の上にカーソルを置いて
-    "2<Leader><Space>"と打つと、"CANDIDATE: 娃"と表示されます。
-    さらに"<Leader><Space>"と打つと、"CANDIDATE: 哀"と表示されます。
-    この状態で"<Leader><CR>"を打つと、"あい"が"哀"に置き換えられます。
+    "2<Leader><Space>"と打つと、"__TcvimeCand__"というバッファが開いて
+    候補文字列が各行に表示されます。__TcvimeCand__バッファ内で"<CR>"を打つと、
+    "あい"が該当行の候補に置き換えられます。
 
 
 Normal Modeでの交ぜ書き変換(活用する語)		*tcvime-normal-mazegaki-katuyo*
@@ -98,9 +93,10 @@ Normal Modeでの交ぜ書き変換(活用する語)		*tcvime-normal-mazegaki-katuyo*
 [count]<Leader>o	カーソル位置以前の[count]文字に"―"を付加した文字列を
 			読みとして交ぜ書き変換辞書から検索します。
 
-例: "ながめ"と表示されているとき、"め"の上にカーソルを置いて
-    "3<Leader>o"と打つと、"CANDIDATE: 眺め"と表示されます。
-    "<Leader><CR>"と打つと、"ながめ"が"眺め"に置き換えられます。
+例: "あお"と表示されているとき、"お"の上にカーソルを置いて
+    "2<Leader>o"と打つと、"__TcvimeCand__"というバッファが開いて、
+    候補文字列が各行に表示されます。__TcvimeCand__バッファ内で"<CR>"を打つと、
+    "あお"が該当行の候補に置き換えられます。
 
 
 Normal Modeでの部首合成変換			*tcvime-normal-bushu*
@@ -163,13 +159,10 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
 キー設定オプション(Insert Mode)
 -------------------------------
 
-'<Plug>TcvimeIFix'				*'<Plug>TcvimeIFix'*
-   交ぜ書き変換: 候補確定キー。省略値: <Leader><CR>
-   <Leader><CR>を指定する場合の例:
-     imap <Leader><CR> <Plug>TcvimeIFix
-
 '<Plug>TcvimeIStart'				*'<Plug>TcvimeIStart'*
    交ぜ書き変換: 読みを開始するキー。省略値: <Leader>q
+   <Leader>qを指定する場合の例:
+     imap <Leader>q <Plug>TcvimeIStart
 
 '<Plug>TcvimeIConvert'				*'<Plug>TcvimeIConvert'*
    交ぜ書き変換: 変換実行キー。省略値: <Leader><Space>
@@ -183,14 +176,11 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
 キー設定オプション(Normal Mode)
 -------------------------------
 
-'<Plug>TcvimeNFix'				*'<Plug>TcvimeNFix'*
-   交ぜ書き変換: 候補確定キー。省略値: <Leader><CR>
-   <Leader><CR>を指定する場合の例:
-     nmap <Leader><CR> <Plug>TcvimeNFix
-
 '<Plug>TcvimeNConvert'				*'<Plug>TcvimeNConvert'*
    交ぜ書き変換: カーソル位置以前の[count]文字の変換を行うキー。
    省略値: <Leader><Space>
+   <Leader><Space>を指定する場合の例:
+     nmap <Leader><Space> <Plug>TcvimeNConvert
 
 '<Plug>TcvimeNKatuyo'				*'<Plug>TcvimeNKatuyo'*
    交ぜ書き変換: [count]文字の活用する語の変換を行うキー。
@@ -246,9 +236,6 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
 
 ==============================================================================
 5. 問題点					*tcvime-problem*
-
-- 交ぜ書き変換のCANDIDATE: 表示がすぐ消えてしまって見れないことがあります。
-  特に複数のウィンドウを開いている場合。
 
 - |'backspace'|オプションにstartが入っていない場合、Insertモードで部首合成
   変換等を行ったときに、元の文字が消えないで残ってしまうことがあります。
