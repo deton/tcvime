@@ -51,40 +51,6 @@ UNIXでの使用上の注意
 使い方
   tcvime.txtを参照してください。
 
-~/.vimrcの設定例
-  <C-J>でtutcodeを有効にし、<C-L>でtutcodeを無効にする設定の例です。
-  (<C-^>でのトグル操作における、現在の状態を意識する負担を無くしたい場合用)
-
-  if has('keymap')
-    set iminsert=0 imsearch=0
-    " 切替時にインデントが解除されるのを回避するため、1<C-H>
-    imap <C-J> 1<C-H><C-O>:call <SID>SetKeymap('tutcodek')<CR>
-    imap <C-L> 1<C-H><C-O>:set iminsert=0<CR>
-    imap <silent> <ESC> <ESC>:set imsearch=0<CR>
-    " nmap <C-K>k <Plug>TcvimeNKatakana
-  endif
-  function! s:SetKeymap(keymapname)
-    if &keymap !=# a:keymapname
-      let &keymap = a:keymapname
-      " alaで後置型部首合成変換(TUT-Code用)
-      " lmap ala <Plug>TcvimeIBushu
-      " aljで前置型交ぜ書き変換の読み入力開始(TUT-Code用)
-      " lmap alj <Plug>TcvimeIStart
-      " al<Space>で前置型交ぜ書き変換(TUT-Code用)
-      " lmap al<Space> <Plug>TcvimeIConvert
-      " 後置型カタカナ変換(TUT-Code用)
-      " lmap all <C-R>=tcvime#InputConvertKatakana(0)<CR> " ひらがなが続く間
-      " lmap al1 <C-R>=tcvime#InputConvertKatakana(1)<CR> " 1文字
-      " lmap al2 <C-R>=tcvime#InputConvertKatakana(2)<CR> " 2文字
-      " lmap al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
-      " lmap al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
-      " lmap al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
-      " lmap al6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
-    else
-      let &iminsert = 1
-    endif
-  endfunction
-
 謝辞
   - 村岡さんのvime.vimをベースにさせていただいています。
     tcvime.vimの交ぜ書き変換部分はほとんどvime.vimそのものです。
@@ -108,7 +74,7 @@ UNIXでの使用上の注意
      &keymapが未設定の場合にヘルプ表の表示に使うkeymap。
    - 変換開始等のキーを<Plug>で設定可能にした。
      (ただし、keymapファイル内に<Plug>を書いても効かないようなので、
-     lmapで使いたい場合は、上記~/.vimrc設定例のように後で設定する必要あり)
+     lmapで使いたい場合は後で設定する必要あり。tcvime.txtの設定例参照)
    - 後置型カタカナ変換機能を追加:
      - insert mode用関数: tcvime#InputConvertKatakana()。上記~/.vimrc参照
      - normal mode用<Plug>TcvimeNKatakana

@@ -110,8 +110,13 @@ let s:buflisted = 0
 
 " keymap‚ğİ’è‚·‚é
 function! tcvime#SetKeymap(keymapname)
-  if &keymap !=# a:keymapname
-    let &keymap = a:keymapname
+  if &l:keymap !=# a:keymapname
+    let &l:keymap = a:keymapname
+    if exists('*TcvimeCustomKeymap')
+      call TcvimeCustomKeymap()
+    endif
+  else
+    let &l:iminsert = 1
   endif
 endfunction
 

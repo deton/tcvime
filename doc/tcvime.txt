@@ -8,7 +8,8 @@
 2. 操作法				|tcvime-usage|
 3. オプション				|tcvime-option|
 4. コマンド				|tcvime-command|
-5. 問題点				|tcvime-problem|
+5. 設定例				|tcvime-setting|
+6. 問題点				|tcvime-problem|
 
 {Vi does not have any of these features}
 
@@ -147,6 +148,10 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
   設定例:
 	let tcvime_keymap_for_help = 'tutcode'
 
+TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
+  lmapのカスタマイズを行う関数。tcvime#SetKeymap()からコールバックされる。
+  設定例は|tcvime-setting|参照。
+
 'mapleader'
   キーマッピングのプレフィックス。|mapleader|を参照。省略値: CTRL-K
   CTRL-Kを指定する場合の例:
@@ -241,7 +246,47 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
   ヘルプ用バッファを閉じる
 
 ==============================================================================
-5. 問題点					*tcvime-problem*
+5. 設定例					*tcvime-setting*
+
+~/.vimrcでの設定例です。
+<C-J>でtutcodeを有効にし、<C-L>でtutcodeを無効にする設定の例です。
+(<C-^>でのトグル操作における、現在の状態を意識する負担を無くしたい場合用)
+
+if has('keymap')
+  set iminsert=0 imsearch=0
+  " 切替時にインデントが解除されるのを回避するため、1<C-H>
+  imap <C-J> 1<C-H><C-O>:call tcvime#SetKeymap('tutcodek')<CR>
+  imap <C-L> 1<C-H><C-O>:set iminsert=0<CR>
+  imap <silent> <ESC> <ESC>:set imsearch=0<CR>
+  nmap <C-K>k <Plug>TcvimeNKatakana
+endif
+" lmapのカスタマイズを行う関数。
+" tcvime#SetKeymap()からコールバックされる。
+function! TcvimeCustomKeymap()
+  " (TUT-Code用の例)
+  " alaで後置型部首合成変換
+  lmap ala <Plug>TcvimeIBushu
+  " aljで前置型交ぜ書き変換の読み入力開始
+  lmap alj <Plug>TcvimeIStart
+  " al<Space>で前置型交ぜ書き変換
+  lmap al<Space> <Plug>TcvimeIConvert
+  " aloで前置型交ぜ書き変換(活用する語として変換)
+  lmap alo <Plug>TcvimeIKatuyo
+  " 後置型カタカナ変換
+  lmap all <C-R>=tcvime#InputConvertKatakana(0)<CR> " ひらがなが続く間
+  lmap al1 <C-R>=tcvime#InputConvertKatakana(1)<CR> " 1文字
+  lmap al2 <C-R>=tcvime#InputConvertKatakana(2)<CR> " 2文字
+  lmap al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
+  lmap al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
+  lmap al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
+  lmap al6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
+  lmap al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
+  lmap al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
+  lmap al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
+endfunction
+
+==============================================================================
+6. 問題点					*tcvime-problem*
 
 - Insert Modeの交ぜ書き変換の際、ポップアップメニューが無効で表示できない場合、
   自動ヘルプの表示はできません。
