@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-01
+" Last Change: 2012-12-02
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -224,6 +224,65 @@ function! s:InputStart()
 endfunction
 
 let s:completeyomi = ''
+
+" Insert modeで後置型交ぜ書き変換を行う。
+" 活用する語の変換の場合は、
+" 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
+"
+" tc2同様の後置型交ぜ書き変換を行うための設定例:
+"     " 活用しない語
+"     lmap 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
+"     lmap 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
+"     lmap 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
+"     lmap 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
+"     " 活用する語(ただしtc2と違って、読みの文字数には活用語尾は含まない)
+"     lmap 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
+"     lmap 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
+"     lmap 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
+"     lmap 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
+" @param count 交ぜ書き変換の対象にする読みの文字数
+" @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
+function! tcvime#InputPostConvert(count, katuyo)
+  " a:count長の文字列にマッチする正規表現を作る
+  let i = 0
+  let mstr = ''
+  while i < a:count
+    let mstr = mstr . '.'
+    let i = i + 1
+  endwhile
+
+  let s:is_katuyo = 0
+  let s:completeyomi = ''
+  let s:status_line = line(".")
+  let yomi = matchstr(getline('.'), mstr . '\%' . col('.') . 'c')
+  let len = strlen(yomi)
+  if len == 0
+    let s:last_keyword = ''
+    let s:last_count = 0
+    call s:StatusReset()
+    return ''
+  endif
+  let inschars = ''
+  let s:status_column = col('.') - len
+  let s:is_katuyo = a:katuyo
+  if s:is_katuyo
+    let key = yomi . '―'
+  else
+    let key = yomi
+  endif
+  let ncands = s:CandidateSearch(key)
+  if ncands == 1
+    let inschars = s:InputFix(col('.'))
+  elseif ncands > 0
+    let s:completeyomi = yomi
+    call complete(s:status_column, s:last_candidate_list)
+  elseif ncands == 0
+    echo '交ぜ書き辞書中には見つかりません: <' . yomi . '>'
+  else
+    echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
+  endif
+  return inschars
+endfunction
 
 " Insert modeで交ぜ書き変換を行う。
 " 活用する語の変換の場合は、

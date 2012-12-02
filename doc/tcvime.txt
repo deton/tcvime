@@ -29,6 +29,7 @@ mapleaderがCTRL-Kの場合、<Leader>q は CTRL-Kの後にqを入力する、ということです。
 
 |tcvime-insert-mazegaki|	Insert Modeでの交ぜ書き変換
 |tcvime-insert-mazegaki-katuyo|	Insert Modeでの交ぜ書き変換(活用する語)
+|tcvime-insert-mazegaki-postfix|	Insert Modeでの後置型交ぜ書き変換
 |tcvime-insert-bushu|		Insert Modeでの部首合成変換
 |tcvime-normal-mazegaki|	Normal Modeでの交ぜ書き変換
 |tcvime-normal-mazegaki-katuyo|	Normal Modeでの交ぜ書き変換(活用する語)
@@ -71,6 +72,24 @@ Insert Modeでの交ぜ書き変換(活用する語)		*tcvime-insert-mazegaki-katuyo*
 例: "<Leader>qあお<Leader>o"と打つと、ポップアップメニューで"仰"等の候補が
     表示されます。CTRL-Yを打つと、"あお"が"仰"に置き換えられます。
 
+Insert Modeでの後置型交ぜ書き変換	*tcvime-insert-mazegaki-postfix*
+---------------------------------
+読みの文字数を指定して後置型で交ぜ書き変換を開始することもできます。
+
+例えば、tc2と同様に、18,28,38,48と打った際にそれぞれ読みの文字数として、
+1,2,3,4文字を指定した交ぜ書き変換を開始したい場合は、
+keymapのset後に以下のlmapを行うことで可能です。
+
+  " 活用しない語
+  lmap 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
+  lmap 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
+  lmap 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
+  lmap 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
+  " 活用する語(ただしtc2と違って、読みの文字数には活用語尾は含まない)
+  lmap 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
+  lmap 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
+  lmap 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
+  lmap 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
 
 Insert Modeでの部首合成変換			*tcvime-insert-bushu*
 ---------------------------
@@ -283,6 +302,17 @@ function! TcvimeCustomKeymap()
   lmap al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
   lmap al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
   lmap al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
+  " tc2同様の後置型交ぜ書き変換を行うための設定:
+  " " 活用しない語
+  " lmap 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
+  " lmap 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
+  " lmap 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
+  " lmap 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
+  " " 活用する語(ただしtc2と違って、読みの文字数には活用語尾は含まない)
+  " lmap 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
+  " lmap 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
+  " lmap 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
+  " lmap 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
 endfunction
 
 ==============================================================================

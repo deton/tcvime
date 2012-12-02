@@ -66,6 +66,7 @@ UNIXでの使用上の注意
    - 交ぜ書き変換の候補選択方法を改良:
      - insert mode: Vimの補完ポップアップメニューで選択・確定
      - normal mode: 候補選択用バッファで選択・確定
+   - Insert mode用の後置型交ぜ書き変換関数を追加
    - Visual modeで選択した複数文字に対してヘルプ表を表示する機能を追加(issue #1)
    - 自動ヘルプ機能追加(issue #2):
      部首合成変換や交ぜ書き変換で確定した文字列のヘルプ表を表示。
@@ -76,7 +77,7 @@ UNIXでの使用上の注意
      (ただし、keymapファイル内に<Plug>を書いても効かないようなので、
      lmapで使いたい場合は後で設定する必要あり。tcvime.txtの設定例参照)
    - 後置型カタカナ変換機能を追加:
-     - insert mode用関数: tcvime#InputConvertKatakana()。上記~/.vimrc参照
+     - insert mode用関数: tcvime#InputConvertKatakana()
      - normal mode用<Plug>TcvimeNKatakana
    - tutcodek_cp932.vimをtutcodek.vimに変更。
      (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
