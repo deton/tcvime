@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-02
+" Last Change: 2012-12-05
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -75,22 +75,14 @@ function! tcvime#InputConvertKatakanaPos(col, n)
   if a:n == 0
     " g:tcvime#hira2kata_patにマッチする文字を取得
     let chars = matchstr(getline('.'), g:tcvime#hira2kata_pat . '\%' . a:col . 'c')
-    let bs = substitute(chars, '.', "\<BS>", 'g')
-  elseif a:col > a:n
-    " 指定された文字数の文字列を取得
-    let pat = ''
-    let i = 0
-    while i < a:n
-      let pat .= '.'
-      let i += 1
-    endwhile
-    let chars = matchstr(getline('.'), pat . '\%' . a:col . 'c')
-    let bs = substitute(pat, '\.', "\<BS>", 'g')
   else
+    let chars = matchstr(getline('.'), '.\{,' . a:n . '}\%' . a:col . 'c')
+  endif
+  if strlen(chars) == 0
     return ''
   endif
   let subst = substitute(chars, '.', '\=tcvime#hira2kata(submatch(0))', 'g')
-  return bs . subst
+  return substitute(chars, '.', "\<BS>", 'g') . subst
 endfunction
 
 function! tcvime#hira2kata(s)
