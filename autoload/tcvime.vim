@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-08
+" Last Change: 2012-12-09
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -122,34 +122,34 @@ function! tcvime#MappingOn()
   let s:mapleader = g:mapleader
 
   if !hasmapto('<Plug>TcvimeIStart')
-    imap <unique> <silent> <Leader>q <Plug>TcvimeIStart
+    silent! imap <unique> <silent> <Leader>q <Plug>TcvimeIStart
   endif
   if !hasmapto('<Plug>TcvimeIConvert')
-    imap <unique> <silent> <Leader><Space> <Plug>TcvimeIConvert
+    silent! imap <unique> <silent> <Leader><Space> <Plug>TcvimeIConvert
   endif
   if !hasmapto('<Plug>TcvimeIKatuyo')
-    imap <unique> <silent> <Leader>o <Plug>TcvimeIKatuyo
+    silent! imap <unique> <silent> <Leader>o <Plug>TcvimeIKatuyo
   endif
   if !hasmapto('<Plug>TcvimeIBushu')
-    imap <unique> <silent> <Leader>b <Plug>TcvimeIBushu
+    silent! imap <unique> <silent> <Leader>b <Plug>TcvimeIBushu
   endif
   if !hasmapto('<Plug>TcvimeNConvert')
-    nmap <unique> <silent> <Leader><Space> <Plug>TcvimeNConvert
+    silent! nmap <unique> <silent> <Leader><Space> <Plug>TcvimeNConvert
   endif
   if !hasmapto('<Plug>TcvimeNKatuyo')
-    nmap <unique> <silent> <Leader>o <Plug>TcvimeNKatuyo
+    silent! nmap <unique> <silent> <Leader>o <Plug>TcvimeNKatuyo
   endif
   if !hasmapto('<Plug>TcvimeNBushu')
-    nmap <unique> <silent> <Leader>b <Plug>TcvimeNBushu
+    silent! nmap <unique> <silent> <Leader>b <Plug>TcvimeNBushu
   endif
   if !hasmapto('<Plug>TcvimeNHelp')
-    nmap <unique> <silent> <Leader>? <Plug>TcvimeNHelp
+    silent! nmap <unique> <silent> <Leader>? <Plug>TcvimeNHelp
   endif
   if !hasmapto('<Plug>TcvimeNKanjiTable')
-    nmap <unique> <silent> <Leader>t <Plug>TcvimeNKanjiTable
+    silent! nmap <unique> <silent> <Leader>t <Plug>TcvimeNKanjiTable
   endif
   if !hasmapto('<Plug>TcvimeVHelp')
-    vmap <unique> <silent> <Leader>? <Plug>TcvimeVHelp
+    silent! vmap <unique> <silent> <Leader>? <Plug>TcvimeVHelp
   endif
 
   inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=<SID>InputStart()<CR>
