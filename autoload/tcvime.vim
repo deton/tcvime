@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-05
+" Last Change: 2012-12-08
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -235,18 +235,10 @@ let s:completeyomi = ''
 " @param count 交ぜ書き変換の対象にする読みの文字数
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! tcvime#InputPostConvert(count, katuyo)
-  " a:count長の文字列にマッチする正規表現を作る
-  let i = 0
-  let mstr = ''
-  while i < a:count
-    let mstr = mstr . '.'
-    let i = i + 1
-  endwhile
-
   let s:is_katuyo = 0
   let s:completeyomi = ''
   let s:status_line = line(".")
-  let yomi = matchstr(getline('.'), mstr . '\%' . col('.') . 'c')
+  let yomi = matchstr(getline('.'), '.\{' . a:count . '}\%' . col('.') . 'c')
   let len = strlen(yomi)
   if len == 0
     let s:last_keyword = ''
@@ -396,18 +388,10 @@ function! s:ConvertCount(count, katuyo)
   endif
   let s:last_count = cnt
 
-  " cnt長の文字列にマッチする正規表現を作る
-  let i = 0
-  let mstr = ''
-  while i < cnt
-    let mstr = mstr . '.'
-    let i = i + 1
-  endwhile
-
   let s:is_katuyo = 0
   let s:status_line = line(".")
   execute "normal! a\<ESC>"
-  let chars = matchstr(getline('.'), mstr . '\%' . col("'^") . 'c')
+  let chars = matchstr(getline('.'), '.\{' . cnt . '}\%' . col("'^") . 'c')
 
   let len = strlen(chars)
   if len > 0
