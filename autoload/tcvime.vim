@@ -107,8 +107,6 @@ let s:helpbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeHelp__'
 let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
 let s:candbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeCand__'
 let s:candbufname = substitute(s:candbufname, '\\', '/', 'g')
-" 辞書ファイルが:ls等で表示されるようにするかどうか。0:表示されない,1:表示する
-let s:buflisted = 0
 
 " keymapを設定する
 function! tcvime#SetKeymap(keymapname)
@@ -613,9 +611,7 @@ function! s:OpenHelpBuffer()
     set bufhidden=delete
     set noswapfile
     set winfixheight
-    if !s:buflisted
-      set nobuflisted
-    endif
+    set nobuflisted
     nnoremap <buffer> <silent> q :<C-U>quit<CR>
   endif
   %d _
@@ -819,9 +815,7 @@ function! s:SearchKeymap(ch, keymap)
     endif
   endif
   execute "silent normal! :sv " . kmfile . "\<CR>"
-  if !s:buflisted
-    set nobuflisted
-  endif
+  set nobuflisted
   let dummy = search('loadkeymap', 'w')
   if search('^[^"].*[^ 	]\+[ 	]\+' . a:ch, 'w') != 0
     let keyseq = substitute(getline('.'), '[ 	]\+.*$', '', '')
@@ -852,9 +846,7 @@ function! s:Candidate_FileOpen()
   endif
   if s:SelectWindowByName(s:candidate_file) < 0
     execute 'silent normal! :sv '.s:candidate_file."\<CR>"
-    if !s:buflisted
-      set nobuflisted
-    endif
+    set nobuflisted
   endif
   return 1
 endfunction
@@ -897,9 +889,7 @@ function! s:Bushu_FileOpen()
   endif
   if s:SelectWindowByName(s:bushu_file) < 0
     execute 'silent normal! :sv '.s:bushu_file."\<CR>"
-    if !s:buflisted
-      set nobuflisted
-    endif
+    set nobuflisted
   endif
   return 1
 endfunction
@@ -1156,9 +1146,7 @@ function! s:Candwin_Open()
     set buftype=nofile
     set bufhidden=delete
     set noswapfile
-    if !s:buflisted
-      set nobuflisted
-    endif
+    set nobuflisted
   endif
   %d _
   nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
