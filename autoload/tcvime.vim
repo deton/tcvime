@@ -105,8 +105,6 @@ let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 let s:kanjitable_file = globpath($VIM.','.&runtimepath, 'kanjitable.txt')
 let s:helpbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeHelp__'
 let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
-let s:candbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeCand__'
-let s:candbufname = substitute(s:candbufname, '\\', '/', 'g')
 
 " keymapを設定する
 function! tcvime#SetKeymap(keymapname)
@@ -298,7 +296,7 @@ function! s:InputConvertSub(yomi, katuyo)
   else
     let key = a:yomi
   endif
-  let ncands = s:CandidateSearch(key)
+  let ncands = s:CandidateSearch(key, 1)
   if ncands == 1
     let inschars = s:InputFix(col('.'))
   elseif ncands > 0
@@ -492,10 +490,9 @@ function! s:ConvertSub(yomi, katuyo)
     if s:is_katuyo
       let chars = chars . '―'
     endif
-    let ncands = s:CandidateSearch(chars)
+    let ncands = s:CandidateSearch(chars, 0)
     if ncands > 1
-      call s:Candwin_SetCands(s:last_candidate_list)
-      call s:SelectWindowByName(s:candbufname)
+      " 辞書ファイルバッファを表示中
     elseif ncands == 1
       call s:FixCandidate()
     elseif ncands == 0
@@ -846,6 +843,13 @@ function! s:Candidate_FileOpen()
   endif
   if s:SelectWindowByName(s:candidate_file) < 0
     execute 'silent normal! :sv '.s:candidate_file."\<CR>"
+    nnoremap <buffer> <silent> <Tab> :<C-U>call <SID>Candwin_NextCand()<CR>
+    nnoremap <buffer> <silent> <C-N> :<C-U>call <SID>Candwin_NextCand()<CR>
+    nnoremap <buffer> <silent> <C-P> :<C-U>call <SID>Candwin_PrevCand()<CR>
+    nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
+    nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>Candwin_Select()<CR>
+    nnoremap <buffer> <silent> q :<C-U>quit<CR>
+    nnoremap <buffer> <silent> <C-E> :<C-U>quit<CR>
     set nobuflisted
   endif
   return 1
@@ -860,7 +864,7 @@ let s:is_katuyo = 0
 " 辞書から未確定文字列を検索
 " @return -1:辞書が開けない場合, 0:文字列が見つからない場合,
 "   1:候補が1つだけ見つかった場合, 2:候補が2つ以上見つかった場合
-function! s:CandidateSearch(keyword)
+function! s:CandidateSearch(keyword, close)
   let s:last_keyword = a:keyword
   if !s:Candidate_FileOpen()
     return -1
@@ -878,8 +882,38 @@ function! s:CandidateSearch(keyword)
       let s:last_candidate = s:last_candidate_list[0]
     endif
   endif
-  quit!
+  if a:close || ret <= 1
+    quit!
+  else
+    call search(' /', 'e')
+  endif
   return ret
+endfunction
+
+" 次候補に移動する
+function! s:Candwin_NextCand()
+  call search('/', '', line('.'))
+endfunction
+
+" 次候補に移動する
+function! s:Candwin_PrevCand()
+  call search('/', 'b', line('.'))
+endfunction
+
+" カーソル位置の候補を確定する
+function! s:Candwin_Select()
+  let beg = 0
+  while beg == 0
+    let [lnum, end] = searchpos('/', '', line('.'))
+    if end == 0
+      return
+    endif
+    let [lnum, beg] = searchpos('/\zs', 'b', line('.'))
+  endwhile
+  let chars = matchstr(getline('.'), '\%' . beg . 'c' . '.*\%' . end . 'c')
+  let s:last_candidate = chars
+  quit
+  call s:FixCandidate()
 endfunction
 
 " 部首合成辞書データファイルをオープン
@@ -1134,47 +1168,6 @@ endfunction
 function! s:KanjiTable_CopyChar()
   let ch = matchstr(getline('.'), '\%' . col('.') . 'c.')
   execute "normal! \<C-W>pa" . ch . "\<ESC>\<C-W>p"
-endfunction
-
-"==============================================================================
-" 候補選択バッファ
-
-" 候補選択バッファを開く
-function! s:Candwin_Open()
-  if s:SelectWindowByName(s:candbufname) < 0
-    execute "silent normal! :sp " . s:candbufname . "\<CR>"
-    set buftype=nofile
-    set bufhidden=delete
-    set noswapfile
-    set nobuflisted
-  endif
-  %d _
-  nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
-  nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>Candwin_Select()<CR>
-  nnoremap <buffer> <silent> q :<C-U>quit<CR>
-  nnoremap <buffer> <silent> <C-E> :<C-U>quit<CR>
-endfunction
-
-" 候補選択バッファを閉じる
-function! s:Candwin_Close()
-  if s:SelectWindowByName(s:candbufname) > 0
-    bwipeout!
-  endif
-endfunction
-
-" 候補をセットする
-function! s:Candwin_SetCands(candlist)
-  call s:Candwin_Open()
-  execute 'normal! a' . join(a:candlist, "\n") . "\<ESC>"
-  normal! 1G
-  wincmd p
-endfunction
-
-" 現在行の候補を確定する
-function! s:Candwin_Select()
-  let s:last_candidate = getline('.')
-  bwipeout!
-  call s:FixCandidate()
 endfunction
 
 let &cpo = s:save_cpo
