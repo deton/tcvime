@@ -271,26 +271,8 @@ function! tcvime#InputPostConvert(count, katuyo)
     call s:StatusReset()
     return ''
   endif
-  let inschars = ''
   let s:status_column = col('.') - len
-  let s:is_katuyo = a:katuyo
-  if s:is_katuyo
-    let key = yomi . '―'
-  else
-    let key = yomi
-  endif
-  let ncands = s:CandidateSearch(key)
-  if ncands == 1
-    let inschars = s:InputFix(col('.'))
-  elseif ncands > 0
-    let s:completeyomi = yomi
-    call complete(s:status_column, s:last_candidate_list)
-  elseif ncands == 0
-    echo '交ぜ書き辞書中には見つかりません: <' . yomi . '>'
-  else
-    echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
-  endif
-  return inschars
+  return s:InputConvertSub(yomi, a:katuyo)
 endfunction
 
 " Insert modeで交ぜ書き変換を行う。
@@ -298,32 +280,36 @@ endfunction
 " 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! s:InputConvert(katuyo)
-  let inschars = ''
   let s:is_katuyo = 0
   let s:completeyomi = ''
   let status = s:StatusGet('.', col('.'))
   let len = strlen(status)
-  if len > 0
-    let s:is_katuyo = a:katuyo
-    if s:is_katuyo
-      let key = status . '―'
-    else
-      let key = status
-    endif
-    let ncands = s:CandidateSearch(key)
-    if ncands == 1
-      let inschars = s:InputFix(col('.'))
-    elseif ncands > 0
-      let s:completeyomi = status
-      call complete(s:status_column, s:last_candidate_list)
-    elseif ncands == 0
-      echo '交ぜ書き辞書中には見つかりません: <' . status . '>'
-    else
-      echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
-    endif
-  else
+  if len == 0
     let s:last_keyword = ''
     call s:InputStart()
+    return ''
+  endif
+  return s:InputConvertSub(status, a:katuyo)
+endfunction
+
+function! s:InputConvertSub(yomi, katuyo)
+  let inschars = ''
+  let s:is_katuyo = a:katuyo
+  if s:is_katuyo
+    let key = a:yomi . '―'
+  else
+    let key = a:yomi
+  endif
+  let ncands = s:CandidateSearch(key)
+  if ncands == 1
+    let inschars = s:InputFix(col('.'))
+  elseif ncands > 0
+    let s:completeyomi = a:yomi
+    call complete(s:status_column, s:last_candidate_list)
+  elseif ncands == 0
+    echo '交ぜ書き辞書中には見つかりません: <' . a:yomi . '>'
+  else
+    echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
   endif
   return inschars
 endfunction
