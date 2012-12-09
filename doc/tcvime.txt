@@ -214,14 +214,20 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 
 '<Plug>TcvimeNOpConvert'			*'<Plug>TcvimeNOpConvert'*
    交ぜ書き変換: このキーを押した後の{motion}で指定される文字列を変換。
-   注意: |'operatorfunc'|を上書きします。
+   注意: キーを押した際に|'operatorfunc'|を上書きします。
    省略値: (無し: 未割当て)
-   <Leader>pを指定する場合の例:
-     nmap <Leader>p <Plug>TcvimeNOpConvert
+   <Leader>nを指定する場合の例:
+     nmap <Leader>n <Plug>TcvimeNOpConvert
 
 '<Plug>TcvimeNKatuyo'				*'<Plug>TcvimeNKatuyo'*
    交ぜ書き変換: [count]文字の活用する語の変換を行うキー。
    省略値: <Leader>o
+
+'<Plug>TcvimeNOpKatuyo'				*'<Plug>TcvimeNOpKatuyo'*
+   交ぜ書き変換: このキーを押した後の{motion}で指定される文字列を
+   活用する語として変換。
+   注意: キーを押した際に|'operatorfunc'|を上書きします。
+   省略値: (無し: 未割当て)
 
 '<Plug>TcvimeNBushu'				*'<Plug>TcvimeNBushu'*
    部首合成変換: カーソル位置以前の2文字の部首合成変換を行うキー。
@@ -250,6 +256,10 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 '<Plug>TcvimeVConvert'				*'<Plug>TcvimeVConvert'*
    交ぜ書き変換: 選択中の文字列の変換を行うキー。
    省略値: <Leader><Space>
+
+'<Plug>TcvimeVKatuyo'				*'<Plug>TcvimeVKatuyo'*
+   交ぜ書き変換: 選択中の文字列を活用する語として変換を行うキー。
+   省略値: <Leader>o
 
 ==============================================================================
 4. コマンド					*tcvime-command*

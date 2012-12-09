@@ -154,6 +154,9 @@ function! tcvime#MappingOn()
   if !hasmapto('<Plug>TcvimeVConvert')
     silent! vmap <unique> <silent> <Leader><Space> <Plug>TcvimeVConvert
   endif
+  if !hasmapto('<Plug>TcvimeVKatuyo')
+    silent! vmap <unique> <silent> <Leader>o <Plug>TcvimeVKatuyo
+  endif
 
   inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=<SID>InputStart()<CR>
   inoremap <script> <silent> <Plug>TcvimeIConvert <C-R>=<SID>InputConvert(0)<CR>
@@ -166,8 +169,10 @@ function! tcvime#MappingOn()
   nnoremap <script> <silent> <Plug>TcvimeNHelp :<C-U>call <SID>ShowStrokeHelp()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKanjiTable :<C-U>call tcvime#KanjiTable_FileOpen()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNOpConvert :set opfunc=tcvime#ConvertOp<CR>g@
+  nnoremap <script> <silent> <Plug>TcvimeNOpKatuyo :set opfunc=tcvime#ConvertOpKatuyo<CR>g@
   vnoremap <script> <silent> <Plug>TcvimeVHelp :<C-U>call <SID>ShowHelpVisual()<CR>
   vnoremap <script> <silent> <Plug>TcvimeVConvert :<C-U>call tcvime#ConvertOp(visualmode(), 1)<CR>
+  vnoremap <script> <silent> <Plug>TcvimeVKatuyo :<C-U>call tcvime#ConvertOpKatuyo(visualmode(), 1)<CR>
 
   if set_mapleader
     unlet g:mapleader
@@ -190,6 +195,7 @@ function! tcvime#MappingOff()
     let save_mapleader = g:mapleader
   endif
   let g:mapleader = s:mapleader
+  " TODO: tcvime以外でmapされたものをunmapしないようにする
   silent! iunmap <Leader>q
   silent! iunmap <Leader><Space>
   silent! iunmap <Leader>o
@@ -200,6 +206,8 @@ function! tcvime#MappingOff()
   silent! nunmap <Leader>?
   silent! nunmap <Leader>t
   silent! vunmap <Leader>?
+  silent! vunmap <Leader><Space>
+  silent! vunmap <Leader>o
   if set_mapleader
     unlet g:mapleader
   else
@@ -378,11 +386,28 @@ endfunction
 
 " operatorfuncとして、選択された文字列を交ぜ書き変換する
 function! tcvime#ConvertOp(type, ...)
+  let visual = 0
+  if a:0  " Invoked from Visual mode
+    let visual = 1
+  endif
+  call s:ConvertOpSub(a:type, visual, 0)
+endfunction
+
+" operatorfuncとして、選択された文字列を活用する語として交ぜ書き変換する
+function! tcvime#ConvertOpKatuyo(type, ...)
+  let visual = 0
+  if a:0  " Invoked from Visual mode
+    let visual = 1
+  endif
+  call s:ConvertOpSub(a:type, visual, 1)
+endfunction
+
+function! s:ConvertOpSub(type, visual, katuyo)
   let sel_save = &selection
   let &selection = "inclusive"
   let reg_save = @@
 
-  if a:0  " Invoked from Visual mode, use '< and '> marks.
+  if a:visual  " Invoked from Visual mode, use '< and '> marks.
     let s:status_line = line("'<")
     let s:status_column = col("'<")
     let s:status_colend = col("'>")
@@ -403,7 +428,7 @@ function! tcvime#ConvertOp(type, ...)
   endif
 
   if @@ != ''
-    call s:ConvertSub(@@, 0)
+    call s:ConvertSub(@@, a:katuyo)
   endif
 
   let &selection = sel_save
