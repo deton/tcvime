@@ -81,11 +81,21 @@ function! tcvime#InputConvertKatakanaPos(col, n)
   if strlen(chars) == 0
     return ''
   endif
-  let subst = substitute(chars, '.', '\=tcvime#hira2kata(submatch(0))', 'g')
-  return substitute(chars, '.', "\<BS>", 'g') . subst
+  return substitute(chars, '.', "\<BS>", 'g') . tcvime#hira2kata(chars)
 endfunction
 
-function! tcvime#hira2kata(s)
+" 文字列をカタカナに変換する
+function! tcvime#hira2kata(str)
+  let hira = split(a:str, '\zs')
+  call map(hira, 'tcvime#hira2kata_char(v:val)')
+  return join(hira, '')
+  " XXX: vimが再帰的な:s\=に未対応なので、tcvime#ConvertOpKatakana()から、
+  "      \=tcvime#hira2kata()で呼び出すと動かない。
+  " return substitute(a:str, '.', '\=tcvime#hira2kata_char(submatch(0))', 'g')
+endfunction
+
+" 1文字をカタカナに変換する
+function! tcvime#hira2kata_char(s)
   return get(g:tcvime#hira2kata_table, a:s, a:s)
 endfunction
 
@@ -170,9 +180,11 @@ function! tcvime#MappingOn()
   nnoremap <script> <silent> <Plug>TcvimeNKanjiTable :<C-U>call tcvime#KanjiTable_FileOpen()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNOpConvert :set opfunc=tcvime#ConvertOp<CR>g@
   nnoremap <script> <silent> <Plug>TcvimeNOpKatuyo :set opfunc=tcvime#ConvertOpKatuyo<CR>g@
+  nnoremap <script> <silent> <Plug>TcvimeNOpKatakana :set opfunc=tcvime#ConvertOpKatakana<CR>g@
   vnoremap <script> <silent> <Plug>TcvimeVHelp :<C-U>call <SID>ShowHelpVisual()<CR>
   vnoremap <script> <silent> <Plug>TcvimeVConvert :<C-U>call tcvime#ConvertOp(visualmode(), 1)<CR>
   vnoremap <script> <silent> <Plug>TcvimeVKatuyo :<C-U>call tcvime#ConvertOpKatuyo(visualmode(), 1)<CR>
+  vnoremap <script> <silent> <Plug>TcvimeVKatakana :<C-U>call tcvime#ConvertOpKatakana(visualmode(), 1)<CR>
 
   if set_mapleader
     unlet g:mapleader
@@ -433,6 +445,30 @@ function! s:ConvertOpSub(type, visual, katuyo)
 
   let &selection = sel_save
   let @@ = reg_save
+endfunction
+
+" operatorfuncとして、選択された文字列をカタカナに変換する
+function! tcvime#ConvertOpKatakana(type, ...)
+  let sel_save = &selection
+  let &selection = "inclusive"
+
+  if a:0  " Invoked from Visual mode, use '< and '> marks.
+    call s:ConvertOpKatakanaSub(col("'<"), col("'>"))
+  elseif a:type == 'char'
+    call s:ConvertOpKatakanaSub(col("'["), col("']"))
+  endif
+
+  let &selection = sel_save
+endfunction
+
+function! s:ConvertOpKatakanaSub(beg, end)
+  let col = col('.')
+  call cursor(0, a:end)
+  execute "normal! a\<ESC>"
+  execute 's/\%' . a:beg . 'c.*\%' . col("'^") . 'c/\=tcvime#hira2kata(submatch(0))/'
+  " XXX: 最後の文字が変換に含まれない。\%>'>にすると行末まで変換される
+  "s/\%'<.*\%'>/\=tcvime#hira2kata(submatch(0))/
+  call cursor(0, col) " XXX: undoすると行頭に移動するのでいまいち
 endfunction
 
 " 以前のConvertCount()に渡されたcount引数の値。
