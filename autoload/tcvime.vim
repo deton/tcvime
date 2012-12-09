@@ -886,6 +886,7 @@ function! s:CandidateSearch(keyword, close)
     quit!
   else
     call search(' /', 'e')
+    call search('/')
   endif
   return ret
 endfunction
@@ -902,14 +903,11 @@ endfunction
 
 " カーソル位置の候補を確定する
 function! s:Candwin_Select()
-  let beg = 0
-  while beg == 0
-    let [lnum, end] = searchpos('/', '', line('.'))
-    if end == 0
-      return
-    endif
-    let [lnum, beg] = searchpos('/\zs', 'b', line('.'))
-  endwhile
+  let [lnum, beg] = searchpos('/\zs', 'bc', line('.'))
+  if beg == 0
+    let [lnum, beg] = searchpos('/\zs', '', line('.'))
+  endif
+  let [lnum, end] = searchpos('\ze/', '', line('.'))
   let chars = matchstr(getline('.'), '\%' . beg . 'c' . '.*\%' . end . 'c')
   let s:last_candidate = chars
   quit
