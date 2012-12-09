@@ -151,6 +151,9 @@ function! tcvime#MappingOn()
   if !hasmapto('<Plug>TcvimeVHelp')
     silent! vmap <unique> <silent> <Leader>? <Plug>TcvimeVHelp
   endif
+  if !hasmapto('<Plug>TcvimeVConvert')
+    silent! vmap <unique> <silent> <Leader><Space> <Plug>TcvimeVConvert
+  endif
 
   inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=<SID>InputStart()<CR>
   inoremap <script> <silent> <Plug>TcvimeIConvert <C-R>=<SID>InputConvert(0)<CR>
@@ -162,7 +165,9 @@ function! tcvime#MappingOn()
   nnoremap <script> <silent> <Plug>TcvimeNBushu :<C-U>call <SID>ConvertBushu()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNHelp :<C-U>call <SID>ShowStrokeHelp()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKanjiTable :<C-U>call tcvime#KanjiTable_FileOpen()<CR>
+  nnoremap <script> <silent> <Plug>TcvimeNOpConvert :set opfunc=tcvime#ConvertOp<CR>g@
   vnoremap <script> <silent> <Plug>TcvimeVHelp :<C-U>call <SID>ShowHelpVisual()<CR>
+  vnoremap <script> <silent> <Plug>TcvimeVConvert :<C-U>call tcvime#ConvertOp(visualmode(), 1)<CR>
 
   if set_mapleader
     unlet g:mapleader
@@ -341,7 +346,7 @@ function! s:InputFix(col)
   let inschars = ''
   let str = s:StatusGet('.', a:col)
   if s:IsCandidateOK(str)
-    let inschars = s:CandidateSelect()
+    let inschars = s:last_candidate
     if strlen(inschars) > 0
       call s:ShowAutoHelp(str, inschars)
       let bs = substitute(str, '.', "\<BS>", "g")
@@ -371,6 +376,40 @@ function! s:InputConvertBushu(col)
   return inschars
 endfunction
 
+" operatorfuncとして、選択された文字列を交ぜ書き変換する
+function! tcvime#ConvertOp(type, ...)
+  let sel_save = &selection
+  let &selection = "inclusive"
+  let reg_save = @@
+
+  if a:0  " Invoked from Visual mode, use '< and '> marks.
+    let s:status_line = line("'<")
+    let s:status_column = col("'<")
+    let s:status_colend = col("'>")
+    silent exe "normal! `<" . a:type . "`>y"
+  elseif a:type == 'char'
+    let s:status_line = line("'[")
+    let s:status_column = col("'[")
+    let s:status_colend = col("']")
+    silent exe "normal! `[v`]y"
+  elseif a:type == 'block'
+    let s:status_line = line("'[")
+    let s:status_column = col("'[")
+    let s:status_colend = col("']")
+    silent exe "normal! `[\<C-V>`]y"
+  else
+    let @@ = ''
+    call s:StatusReset()
+  endif
+
+  if @@ != ''
+    call s:ConvertSub(@@, 0)
+  endif
+
+  let &selection = sel_save
+  let @@ = reg_save
+endfunction
+
 " 以前のConvertCount()に渡されたcount引数の値。
 " countが0で実行された場合に以前のcount値を使うようにするため。
 let s:last_count = 0
@@ -390,12 +429,16 @@ function! s:ConvertCount(count, katuyo)
 
   let s:is_katuyo = 0
   let s:status_line = line(".")
+  let s:status_colend = col(".")
   execute "normal! a\<ESC>"
   let chars = matchstr(getline('.'), '.\{' . cnt . '}\%' . col("'^") . 'c')
+  let s:status_column = col("'^") - strlen(chars)
+  call s:ConvertSub(chars, a:katuyo)
+endfunction
 
-  let len = strlen(chars)
-  if len > 0
-    let s:status_column = col("'^") - len
+function! s:ConvertSub(yomi, katuyo)
+  let chars = a:yomi
+  if chars != ''
     let s:is_katuyo = a:katuyo
     if s:is_katuyo
       let chars = chars . '―'
@@ -420,6 +463,7 @@ endfunction
 
 " ConvertCount()で変換を開始した候補を確定する
 function! s:FixCandidate()
+  call cursor(0, s:status_colend)
   execute "normal! a\<ESC>"
   let inschars = s:InputFix(col("'^"))
   let s:last_count = 0
@@ -477,6 +521,7 @@ endfunction
 function! s:StatusReset()
   let s:status_line = 0
   let s:status_column = 0
+  let s:status_colend = 0
 endfunction
 
 "   未確定文字列を「状態」として取得する
@@ -792,18 +837,6 @@ function! s:CandidateSearch(keyword)
   endif
   quit!
   return ret
-endfunction
-
-" 確定文字列を取得
-function! s:CandidateSelect()
-  let inschars = ''
-  if strlen(s:last_candidate) > 0
-    let i = 0
-    let inschars = inschars . s:last_candidate
-    let s:status_column = s:status_column + strlen(s:last_candidate)
-    let s:last_candidate = ''
-  endif
-  return inschars
 endfunction
 
 " 部首合成辞書データファイルをオープン
