@@ -883,7 +883,7 @@ function! s:CandidateSearch(keyword, close)
     endif
   endif
   if a:close || ret <= 1
-    quit!
+    quit
   else
     call search(' /', 'e')
     call search('/')
