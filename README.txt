@@ -64,9 +64,10 @@ UNIXでの使用上の注意
 更新履歴
   - 1.2.2 (2012-12-XX)
    - 交ぜ書き変換の候補選択方法を改良:
-     - insert mode: Vimの補完ポップアップメニューで選択・確定
-     - normal mode: 候補選択用バッファで選択・確定
+     - Insert mode: Vimの補完ポップアップメニューで選択・確定
+     - Normal mode: 交ぜ書き変換辞書ファイルのバッファで選択・確定
    - Insert mode用の後置型交ぜ書き変換関数を追加
+   - Visual modeで選択した文字列に対する交ぜ書き変換、カタカナ変換
    - Visual modeで選択した複数文字に対してヘルプ表を表示する機能を追加(issue #1)
    - 自動ヘルプ機能追加(issue #2):
      部首合成変換や交ぜ書き変換で確定した文字列のヘルプ表を表示。
@@ -76,9 +77,12 @@ UNIXでの使用上の注意
    - 変換開始等のキーを<Plug>で設定可能にした。
      (ただし、keymapファイル内に<Plug>を書いても効かないようなので、
      lmapで使いたい場合は後で設定する必要あり。tcvime.txtの設定例参照)
+   - {motion}で対象文字列を指定した変換を行うためのopfuncや<Plug>を追加:
+     - 交ぜ書き変換: <Plug>TcvimeNOpConvert, <Plug>TcvimeNOpKatuyo
+     - カタカナ変換: <Plug>TcvimeNOpKatakana
    - 後置型カタカナ変換機能を追加:
-     - insert mode用関数: tcvime#InputConvertKatakana()
-     - normal mode用<Plug>TcvimeNKatakana
+     - Insert mode用関数: tcvime#InputConvertKatakana()
+     - Normal mode用<Plug>TcvimeNKatakana
    - tutcodek_cp932.vimをtutcodek.vimに変更。
      (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
    - Vim6対応を終了。要Vim7
