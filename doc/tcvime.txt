@@ -237,6 +237,11 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    カタカナ変換: カーソル位置以前の[count]文字のカタカナへの変換を行うキー。
    省略値: (無し: 未割当て)
 
+'<Plug>TcvimeNOpKatakana'			*'<Plug>TcvimeNOpKatakana'*
+   カタカナ変換: このキーを押した後の{motion}で指定される文字列をカタカナ変換。
+   注意: キーを押した際に|'operatorfunc'|を上書きします。
+   省略値: (無し: 未割当て)
+
 '<Plug>TcvimeNHelp'				*'<Plug>TcvimeNHelp'*
    打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示するキー。
    省略値: <Leader>?
@@ -260,6 +265,10 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 '<Plug>TcvimeVKatuyo'				*'<Plug>TcvimeVKatuyo'*
    交ぜ書き変換: 選択中の文字列を活用する語として変換を行うキー。
    省略値: <Leader>o
+
+'<Plug>TcvimeVKatakana'				*'<Plug>TcvimeVKatakana'*
+   カタカナ変換: 選択中の文字列をカタカナに変換するキー。
+   省略値: (無し: 未割当て)
 
 ==============================================================================
 4. コマンド					*tcvime-command*

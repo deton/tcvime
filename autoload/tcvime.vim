@@ -465,10 +465,14 @@ function! s:ConvertOpKatakanaSub(beg, end)
   let col = col('.')
   call cursor(0, a:end)
   execute "normal! a\<ESC>"
-  execute 's/\%' . a:beg . 'c.*\%' . col("'^") . 'c/\=tcvime#hira2kata(submatch(0))/'
+  let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
+  let inschars = substitute(chars, '.', "\<BS>", 'g') . tcvime#hira2kata(chars)
+  call s:InsertString(inschars)
+  " XXX: undoすると行頭に移動するのでいまいち
+  "execute 's/\%' . a:beg . 'c.*\%' . col("'^") . 'c/\=tcvime#hira2kata(submatch(0))/'
   " XXX: 最後の文字が変換に含まれない。\%>'>にすると行末まで変換される
   "s/\%'<.*\%'>/\=tcvime#hira2kata(submatch(0))/
-  call cursor(0, col) " XXX: undoすると行頭に移動するのでいまいち
+  call cursor(0, col)
 endfunction
 
 " 以前のConvertCount()に渡されたcount引数の値。
