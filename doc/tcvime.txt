@@ -34,8 +34,10 @@ mapleaderがCTRL-Kの場合、<Leader>q は CTRL-Kの後にqを入力する、ということです。
 |tcvime-normal-mazegaki|	Normal Modeでの交ぜ書き変換
 |tcvime-normal-mazegaki-katuyo|	Normal Modeでの交ぜ書き変換(活用する語)
 |tcvime-normal-bushu|		Normal Modeでの部首合成変換
+|tcvime-visual-mazegaki|	Visual Modeでの交ぜ書き変換
+|tcvime-visual-mazegaki-katuyo|	Visual Modeでの交ぜ書き変換(活用する語)
 |tcvime-normal-help|		文字ヘルプ表表示(Normal Mode)
-|tcvime-normal-help-visual|	文字ヘルプ表表示(Visual Mode)
+|tcvime-visual-help|		文字ヘルプ表表示(Visual Mode)
 |tcvime-normal-kanjitable|	漢字テーブルファイル表示(Normal Mode)
 
 
@@ -135,6 +137,17 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
     "<Leader>b"と打つと、"木口"が"杏"に置き換えられます。
 
 
+Visual Modeでの交ぜ書き変換			*tcvime-visual-mazegaki*
+---------------------------
+<Leader><Space>	Visual Modeで選択した文字列の交ぜ書き変換を行います。
+
+
+Visual Modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
+-----------------------------------------
+<Leader>o	Visual Modeで選択した文字列"―"を付加した文字列を
+		読みとして交ぜ書き変換辞書から検索します。
+
+
 文字ヘルプ表表示(Normal Mode)			*tcvime-normal-help*
 -----------------------------
 <Leader>?	カーソル位置の文字のヘルプ表を表示します。使用中のkeymapで
@@ -149,7 +162,7 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
         ・・・・    ・・・・
         ・・1 2     ・・・・
 
-文字ヘルプ表表示(Visual Mode)			*tcvime-normal-help-visual*
+文字ヘルプ表表示(Visual Mode)			*tcvime-visual-help*
 -----------------------------
 <Leader>?	Visual modeで選択中の(複数)文字のヘルプ表を表示します。
 
@@ -316,6 +329,7 @@ if has('keymap')
   imap <C-L> 1<C-H><C-O>:set iminsert=0<CR>
   imap <silent> <ESC> <ESC>:set imsearch=0<CR>
   nmap <C-K>k <Plug>TcvimeNKatakana
+  vmap <C-K>k <Plug>TcvimeVKatakana
 endif
 " lmapのカスタマイズを行う関数。
 " tcvime#SetKeymap()からコールバックされる。
