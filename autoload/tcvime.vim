@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-09
+" Last Change: 2012-12-10
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -189,7 +189,6 @@ function! tcvime#MappingOn()
   augroup Tcvime
   autocmd!
   execute "autocmd BufReadCmd ".s:helpbufname." call <SID>Help_BufReadCmd()"
-  autocmd CursorMovedI * call <SID>OnCursorMovedI()
   augroup END
 endfunction
 
@@ -301,6 +300,7 @@ function! s:InputConvertSub(yomi, katuyo)
     let inschars = s:InputFix(col('.'))
   elseif ncands > 0
     let s:completeyomi = a:yomi
+    autocmd Tcvime CursorMovedI * call <SID>OnCursorMovedI()
     call complete(s:status_column, s:last_candidate_list)
   elseif ncands == 0
     echo '交ぜ書き辞書中には見つかりません: <' . a:yomi . '>'
@@ -315,6 +315,7 @@ function! s:OnCursorMovedI()
   if s:completeyomi == ''
     return
   endif
+  autocmd! Tcvime CursorMovedI * call <SID>OnCursorMovedI()
   let col = col('.')
   if col == 1
     " <CR>で確定して改行が挿入されて行頭になった場合。TODO: autoindent対応
@@ -324,11 +325,10 @@ function! s:OnCursorMovedI()
   else
     let status = s:StatusGet('.', col)
   endif
-  if status == s:completeyomi
-    return
+  if status != s:completeyomi
+    " XXX: ポップアップメニュー無効の場合、自動ヘルプ表示できない
+    call s:ShowAutoHelp(s:completeyomi, status)
   endif
-  " XXX: ポップアップメニュー無効の場合、自動ヘルプ表示できない
-  call s:ShowAutoHelp(s:completeyomi, status)
   let s:completeyomi = ''
   call s:StatusReset()
 endfunction
