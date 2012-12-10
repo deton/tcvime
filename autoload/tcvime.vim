@@ -73,8 +73,15 @@ endfunction
 
 function! tcvime#InputConvertKatakanaPos(col, n)
   if a:n == 0
+    let line = getline('.')
+    let col = a:col
+    if s:insert_line == line('.') && s:insert_col < a:col
+      " Insert mode開始位置以降を変換対象とする
+      let line = strpart(line, s:insert_col - 1)
+      let col = a:col - s:insert_col + 1
+    endif
     " g:tcvime#hira2kata_patにマッチする文字を取得
-    let chars = matchstr(getline('.'), g:tcvime#hira2kata_pat . '\%' . a:col . 'c')
+    let chars = matchstr(line, g:tcvime#hira2kata_pat . '\%' . col . 'c')
   else
     let chars = matchstr(getline('.'), '.\{,' . a:n . '}\%' . a:col . 'c')
   endif
@@ -189,6 +196,7 @@ function! tcvime#MappingOn()
   augroup Tcvime
   autocmd!
   execute "autocmd BufReadCmd ".s:helpbufname." call <SID>Help_BufReadCmd()"
+  autocmd InsertEnter * call <SID>OnInsertEnter()
   augroup END
 endfunction
 
@@ -224,6 +232,15 @@ function! tcvime#MappingOff()
   augroup Tcvime
   autocmd!
   augroup END
+endfunction
+
+let s:insert_line = 0
+let s:insert_col = 1
+
+" 後置型変換用に、挿入開始位置を記録
+function! s:OnInsertEnter()
+  let s:insert_line = line('.')
+  let s:insert_col = col('.')
 endfunction
 
 "==============================================================================
