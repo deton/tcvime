@@ -83,15 +83,15 @@ Insert Modeでの後置型交ぜ書き変換	*tcvime-insert-mazegaki-postfix*
 keymapのset後に以下のlmapを行うことで可能です。
 
   " 活用しない語
-  lmap 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
-  lmap 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
-  lmap 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
-  lmap 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
+  lmap <silent> 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
+  lmap <silent> 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
+  lmap <silent> 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
+  lmap <silent> 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
   " 活用する語(ただしtc2と違って、読みの文字数には活用語尾は含まない)
-  lmap 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
-  lmap 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
-  lmap 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
-  lmap 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
+  lmap <silent> 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
+  lmap <silent> 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
+  lmap <silent> 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
+  lmap <silent> 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
 
 Insert Modeでの部首合成変換			*tcvime-insert-bushu*
 ---------------------------
@@ -207,22 +207,22 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 '<Plug>TcvimeIStart'				*'<Plug>TcvimeIStart'*
    交ぜ書き変換: 読みを開始するキー。省略値: <Leader>q
    例(aljを指定する場合):
-     lmap alj <Plug>TcvimeIStart
+     lmap <silent> alj <Plug>TcvimeIStart
 
 '<Plug>TcvimeIConvert'				*'<Plug>TcvimeIConvert'*
    交ぜ書き変換: 変換実行キー。省略値: <Leader><Space>
    例(al<Space>を指定する場合):
-     lmap al<Space> <Plug>TcvimeIConvert
+     lmap <silent> al<Space> <Plug>TcvimeIConvert
 
 '<Plug>TcvimeIKatuyo'				*'<Plug>TcvimeIKatuyo'*
    交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
    例(aloを指定する場合):
-     lmap alo <Plug>TcvimeIKatuyo
+     lmap <silent> alo <Plug>TcvimeIKatuyo
 
 '<Plug>TcvimeIBushu'				*'<Plug>TcvimeIBushu'*
    部首合成変換: 直前の2文字の部首合成変換実行キー。省略値: <Leader>b
    例(alaを指定する場合):
-     lmap ala <Plug>TcvimeIBushu
+     lmap <silent> ala <Plug>TcvimeIBushu
 
 キー設定オプション(Normal Mode)
 -------------------------------
@@ -328,43 +328,45 @@ if has('keymap')
   imap <C-J> 1<C-H><C-O>:call tcvime#SetKeymap('tutcodek')<CR>
   imap <C-L> 1<C-H><C-O>:set iminsert=0<CR>
   imap <silent> <ESC> <ESC>:set imsearch=0<CR>
-  nmap <C-K>k <Plug>TcvimeNKatakana
-  vmap <C-K>k <Plug>TcvimeVKatakana
+  nmap <silent> <C-K>k <Plug>TcvimeNKatakana
+  vmap <silent> <C-K>k <Plug>TcvimeVKatakana
 endif
 " lmapのカスタマイズを行う関数。
 " tcvime#SetKeymap()からコールバックされる。
 function! TcvimeCustomKeymap()
   " (TUT-Code用の例)
   " alaで後置型部首合成変換
-  lmap ala <Plug>TcvimeIBushu
+  lmap <silent> ala <Plug>TcvimeIBushu
   " aljで前置型交ぜ書き変換の読み入力開始
-  lmap alj <Plug>TcvimeIStart
+  lmap <silent> alj <Plug>TcvimeIStart
+  " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
+  lmap <silent> <Space> <C-R>=tcvime#InputConvertOrSpace()<CR>
   " al<Space>で前置型交ぜ書き変換
-  lmap al<Space> <Plug>TcvimeIConvert
+  lmap <silent> al<Space> <Plug>TcvimeIConvert
   " aloで前置型交ぜ書き変換(活用する語として変換)
-  lmap alo <Plug>TcvimeIKatuyo
+  lmap <silent> alo <Plug>TcvimeIKatuyo
   " 後置型カタカナ変換
-  lmap all <C-R>=tcvime#InputConvertKatakana(0)<CR> " ひらがなが続く間
-  lmap al1 <C-R>=tcvime#InputConvertKatakana(1)<CR> " 1文字
-  lmap al2 <C-R>=tcvime#InputConvertKatakana(2)<CR> " 2文字
-  lmap al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
-  lmap al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
-  lmap al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
-  lmap al6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
-  lmap al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
-  lmap al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
-  lmap al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
+  lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR> " ひらがなが続く間
+  lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR> " 1文字
+  lmap <silent> al2 <C-R>=tcvime#InputConvertKatakana(2)<CR> " 2文字
+  lmap <silent> al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
+  lmap <silent> al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
+  lmap <silent> al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
+  lmap <silent> al6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
+  lmap <silent> al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
+  lmap <silent> al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
+  lmap <silent> al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
   " tc2同様の後置型交ぜ書き変換を行うための設定:
   " " 活用しない語
-  " lmap 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
-  " lmap 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
-  " lmap 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
-  " lmap 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
+  " lmap <silent> 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
+  " lmap <silent> 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
+  " lmap <silent> 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
+  " lmap <silent> 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
   " " 活用する語(ただしtc2と違って、読みの文字数には活用語尾は含まない)
-  " lmap 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
-  " lmap 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
-  " lmap 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
-  " lmap 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
+  " lmap <silent> 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
+  " lmap <silent> 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
+  " lmap <silent> 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
+  " lmap <silent> 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
 endfunction
 
 ==============================================================================

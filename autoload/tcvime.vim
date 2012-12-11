@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-10
+" Last Change: 2012-12-11
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -48,16 +48,16 @@ let g:tcvime#hira2kata_table = {
 " 全てシフトキーを押しながら打鍵したり「RKTLTUGIEHe SIQLJFL」よりも楽かも)
 "
 " tutcode keymapで後置型カタカナ変換を行うための設定例:
-"     lmap all <C-R>=tcvime#InputConvertKatakana(0)<CR>
-"     lmap al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
-"     lmap al2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
-"     lmap al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
-"     lmap al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
-"     lmap al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
-"     lmap al6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
-"     lmap al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
-"     lmap al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
-"     lmap al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
+"     lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR>
+"     lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
+"     lmap <silent> al2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
+"     lmap <silent> al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
+"     lmap <silent> al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
+"     lmap <silent> al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
+"     lmap <silent> al6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
+"     lmap <silent> al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
+"     lmap <silent> al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
+"     lmap <silent> al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
 function! tcvime#InputConvertKatakana(n)
   let col = col('.')
   let cnt = a:n
@@ -77,6 +77,7 @@ function! tcvime#InputConvertKatakanaPos(col, n)
     let col = a:col
     if s:insert_line == line('.') && s:insert_col < a:col
       " Insert mode開始位置以降を変換対象とする
+      " XXX: CTRL-Dでインデントを減らした場合には未対応
       let line = strpart(line, s:insert_col - 1)
       let col = a:col - s:insert_col + 1
     endif
@@ -172,8 +173,8 @@ function! tcvime#MappingOn()
   endif
 
   inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=<SID>InputStart()<CR>
-  inoremap <script> <silent> <Plug>TcvimeIConvert <C-R>=<SID>InputConvert(0)<CR>
-  inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=<SID>InputConvert(1)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIConvert <C-R>=tcvime#InputConvertOrStart(0)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=tcvime#InputConvertOrStart(1)<CR>
   inoremap <script> <silent> <Plug>TcvimeIBushu <C-R>=<SID>InputConvertBushu(col('.'))<CR>
   nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKatuyo :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
@@ -260,20 +261,18 @@ let s:completeyomi = ''
 "
 " tc2同様の後置型交ぜ書き変換を行うための設定例:
 "     " 活用しない語
-"     lmap 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
-"     lmap 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
-"     lmap 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
-"     lmap 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
+"     lmap <silent> 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
+"     lmap <silent> 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
+"     lmap <silent> 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
+"     lmap <silent> 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
 "     " 活用する語(ただしtc2と違って、読みの文字数には活用語尾は含まない)
-"     lmap 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
-"     lmap 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
-"     lmap 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
-"     lmap 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
+"     lmap <silent> 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
+"     lmap <silent> 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
+"     lmap <silent> 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
+"     lmap <silent> 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
 " @param count 交ぜ書き変換の対象にする読みの文字数
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! tcvime#InputPostConvert(count, katuyo)
-  let s:is_katuyo = 0
-  let s:completeyomi = ''
   let s:status_line = line(".")
   let yomi = matchstr(getline('.'), '.\{' . a:count . '}\%' . col('.') . 'c')
   let len = strlen(yomi)
@@ -287,24 +286,42 @@ function! tcvime#InputPostConvert(count, katuyo)
   return s:InputConvertSub(yomi, a:katuyo)
 endfunction
 
-" Insert modeで交ぜ書き変換を行う。
+" Insert modeで、読みがあれば交ぜ書き変換を開始し、無ければ' 'を返す。
+"   lmap <silent> <Space> <C-R>=tcvime#InputConvertOrSpace()<CR>
+function! tcvime#InputConvertOrSpace()
+  let status = s:StatusGet('.', col('.'))
+  if status == ''
+    let s:last_keyword = ''
+    return ' '
+  endif
+  let lastyomi = s:last_keyword
+  let ret = s:InputConvertSub(status, 0)
+  " 候補無し && 前回と同じ読み→前回も変換不可。再度<Space>なので' 'を返す。
+  " でないと、' 'を挿入できなくなったように見えるので。
+  " <Plug>TcvimeIStartキーを押して読み開始位置リセットすれば挿入できるけど。
+  " XXX: 再検索無しに、前回と同じ読みと位置s:status_columnかを確認した方が良い?
+  if ret == '' && s:completeyomi == '' && lastyomi == status
+    call s:StatusReset()
+    return ' '
+  endif
+  return ret
+endfunction
+
+" Insert modeで交ぜ書き変換を行う。読みが無い場合は読み開始マークを付ける。
 " 活用する語の変換の場合は、
 " 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
-function! s:InputConvert(katuyo)
-  let s:is_katuyo = 0
-  let s:completeyomi = ''
+function! tcvime#InputConvertOrStart(katuyo)
   let status = s:StatusGet('.', col('.'))
-  let len = strlen(status)
-  if len == 0
+  if status == ''
     let s:last_keyword = ''
-    call s:InputStart()
-    return ''
+    return s:InputStart()
   endif
   return s:InputConvertSub(status, a:katuyo)
 endfunction
 
 function! s:InputConvertSub(yomi, katuyo)
+  let s:completeyomi = ''
   let inschars = ''
   let s:is_katuyo = a:katuyo
   if s:is_katuyo
@@ -567,7 +584,7 @@ function! s:StatusIsEnable(lnum, col)
   if ln == '.'
     let ln = line(ln)
   endif
-  if s:status_line != ln || s:status_column <= 0 || s:status_column > a:col
+  if s:status_line != ln || s:status_column <= 0 || s:status_column >= a:col
     return 0
   endif
   return 1
