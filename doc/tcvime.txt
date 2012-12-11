@@ -189,7 +189,7 @@ Visual Modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
 	let tcvime_keymap_for_help = 'tutcode'
 
 TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
-  lmapのカスタマイズを行う関数。tcvime#SetKeymap()からコールバックされる。
+  lmapのカスタマイズ用の関数。tcvime#SetKeymap()からコールバックされる。
   設定例は|tcvime-setting|参照。
 
 'mapleader'
@@ -205,14 +205,27 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 -------------------------------
 
 '<Plug>TcvimeIStart'				*'<Plug>TcvimeIStart'*
-   交ぜ書き変換: 読みを開始するキー。省略値: <Leader>q
+   交ぜ書き変換: 読みの開始位置の印を付けるキー。省略値: <Leader>q
    例(aljを指定する場合):
      lmap <silent> alj <Plug>TcvimeIStart
 
-'<Plug>TcvimeIConvert'				*'<Plug>TcvimeIConvert'*
-   交ぜ書き変換: 変換実行キー。省略値: <Leader><Space>
+'<Plug>TcvimeIConvOrStart'			*'<Plug>TcvimeIConvOrStart'*
+   交ぜ書き変換: 変換実行キー。
+   読みの開始位置の印が付けられていれば、
+   開始位置と現在位置の間の文字列を、交ぜ書き変換の読みとして変換を実行。
+   印が付けられていなければ、現状位置を読みの開始位置として印を付ける。
+   省略値: <Leader><Space>
    例(al<Space>を指定する場合):
-     lmap <silent> al<Space> <Plug>TcvimeIConvert
+     lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
+
+'<Plug>TcvimeIConvOrSpace'			*'<Plug>TcvimeIConvOrSpace'*
+   交ぜ書き変換: 変換実行キー。
+   読みの開始位置の印が付けられていれば、
+   開始位置と現在位置の間の文字列を、交ぜ書き変換の読みとして変換を実行。
+   印が付けられていなければ、' 'を挿入。
+   省略値: (無し: 未割当て)
+   例(<Space>を指定する場合):
+     lmap <silent> <Space> <Plug>TcvimeIConvOrSpace
 
 '<Plug>TcvimeIKatuyo'				*'<Plug>TcvimeIKatuyo'*
    交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
@@ -231,14 +244,14 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    交ぜ書き変換: カーソル位置以前の[count]文字の変換を行うキー。
    省略値: <Leader><Space>
    <Leader><Space>を指定する場合の例:
-     nmap <Leader><Space> <Plug>TcvimeNConvert
+     nmap <silent> <Leader><Space> <Plug>TcvimeNConvert
 
 '<Plug>TcvimeNOpConvert'			*'<Plug>TcvimeNOpConvert'*
    交ぜ書き変換: このキーを押した後の{motion}で指定される文字列を変換。
    注意: キーを押した際に|'operatorfunc'|を上書きします。
    省略値: (無し: 未割当て)
    <Leader>nを指定する場合の例:
-     nmap <Leader>n <Plug>TcvimeNOpConvert
+     nmap <silent> <Leader>n <Plug>TcvimeNOpConvert
 
 '<Plug>TcvimeNKatuyo'				*'<Plug>TcvimeNKatuyo'*
    交ぜ書き変換: [count]文字の活用する語の変換を行うキー。
@@ -277,7 +290,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    打鍵ヘルプ表示: 選択中の(複数)文字のヘルプ表を表示するキー。
    省略値: <Leader>?
    <Leader>? を指定する場合の例:
-     vmap <Leader>? <Plug>TcvimeVHelp
+     vmap <silent> <Leader>? <Plug>TcvimeVHelp
 
 '<Plug>TcvimeVConvert'				*'<Plug>TcvimeVConvert'*
    交ぜ書き変換: 選択中の文字列の変換を行うキー。
@@ -326,7 +339,7 @@ if has('keymap')
   set iminsert=0 imsearch=0
   " 切替時にインデントが解除されるのを回避するため、1<C-H>
   imap <C-J> 1<C-H><C-O>:call tcvime#SetKeymap('tutcodek')<CR>
-  imap <C-L> 1<C-H><C-O>:set iminsert=0<CR>
+  imap <silent> <C-L> 1<C-H><C-O>:set iminsert=0<CR>
   imap <silent> <ESC> <ESC>:set imsearch=0<CR>
   nmap <silent> <C-K>k <Plug>TcvimeNKatakana
   vmap <silent> <C-K>k <Plug>TcvimeVKatakana
@@ -340,9 +353,9 @@ function! TcvimeCustomKeymap()
   " aljで前置型交ぜ書き変換の読み入力開始
   lmap <silent> alj <Plug>TcvimeIStart
   " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
-  lmap <silent> <Space> <C-R>=tcvime#InputConvertOrSpace()<CR>
+  lmap <silent> <Space> <Plug>TcvimeIConvOrSpace
   " al<Space>で前置型交ぜ書き変換
-  lmap <silent> al<Space> <Plug>TcvimeIConvert
+  lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
   " aloで前置型交ぜ書き変換(活用する語として変換)
   lmap <silent> alo <Plug>TcvimeIKatuyo
   " 後置型カタカナ変換

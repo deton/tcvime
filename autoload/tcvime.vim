@@ -138,8 +138,8 @@ function! tcvime#MappingOn()
   if !hasmapto('<Plug>TcvimeIStart')
     silent! imap <unique> <silent> <Leader>q <Plug>TcvimeIStart
   endif
-  if !hasmapto('<Plug>TcvimeIConvert')
-    silent! imap <unique> <silent> <Leader><Space> <Plug>TcvimeIConvert
+  if !hasmapto('<Plug>TcvimeIConvOrStart')
+    silent! imap <unique> <silent> <Leader><Space> <Plug>TcvimeIConvOrStart
   endif
   if !hasmapto('<Plug>TcvimeIKatuyo')
     silent! imap <unique> <silent> <Leader>o <Plug>TcvimeIKatuyo
@@ -173,7 +173,8 @@ function! tcvime#MappingOn()
   endif
 
   inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=<SID>InputStart()<CR>
-  inoremap <script> <silent> <Plug>TcvimeIConvert <C-R>=tcvime#InputConvertOrStart(0)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIConvOrStart <C-R>=tcvime#InputConvertOrStart(0)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIConvOrSpace <C-R>=tcvime#InputConvertOrSpace()<CR>
   inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=tcvime#InputConvertOrStart(1)<CR>
   inoremap <script> <silent> <Plug>TcvimeIBushu <C-R>=<SID>InputConvertBushu(col('.'))<CR>
   nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
