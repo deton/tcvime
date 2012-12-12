@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-11
+" Last Change: 2012-12-12
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -173,9 +173,9 @@ function! tcvime#MappingOn()
   endif
 
   inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=<SID>InputStart()<CR>
-  inoremap <script> <silent> <Plug>TcvimeIConvOrStart <C-R>=tcvime#InputConvertOrStart(0)<CR>
-  inoremap <script> <silent> <Plug>TcvimeIConvOrSpace <C-R>=tcvime#InputConvertOrSpace()<CR>
-  inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=tcvime#InputConvertOrStart(1)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIConvOrStart <C-R>=<SID>InputConvertOrStart(0)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIConvOrSpace <C-R>=<SID>InputConvertOrSpace()<CR>
+  inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=<SID>InputConvertOrStart(1)<CR>
   inoremap <script> <silent> <Plug>TcvimeIBushu <C-R>=<SID>InputConvertBushu(col('.'))<CR>
   nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKatuyo :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
@@ -288,8 +288,7 @@ function! tcvime#InputPostConvert(count, katuyo)
 endfunction
 
 " Insert modeで、読みがあれば交ぜ書き変換を開始し、無ければ' 'を返す。
-"   lmap <silent> <Space> <C-R>=tcvime#InputConvertOrSpace()<CR>
-function! tcvime#InputConvertOrSpace()
+function! s:InputConvertOrSpace()
   let status = s:StatusGet('.', col('.'))
   if status == ''
     let s:last_keyword = ''
@@ -312,7 +311,7 @@ endfunction
 " 活用する語の変換の場合は、
 " 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
-function! tcvime#InputConvertOrStart(katuyo)
+function! s:InputConvertOrStart(katuyo)
   let status = s:StatusGet('.', col('.'))
   if status == ''
     let s:last_keyword = ''
