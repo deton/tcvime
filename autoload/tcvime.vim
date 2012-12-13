@@ -13,26 +13,8 @@ set cpo&vim
 " このパターンにマッチする文字が続く間はカタカナに変換する。
 let g:tcvime#hira2kata_pat = '[ぁ-んー・]*'
 
-let g:tcvime#hira2kata_table = {
-  \'あ':'ア','い':'イ','う':'ウ','え':'エ','お':'オ',
-  \'か':'カ','き':'キ','く':'ク','け':'ケ','こ':'コ',
-  \'さ':'サ','し':'シ','す':'ス','せ':'セ','そ':'ソ',
-  \'た':'タ','ち':'チ','つ':'ツ','て':'テ','と':'ト',
-  \'な':'ナ','に':'ニ','ぬ':'ヌ','ね':'ネ','の':'ノ',
-  \'は':'ハ','ひ':'ヒ','ふ':'フ','へ':'ヘ','ほ':'ホ',
-  \'ま':'マ','み':'ミ','む':'ム','め':'メ','も':'モ',
-  \'や':'ヤ','ゆ':'ユ','よ':'ヨ',
-  \'ら':'ラ','り':'リ','る':'ル','れ':'レ','ろ':'ロ',
-  \'わ':'ワ','ゐ':'ヰ','ゑ':'ヱ','を':'ヲ',
-  \'が':'ガ','ぎ':'ギ','ぐ':'グ','げ':'ゲ','ご':'ゴ',
-  \'ざ':'ザ','じ':'ジ','ず':'ズ','ぜ':'ゼ','ぞ':'ゾ',
-  \'だ':'ダ','ぢ':'ヂ','づ':'ヅ','で':'デ','ど':'ド',
-  \'ば':'バ','び':'ビ','ぶ':'ブ','べ':'ベ','ぼ':'ボ',
-  \'ぱ':'パ','ぴ':'ピ','ぷ':'プ','ぺ':'ペ','ぽ':'ポ',
-  \'ぁ':'ァ','ぃ':'ィ','ぅ':'ゥ','ぇ':'ェ','ぉ':'ォ',
-  \'ゃ':'ャ','ゅ':'ュ','ょ':'ョ',
-  \'ん':'ン','っ':'ッ','ゎ':'ヮ',
-\}
+let g:tcvime#hiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん'
+let g:tcvime#katakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲン'
 
 " insert mode時に、直前の指定された文字数のひらがな→カタカナ変換を行う
 " ための文字列を返す。
@@ -71,6 +53,18 @@ function! tcvime#InputConvertKatakana(n)
   return tcvime#InputConvertKatakanaPos(col, cnt)
 endfunction
 
+" 直前の後置型カタカナ変換を縮める
+function! tcvime#InputConvertKatakanaShrink()
+  if s:prev_str == ''
+    return ''
+  endif
+  let str = s:prev_str
+  let strlist = matchlist(str, '\(.\)\(.*\)')
+  let s:prev_str = tcvime#hira2kata(strlist[2])
+  let s:commit_str = tcvime#kata2hira(strlist[1]) . s:prev_str
+  return substitute(str, '.', "\<BS>", 'g') . s:commit_str
+endfunction
+
 function! tcvime#InputConvertKatakanaPos(col, n)
   if a:n == 0
     let line = getline('.')
@@ -89,22 +83,19 @@ function! tcvime#InputConvertKatakanaPos(col, n)
   if strlen(chars) == 0
     return ''
   endif
-  return substitute(chars, '.', "\<BS>", 'g') . tcvime#hira2kata(chars)
+  let s:prev_str = chars
+  let s:commit_str = tcvime#hira2kata(chars)
+  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
 " 文字列をカタカナに変換する
 function! tcvime#hira2kata(str)
-  let hira = split(a:str, '\zs')
-  call map(hira, 'tcvime#hira2kata_char(v:val)')
-  return join(hira, '')
-  " XXX: vimが再帰的な:s\=に未対応なので、tcvime#ConvertOpKatakana()から、
-  "      \=tcvime#hira2kata()で呼び出すと動かない。
-  " return substitute(a:str, '.', '\=tcvime#hira2kata_char(submatch(0))', 'g')
+  return tr(a:str, g:tcvime#hiragana, g:tcvime#katakana)
 endfunction
 
-" 1文字をカタカナに変換する
-function! tcvime#hira2kata_char(s)
-  return get(g:tcvime#hira2kata_table, a:s, a:s)
+" 文字列をひらがなに変換する
+function! tcvime#kata2hira(str)
+  return tr(a:str, g:tcvime#katakana, g:tcvime#hiragana)
 endfunction
 
 " 設定
