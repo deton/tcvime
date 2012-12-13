@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-12
+" Last Change: 2012-12-13
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -52,6 +52,9 @@ function! tcvime#InputConvertKatakana(n)
   endif
   return tcvime#InputConvertKatakanaPos(col, cnt)
 endfunction
+
+let s:prev_str = ''
+let s:commit_str = ''
 
 " 直前の後置型カタカナ変換を縮める
 function! tcvime#InputConvertKatakanaShrink()
