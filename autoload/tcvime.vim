@@ -77,6 +77,29 @@ function! tcvime#InputConvertKatakanaShrink()
   return substitute(str, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
+" 直前の変換を取り消す
+" TODO: 交ぜ書き変換や部首合成変換の取り消しへの対応(現状カタカナ変換のみ対応)
+function! tcvime#InputConvertUndo()
+  if s:prev_str == ''
+    return ''
+  endif
+  " カーソル位置前が、直前に変換確定した文字列でない場合は、何もしない。
+  " 変換確定後に別の文字を入力した後で間違ってこの関数が呼ばれて、
+  " 古い変換の内容をもとに上書きすると困るので。
+  let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
+  let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
+  if chars != s:commit_str
+    let s:prev_str = ''
+    return ''
+  endif
+  let str = s:commit_str
+  let prev = s:prev_str
+  " XXX: 多段undoは未対応
+  let s:prev_str = ''
+  let s:commit_str = prev
+  return substitute(str, '.', "\<BS>", 'g') . prev
+endfunction
+
 function! tcvime#InputConvertKatakanaPos(col, n)
   if a:n == 0
     let line = getline('.')
