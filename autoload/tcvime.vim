@@ -72,9 +72,13 @@ function! tcvime#InputConvertKatakanaShrink()
   endif
   let str = s:prev_str
   let strlist = matchlist(str, '\(.\)\(.*\)')
-  let s:prev_str = tcvime#hira2kata(strlist[2])
-  let s:commit_str = tcvime#kata2hira(strlist[1]) . s:prev_str
-  return substitute(str, '.', "\<BS>", 'g') . s:commit_str
+  let kata = tcvime#hira2kata(strlist[2])
+  let newstr = tcvime#kata2hira(strlist[1]) . kata
+  " Shrinkを繰り返し呼んだ際に1文字ずつカタカナを縮めるため、prev_strを縮める
+  let s:prev_str = strlist[2]
+  " undo用にprev_strに対応するcommit_strをセット
+  let s:commit_str = kata
+  return substitute(str, '.', "\<BS>", 'g') . newstr
 endfunction
 
 " 直前の変換を取り消す
@@ -87,7 +91,7 @@ function! tcvime#InputConvertUndo()
   " 変換確定後に別の文字を入力した後で間違ってこの関数が呼ばれて、
   " 古い変換の内容をもとに上書きすると困るので。
   let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
-  let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
+  let chars = matchstr(getline('.'), '.\{' . cnt . '}\%' . col('.') . 'c')
   if chars != s:commit_str
     let s:prev_str = ''
     return ''
