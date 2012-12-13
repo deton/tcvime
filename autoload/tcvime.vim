@@ -58,6 +58,15 @@ function! tcvime#InputConvertKatakanaShrink()
   if s:prev_str == ''
     return ''
   endif
+  " カーソル位置前が、直前に変換したカタカナ文字列でない場合は、何もしない。
+  " カタカナ変換後に別の文字を入力した後で間違ってこの関数が呼ばれて、
+  " 古いカタカナ変換の内容をもとに上書きすると困るので。
+  let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
+  let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
+  if chars != s:commit_str
+    let s:prev_str = ''
+    return ''
+  endif
   let str = s:prev_str
   let strlist = matchlist(str, '\(.\)\(.*\)')
   let s:prev_str = tcvime#hira2kata(strlist[2])
