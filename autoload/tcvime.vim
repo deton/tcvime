@@ -12,6 +12,7 @@ set cpo&vim
 " 後置型カタカナ変換で、文字数が指定されていない際に、
 " このパターンにマッチする文字が続く間はカタカナに変換する。
 let g:tcvime#hira2kata_pat = '[ぁ-んー・]*'
+let g:tcvime#kata2hira_pat = '[ァ-ンー・]*'
 
 let g:tcvime#hiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん'
 let g:tcvime#katakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲン'
@@ -55,14 +56,21 @@ endfunction
 
 " 直前の後置型カタカナ変換を縮める
 function! tcvime#InputConvertKatakanaShrink()
-  if s:prev_str == ''
+  let line = getline('.')
+  let col = col('.')
+  if s:insert_line == line('.') && s:insert_col < col
+    " Insert mode開始位置以降を変換対象とする
+    " XXX: CTRL-Dでインデントを減らした場合には未対応
+    let line = strpart(line, s:insert_col - 1)
+    let col = col - s:insert_col + 1
+  endif
+  " カタカナが続く間取得
+  let chars = matchstr(line, g:tcvime#kata2hira_pat . '\%' . col . 'c')
+  if chars == ''
     return ''
   endif
-  let str = s:prev_str
-  let strlist = matchlist(str, '\(.\)\(.*\)')
-  let s:prev_str = tcvime#hira2kata(strlist[2])
-  let s:commit_str = tcvime#kata2hira(strlist[1]) . s:prev_str
-  return substitute(str, '.', "\<BS>", 'g') . s:commit_str
+  let strlist = matchlist(chars, '\(.\)\(.*\)')
+  return substitute(chars, '.', "\<BS>", 'g') . tcvime#kata2hira(strlist[1]) . strlist[2]
 endfunction
 
 function! tcvime#InputConvertKatakanaPos(col, n)
@@ -83,9 +91,7 @@ function! tcvime#InputConvertKatakanaPos(col, n)
   if strlen(chars) == 0
     return ''
   endif
-  let s:prev_str = chars
-  let s:commit_str = tcvime#hira2kata(chars)
-  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
+  return substitute(chars, '.', "\<BS>", 'g') . tcvime#hira2kata(chars)
 endfunction
 
 " 文字列をカタカナに変換する
