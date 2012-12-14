@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-13
+" Last Change: 2012-12-14
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -29,6 +29,10 @@ let g:tcvime#katakana = 'ƒ@ƒAƒBƒCƒDƒEƒFƒGƒHƒIƒJƒKƒLƒMƒNƒOƒPƒQƒRƒSƒTƒUƒVƒWƒXƒYƒZƒ
 " (ƒJƒ^ƒJƒiƒ‚[ƒh‚ÉØ‚è‘Ö‚¦‚½‚èu'rktltugiehe siqljfl'vA
 " ‘S‚ÄƒVƒtƒgƒL[‚ğ‰Ÿ‚µ‚È‚ª‚ç‘ÅŒ®‚µ‚½‚èuRKTLTUGIEHe SIQLJFLv‚æ‚è‚àŠy‚©‚à)
 "
+" •¶š”‚Æ‚µ‚Ä•‰‚Ì’l‚ğw’è‚·‚é‚ÆA‚Ğ‚ç‚ª‚È‚Æ‚µ‚Äc‚·•¶š”‚Ìw’è‚Æ‚İ‚È‚·B
+" (ƒJƒ^ƒJƒi‚É•ÏŠ·‚·‚é•¶š—ñ‚ª’·‚­‚Ä•¶š”‚ğ”‚¦‚é‚Ì‚ª–Ê“|‚Èê‡Œü‚¯)
+" u—á‚¦‚Î‚ ‚Õ‚è‚¯[‚µ‚å‚ñvalw¨u—á‚¦‚ÎƒAƒvƒŠƒP[ƒVƒ‡ƒ“v
+"
 " tutcode keymap‚ÅŒã’uŒ^ƒJƒ^ƒJƒi•ÏŠ·‚ğs‚¤‚½‚ß‚Ìİ’è—á:
 "     lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR>
 "     lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
@@ -40,6 +44,13 @@ let g:tcvime#katakana = 'ƒ@ƒAƒBƒCƒDƒEƒFƒGƒHƒIƒJƒKƒLƒMƒNƒOƒPƒQƒRƒSƒTƒUƒVƒWƒXƒYƒZƒ
 "     lmap <silent> al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
 "     lmap <silent> al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
 "     lmap <silent> al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
+" w’è‚µ‚½•¶š”‚Ì‚Ğ‚ç‚ª‚È‚ğc‚µ‚ÄƒJƒ^ƒJƒi•ÏŠ·‚·‚éê‡‚Ìİ’è—á:
+"     lmap <silent> alq <C-R>=tcvime#InputConvertKatakana(-1)<CR>
+"     lmap <silent> alw <C-R>=tcvime#InputConvertKatakana(-2)<CR>
+"     lmap <silent> ale <C-R>=tcvime#InputConvertKatakana(-3)<CR>
+"     lmap <silent> alr <C-R>=tcvime#InputConvertKatakana(-4)<CR>
+"     lmap <silent> alt <C-R>=tcvime#InputConvertKatakana(-5)<CR>
+"     lmap <silent> aly <C-R>=tcvime#InputConvertKatakana(-6)<CR>
 function! tcvime#InputConvertKatakana(n)
   let col = col('.')
   let cnt = a:n
@@ -104,8 +115,10 @@ function! tcvime#InputConvertUndo()
   return substitute(str, '.', "\<BS>", 'g') . prev
 endfunction
 
+" insert mode‚ÉAw’èˆÊ’u‚©‚çw’è‚³‚ê‚½•¶š”‚Ì•¶š—ñ‚ğæ“¾‚µ‚ÄA
+" ‚Ğ‚ç‚ª‚È¨ƒJƒ^ƒJƒi•ÏŠ·‚ğs‚¤‚½‚ß‚Ì•¶š—ñ‚ğ•Ô‚·B
 function! tcvime#InputConvertKatakanaPos(col, n)
-  if a:n == 0
+  if a:n <= 0
     let line = getline('.')
     let col = a:col
     if s:insert_line == line('.') && s:insert_col < a:col
@@ -116,6 +129,10 @@ function! tcvime#InputConvertKatakanaPos(col, n)
     endif
     " g:tcvime#hira2kata_pat‚Éƒ}ƒbƒ`‚·‚é•¶š‚ğæ“¾
     let chars = matchstr(line, g:tcvime#hira2kata_pat . '\%' . col . 'c')
+    if a:n < 0 " ‚Ğ‚ç‚ª‚È‚Æ‚µ‚Äc‚·•¶š”
+      let hiracnt = -a:n
+      let chars = matchstr(chars, '.\{' . hiracnt . '}\zs.*$')
+    endif
   else
     let chars = matchstr(getline('.'), '.\{,' . a:n . '}\%' . a:col . 'c')
   endif
