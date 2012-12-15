@@ -355,7 +355,7 @@ endfunction
 
 function! s:DisableKeymap()
   let &iminsert = 0
-  iunmap <Space>
+  silent! iunmap <Space>
   TcvimeCloseHelp
 endfunction
 
