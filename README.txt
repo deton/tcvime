@@ -43,7 +43,8 @@ UNIXでの使用上の注意
   bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
   kanjitable.txt      'runtimepath'か$VIM   漢字テーブルファイル
   keymap/tutcodek.vim 'runtimepath'/keymap/ 'でひらがな/カタカナモード切り替え
-					    ができるようにしたtutcodeのkeymap
+					    ができるようにしたtutcodeのkeymap。
+					    ただし、r,f,t等でひらがな使用不可
 
   'runtimepath'や$VIMで示されるディレクトリは、Vim上で
   :echo &runtimepath や :echo $VIM を実行することで確認できます。
