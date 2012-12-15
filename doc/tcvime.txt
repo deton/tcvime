@@ -225,7 +225,8 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    印が付けられていなければ、' 'を挿入。
    省略値: (無し: 未割当て)
    例(<Space>を指定する場合):
-     lmap <silent> <Space> <Plug>TcvimeIConvOrSpace
+     imap <silent> <Space> <Plug>TcvimeIConvOrSpace
+   Note: lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可(<C-R>=なので)
 
 '<Plug>TcvimeIKatuyo'				*'<Plug>TcvimeIKatuyo'*
    交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
@@ -338,12 +339,26 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 if has('keymap')
   set iminsert=0 imsearch=0
   " 切替時にインデントが解除されるのを回避するため、1<C-H>
-  imap <C-J> 1<C-H><C-O>:call tcvime#SetKeymap('tutcodek')<CR>
-  imap <silent> <C-L> 1<C-H><C-O>:set iminsert=0<CR>
+  imap <C-J> 1<C-H><C-O>:call <SID>EnableKeymap('tutcodek')<CR>
+  imap <silent> <C-L> 1<C-H><C-O>:call <SID>DisableKeymap()<CR>
   imap <silent> <ESC> <ESC>:set imsearch=0<CR>
   nmap <silent> <C-K>k <Plug>TcvimeNKatakana
   vmap <silent> <C-K>k <Plug>TcvimeVKatakana
 endif
+
+function! s:EnableKeymap(keymapname)
+  call tcvime#SetKeymap(a:keymapname)
+  " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
+  " (lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可。(<C-R>=なので))
+  imap <silent> <Space> <Plug>TcvimeIConvOrSpace
+endfunction
+
+function! s:DisableKeymap()
+  let &iminsert = 0
+  iunmap <Space>
+  TcvimeCloseHelp
+endfunction
+
 " lmapのカスタマイズを行う関数。
 " tcvime#SetKeymap()からコールバックされる。
 function! TcvimeCustomKeymap()
@@ -352,12 +367,14 @@ function! TcvimeCustomKeymap()
   lmap <silent> ala <Plug>TcvimeIBushu
   " aljで前置型交ぜ書き変換の読み入力開始
   lmap <silent> alj <Plug>TcvimeIStart
-  " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
-  lmap <silent> <Space> <Plug>TcvimeIConvOrSpace
   " al<Space>で前置型交ぜ書き変換
   lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
   " aloで前置型交ぜ書き変換(活用する語として変換)
   lmap <silent> alo <Plug>TcvimeIKatuyo
+  " alzで直前のカタカナ変換の取り消し
+  lmap <silent> alz <C-R>=tcvime#InputConvertUndo()<CR>
+  " al;で直前のカタカナ変換を縮める
+  lmap <silent> al; <C-R>=tcvime#InputConvertKatakanaShrink()<CR>
   " 後置型カタカナ変換
   lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR> " ひらがなが続く間
   lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR> " 1文字
@@ -369,6 +386,13 @@ function! TcvimeCustomKeymap()
   lmap <silent> al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
   lmap <silent> al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
   lmap <silent> al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
+  " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
+  lmap <silent> alq <C-R>=tcvime#InputConvertKatakana(-1)<CR>
+  lmap <silent> alw <C-R>=tcvime#InputConvertKatakana(-2)<CR>
+  lmap <silent> ale <C-R>=tcvime#InputConvertKatakana(-3)<CR>
+  lmap <silent> alr <C-R>=tcvime#InputConvertKatakana(-4)<CR>
+  lmap <silent> alt <C-R>=tcvime#InputConvertKatakana(-5)<CR>
+  lmap <silent> aly <C-R>=tcvime#InputConvertKatakana(-6)<CR>
   " tc2同様の後置型交ぜ書き変換を行うための設定:
   " " 活用しない語
   " lmap <silent> 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>

@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-11
+" Last Change: 2012-12-15
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -51,7 +51,8 @@ scriptencoding cp932
 "       交ぜ書き変換: 変換実行キー。読みが無ければ' 'を挿入。
 "       省略値: (無し: 未割当て)
 "       例(<Space>を指定する場合):
-"         lmap <silent> al<Space> <Plug>TcvimeIConvOrSpace
+"         imap <silent> <Space> <Plug>TcvimeIConvOrSpace
+"       (lmapにすると、lmap有効時にfやtの後の<Space>が使用不可(<C-R>=なので))
 "    '<Plug>TcvimeIKatuyo'
 "       交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
 "       例(aloを指定する場合):
