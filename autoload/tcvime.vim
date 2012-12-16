@@ -93,7 +93,6 @@ function! tcvime#InputConvertKatakanaShrink()
 endfunction
 
 " 直前の変換を取り消す
-" TODO: 交ぜ書き変換や部首合成変換の取り消しへの対応(現状カタカナ変換のみ対応)
 function! tcvime#InputConvertUndo()
   if s:prev_str == ''
     return ''
@@ -720,6 +719,8 @@ endfunction
 
 " 変換で確定した文字列のヘルプ表を表示する
 function! s:ShowAutoHelp(yomi, str)
+  let s:prev_str = a:yomi
+  let s:commit_str = a:str
   let yomichars = split(a:yomi, '\zs')
   let chars = split(a:str, '\zs')
   " 読みで入力した漢字はヘルプ表示不要なので取り除く
