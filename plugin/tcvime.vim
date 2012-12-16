@@ -77,6 +77,10 @@ scriptencoding cp932
 "    '<Plug>TcvimeNKatakana'
 "       カタカナ変換: カーソル位置以前の[count]文字のカタカナへの変換を行うキー
 "       省略値: (無し:未割当て)
+"    '<Plug>TcvimeNKataHira'
+"       カタカナ変換: カーソル位置以前でひらがなや・ーが続く間カタカナに変換。
+"       [count]で指定した文字数はひらがなとして残す。
+"       省略値: (無し: 未割当て)
 "    '<Plug>TcvimeNHelp'
 "       打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示するキー。
 "       省略値: <Leader>?

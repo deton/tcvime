@@ -272,6 +272,11 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    カタカナ変換: カーソル位置以前の[count]文字のカタカナへの変換を行うキー。
    省略値: (無し: 未割当て)
 
+'<Plug>TcvimeNKataHira'				*'<Plug>TcvimeNKataHira'*
+   カタカナ変換: カーソル位置以前でひらがなや・ーが続く間カタカナに変換。
+   [count]で指定した文字数はひらがなとして残す。
+   省略値: (無し: 未割当て)
+
 '<Plug>TcvimeNOpKatakana'			*'<Plug>TcvimeNOpKatakana'*
    カタカナ変換: このキーを押した後の{motion}で指定される文字列をカタカナ変換。
    注意: キーを押した際に|'operatorfunc'|を上書きします。
@@ -339,7 +344,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 if has('keymap')
   set iminsert=0 imsearch=0
   " 切替時にインデントが解除されるのを回避するため、1<C-H>
-  imap <C-J> 1<C-H><C-O>:call <SID>EnableKeymap('tutcodek')<CR>
+  imap <C-J> 1<C-H><C-O>:call <SID>EnableKeymap('tutcode')<CR>
   imap <silent> <C-L> 1<C-H><C-O>:call <SID>DisableKeymap()<CR>
   imap <silent> <ESC> <ESC>:set imsearch=0<CR>
   nmap <silent> <C-K>k <Plug>TcvimeNKatakana
