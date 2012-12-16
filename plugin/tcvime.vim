@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-15
+" Last Change: 2012-12-16
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -18,6 +18,7 @@ scriptencoding cp932
 "   :TcvimeSetKeymap  keymapをsetする
 "   :TcvimeKanjiTable 漢字テーブルファイルを表示して、漢字を選んで入力
 "   :TcvimeCloseHelp  ヘルプ用バッファを閉じる
+"   :TcvimeEditMazegaki 交ぜ書き変換辞書を編集用に開いて直前に変換した読みを検索
 "
 " imap:
 "   <Leader>q       交ぜ書き変換: 読みを開始
@@ -182,6 +183,10 @@ endif
 " ヘルプ用バッファを閉じる
 if !exists(":TcvimeCloseHelp")
   command! TcvimeCloseHelp call tcvime#CloseHelpBuffer()
+endif
+" 交ぜ書き変換辞書ファイルを編集用に開く
+if !exists(":TcvimeEditMazegaki")
+  command! TcvimeEditMazegaki call tcvime#MazegakiDic_Edit()
 endif
 
 TcvimeOn

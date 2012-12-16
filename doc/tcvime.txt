@@ -334,6 +334,12 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 :TcvimeCloseHelp				*:TcvimeCloseHelp*
   ヘルプ用バッファを閉じる
 
+:TcvimeEditMazegaki				*:TcvimeEditMazegaki*
+  交ぜ書き変換辞書への単語登録用コマンド。
+  交ぜ書き変換辞書を編集用に開いて直前に変換した読みを検索する。
+  読みが見つからない場合は、新たな行を追加して、
+  読みと候補文字列(読みと同じ)を挿入する。
+
 ==============================================================================
 5. 設定例					*tcvime-setting*
 

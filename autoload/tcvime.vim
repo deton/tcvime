@@ -920,12 +920,16 @@ function! s:SelectWindowByName(name)
 endfunction
 
 " 交ぜ書き変換辞書データファイルをオープン
-function! s:Candidate_FileOpen()
+function! s:Candidate_FileOpen(foredit)
   if filereadable(s:candidate_file) != 1
     return 0
   endif
   if s:SelectWindowByName(s:candidate_file) < 0
-    execute 'silent normal! :sv '.s:candidate_file."\<CR>"
+    let cmd = ':sv '
+    if a:foredit
+      let cmd = ':sp '
+    endif
+    execute 'silent normal! ' . cmd . s:candidate_file . "\<CR>"
     nnoremap <buffer> <silent> <Tab> :<C-U>call <SID>Candwin_NextCand()<CR>
     nnoremap <buffer> <silent> <C-N> :<C-U>call <SID>Candwin_NextCand()<CR>
     nnoremap <buffer> <silent> <C-P> :<C-U>call <SID>Candwin_PrevCand()<CR>
@@ -933,7 +937,9 @@ function! s:Candidate_FileOpen()
     nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>Candwin_Select()<CR>
     nnoremap <buffer> <silent> q :<C-U>quit<CR>
     nnoremap <buffer> <silent> <C-E> :<C-U>quit<CR>
-    set nobuflisted
+    if !a:foredit
+      set nobuflisted
+    endif
   endif
   return 1
 endfunction
@@ -949,7 +955,7 @@ let s:is_katuyo = 0
 "   1:候補が1つだけ見つかった場合, 2:候補が2つ以上見つかった場合
 function! s:CandidateSearch(keyword, close)
   let s:last_keyword = a:keyword
-  if !s:Candidate_FileOpen()
+  if !s:Candidate_FileOpen(0)
     return -1
   endif
 
@@ -995,6 +1001,23 @@ function! s:Candwin_Select()
   let s:last_candidate = chars
   quit
   call s:FixCandidate()
+endfunction
+
+" 交ぜ書き辞書を編集用に開いて、直前に変換した読みを検索する
+function! tcvime#MazegakiDic_Edit()
+  if !s:Candidate_FileOpen(1)
+    return -1
+  endif
+  if s:last_keyword == ''
+    return 0
+  endif
+  let ret = search('^' . s:last_keyword . ' ', 'cw')
+  if ret
+    call search(' /', 'e')
+    return ret
+  endif
+  " 読みが無ければ新たに挿入
+  execute 'normal! O' . s:last_keyword . ' /' . s:last_keyword . "/\<ESC>"
 endfunction
 
 " 部首合成辞書データファイルをオープン
