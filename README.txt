@@ -42,6 +42,7 @@ UNIXでの使用上の注意
   mazegaki.dic        'runtimepath'か$VIM   交ぜ書き変換用辞書
   bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
   kanjitable.txt      'runtimepath'か$VIM   漢字テーブルファイル
+  keymap/tutcodep.vim 'runtimepath'/keymap/ tutcodeに新常用漢字対応等63文字追加
   keymap/tutcodek.vim 'runtimepath'/keymap/ 'でひらがな/カタカナモード切り替え
 					    ができるようにしたtutcodeのkeymap。
 					    ただし、r,f,t等でひらがな使用不可
@@ -90,7 +91,8 @@ UNIXでの使用上の注意
    - {motion}で対象文字列を指定した変換を行うためのopfuncや<Plug>を追加:
      - 交ぜ書き変換: <Plug>TcvimeNOpConvert, <Plug>TcvimeNOpKatuyo
      - カタカナ変換: <Plug>TcvimeNOpKatakana
-   - tutcodek_cp932.vimをtutcodek.vimに変更。
+   - keymap/tutcodep.vimを追加。新常用漢字対応等63文字追加。
+   - keymap/tutcodek_cp932.vimをtutcodek.vimに変更。
      (_cp932付きだと&encodingがcp932の場合しか読み込まれないので)
    - Vim6対応を終了。要Vim7
 
