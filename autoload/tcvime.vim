@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-16
+" Last Change: 2012-12-18
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -68,7 +68,7 @@ let s:prev_str = ''
 let s:commit_str = ''
 
 " 直前の後置型カタカナ変換を縮める
-function! tcvime#InputConvertKatakanaShrink()
+function! tcvime#InputConvertKatakanaShrink(n)
   if s:prev_str == ''
     return ''
   endif
@@ -81,8 +81,12 @@ function! tcvime#InputConvertKatakanaShrink()
     let s:prev_str = ''
     return ''
   endif
+  let cnt = a:n
+  if cnt == 0
+    cnt = 1
+  endif
   let str = s:prev_str
-  let strlist = matchlist(str, '\(.\)\(.*\)')
+  let strlist = matchlist(str, '\(.\{,' . cnt . '}\)\(.*\)')
   let kata = tcvime#hira2kata(strlist[2])
   let newstr = tcvime#kata2hira(strlist[1]) . kata
   " Shrinkを繰り返し呼んだ際に1文字ずつカタカナを縮めるため、prev_strを縮める

@@ -382,10 +382,14 @@ function! TcvimeCustomKeymap()
   lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
   " aloで前置型交ぜ書き変換(活用する語として変換)
   lmap <silent> alo <Plug>TcvimeIKatuyo
-  " alzで直前のカタカナ変換・交ぜ書き変換・部首合成変換の取り消し
-  lmap <silent> alz <C-R>=tcvime#InputConvertUndo()<CR>
-  " al;で直前のカタカナ変換を縮める
-  lmap <silent> al; <C-R>=tcvime#InputConvertKatakanaShrink()<CR>
+  " aluで直前のカタカナ変換・交ぜ書き変換・部首合成変換の取り消し
+  lmap <silent> alu <C-R>=tcvime#InputConvertUndo()<CR>
+  " 直前のカタカナ変換を縮める
+  lmap <silent> alz <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
+  lmap <silent> alx <C-R>=tcvime#InputConvertKatakanaShrink(2)<CR>
+  lmap <silent> alc <C-R>=tcvime#InputConvertKatakanaShrink(3)<CR>
+  lmap <silent> alv <C-R>=tcvime#InputConvertKatakanaShrink(4)<CR>
+  lmap <silent> alb <C-R>=tcvime#InputConvertKatakanaShrink(5)<CR>
   " 後置型カタカナ変換
   lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR> " ひらがなが続く間
   lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR> " 1文字
