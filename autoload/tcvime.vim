@@ -4,14 +4,14 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-18
+" Last Change: 2012-12-22
 
 let s:save_cpo = &cpo
 set cpo&vim
 
 " 後置型カタカナ変換で、文字数が指定されていない際に、
 " このパターンにマッチする文字が続く間はカタカナに変換する。
-let g:tcvime#hira2kata_pat = '[ぁ-んー・]*'
+let g:tcvime#hira2kata_pat = '[ぁ-んー]*'
 
 let g:tcvime#hiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん'
 let g:tcvime#katakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲン'

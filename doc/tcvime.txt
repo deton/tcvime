@@ -273,7 +273,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    省略値: (無し: 未割当て)
 
 '<Plug>TcvimeNKataHira'				*'<Plug>TcvimeNKataHira'*
-   カタカナ変換: カーソル位置以前でひらがなや・ーが続く間カタカナに変換。
+   カタカナ変換: カーソル位置以前でひらがなや「ー」が続く間カタカナに変換。
    [count]で指定した文字数はひらがなとして残す。
    省略値: (無し: 未割当て)
 

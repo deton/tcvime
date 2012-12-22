@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-16
+" Last Change: 2012-12-22
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -79,7 +79,7 @@ scriptencoding cp932
 "       カタカナ変換: カーソル位置以前の[count]文字のカタカナへの変換を行うキー
 "       省略値: (無し:未割当て)
 "    '<Plug>TcvimeNKataHira'
-"       カタカナ変換: カーソル位置以前でひらがなや・ーが続く間カタカナに変換。
+"       カタカナ変換: カーソル位置以前でひらがなや「ー」が続く間カタカナに変換。
 "       [count]で指定した文字数はひらがなとして残す。
 "       省略値: (無し: 未割当て)
 "    '<Plug>TcvimeNHelp'
