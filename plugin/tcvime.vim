@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-22
+" Last Change: 2012-12-23
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -142,16 +142,6 @@ scriptencoding cp932
 
 if exists('plugin_tcvime_disable')
   finish
-endif
-
-if !exists("tcvime_keymap_for_help")
-  let tcvime_keymap_for_help = &keymap
-endif
-
-if !exists("tcvime_keyboard")
-  let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
-  " 数字キーの段を表示しない場合は次の文字列を使うようにする(qwerty)
-"  let tcvime_keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 endif
 
 " Mapping

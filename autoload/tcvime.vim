@@ -9,6 +9,16 @@ scriptencoding cp932
 let s:save_cpo = &cpo
 set cpo&vim
 
+if !exists("tcvime_keymap_for_help")
+  let tcvime_keymap_for_help = &keymap
+endif
+
+if !exists("tcvime_keyboard")
+  let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
+  " 数字キーの段を表示しない場合は次の文字列を使うようにする(qwerty)
+"  let tcvime_keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
+endif
+
 " 後置型カタカナ変換で、文字数が指定されていない際に、
 " このパターンにマッチする文字が続く間はカタカナに変換する。
 let g:tcvime#hira2kata_pat = '[ぁ-んー]*'
@@ -955,6 +965,8 @@ let s:last_candidate_list = []
 let s:is_katuyo = 0
 
 " 辞書から未確定文字列を検索
+" @param close 検索後にバッファを閉じるかどうか。
+"   Normal mode時は辞書バッファ上で候補選択をするので開いたままにできるように。
 " @return -1:辞書が開けない場合, 0:文字列が見つからない場合,
 "   1:候補が1つだけ見つかった場合, 2:候補が2つ以上見つかった場合
 function! s:CandidateSearch(keyword, close)
