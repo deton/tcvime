@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-22
+" Last Change: 2012-12-23
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -594,7 +594,7 @@ endfunction
 
 " ConvertCount()‚Å•ÏŠ·‚ðŠJŽn‚µ‚½Œó•â‚ðŠm’è‚·‚é
 function! s:FixCandidate()
-  call cursor(0, s:status_colend)
+  call cursor(s:status_line, s:status_colend)
   execute "normal! a\<ESC>"
   let inschars = s:InputFix(col("'^"))
   let s:last_count = 0
@@ -976,7 +976,9 @@ function! s:CandidateSearch(keyword, close)
     endif
   endif
   if a:close || ret <= 1
-    quit
+    if !&modified
+      quit
+    endif
   else
     call search(' /', 'e')
     call search('/')
@@ -1003,7 +1005,9 @@ function! s:Candwin_Select()
   let [lnum, end] = searchpos('\ze/', '', line('.'))
   let chars = matchstr(getline('.'), '\%' . beg . 'c' . '.*\%' . end . 'c')
   let s:last_candidate = chars
-  quit
+  if !&modified
+    quit
+  endif
   call s:FixCandidate()
 endfunction
 
