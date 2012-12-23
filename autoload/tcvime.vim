@@ -143,6 +143,17 @@ endfunction
 " insert mode時に、指定位置から指定された文字数の文字列を取得して、
 " ひらがな→カタカナ変換を行うための文字列を返す。
 function! tcvime#InputConvertKatakanaPos(col, n)
+  let chars = s:AcquireYomi(g:tcvime#hira2kata_pat, a:col, a:n)
+  if strlen(chars) == 0
+    return ''
+  endif
+  let s:prev_str = chars
+  let s:commit_str = tcvime#hira2kata(chars)
+  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
+endfunction
+
+" insert mode時に、指定位置から指定された文字数の文字列を取得する
+function! s:AcquireYomi(pat, col, n)
   if a:n <= 0
     let line = getline('.')
     let col = a:col
@@ -152,21 +163,16 @@ function! tcvime#InputConvertKatakanaPos(col, n)
       let line = strpart(line, s:insert_col - 1)
       let col = a:col - s:insert_col + 1
     endif
-    " g:tcvime#hira2kata_patにマッチする文字を取得
-    let chars = matchstr(line, g:tcvime#hira2kata_pat . '\%' . col . 'c')
-    if a:n < 0 " ひらがなとして残す文字数
-      let hiracnt = -a:n
-      let chars = matchstr(chars, '.\{' . hiracnt . '}\zs.*$')
+    " patにマッチする文字を取得
+    let chars = matchstr(line, a:pat . '\%' . col . 'c')
+    if a:n < 0 " 除外する文字数
+      let excnt = -a:n
+      let chars = matchstr(chars, '.\{' . excnt . '}\zs.*$')
     endif
   else
     let chars = matchstr(getline('.'), '.\{,' . a:n . '}\%' . a:col . 'c')
   endif
-  if strlen(chars) == 0
-    return ''
-  endif
-  let s:prev_str = chars
-  let s:commit_str = tcvime#hira2kata(chars)
-  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
+  return chars
 endfunction
 
 " 文字列をカタカナに変換する
@@ -183,25 +189,8 @@ endfunction
 " lmap無効のまま入力した文字列を後から漢字に変換したい場合向け。
 "   imap <Space>, <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
 function! tcvime#InputConvertSeq2Kanji(n)
-  let col = col('.')
-  if a:n <= 0
-    let line = getline('.')
-    if s:insert_line == line('.') && s:insert_col < col
-      " Insert mode開始位置以降を変換対象とする
-      " XXX: CTRL-Dでインデントを減らした場合には未対応
-      let line = strpart(line, s:insert_col - 1)
-      let col = col - s:insert_col + 1
-    endif
-    " g:tcvime#seq2kanji_patにマッチする文字を取得
-    let chars = matchstr(line, g:tcvime#seq2kanji_pat . '\%' . col . 'c')
-    if a:n < 0 " そのまま残す文字数
-      let keepcnt = -a:n
-      let chars = matchstr(chars, '.\{' . keepcnt . '}\zs.*$')
-    endif
-  else
-    let chars = matchstr(getline('.'), '.\{,' . a:n . '}\%' . col . 'c')
-  endif
-  if strlen(chars) == 0
+  let chars = s:AcquireYomi(g:tcvime#seq2kanji_pat, col('.'), a:n)
+  if chars == ''
     return ''
   endif
   call feedkeys(g:tcvime_enable_key . chars, 't')
