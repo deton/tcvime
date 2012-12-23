@@ -12,6 +12,9 @@ set cpo&vim
 if !exists("tcvime_mazegaki_edit_nocand")
   let tcvime_mazegaki_edit_nocand = 0
 endif
+if !exists("tcvime_enable_key")
+  let tcvime_enable_key = "\<C-^>"
+endif
 if !exists("tcvime_keymap_for_help")
   let tcvime_keymap_for_help = &keymap
 endif
@@ -20,6 +23,12 @@ if !exists("tcvime_keyboard")
   let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
   " 数字キーの段を表示しない場合は次の文字列を使うようにする(qwerty)
 "  let tcvime_keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
+endif
+
+" 後置型シーケンス→漢字変換で、文字数が指定されていない際に、
+" このパターンにマッチする文字が続く間は漢字に変換する。
+if !exists("g:tcvime#seq2kanji_pat")
+  let g:tcvime#seq2kanji_pat = "[0-9a-zA-Z ;,\\./']*"
 endif
 
 " 後置型カタカナ変換で、文字数が指定されていない際に、
@@ -168,6 +177,35 @@ endfunction
 " 文字列をひらがなに変換する
 function! tcvime#kata2hira(str)
   return tr(a:str, g:tcvime#katakana, g:tcvime#hiragana)
+endfunction
+
+" 入力シーケンスを漢字に変換する。
+" lmap無効のまま入力した文字列を後から漢字に変換したい場合向け。
+"   imap <Space>, <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
+function! tcvime#InputConvertSeq2Kanji(n)
+  let col = col('.')
+  if a:n <= 0
+    let line = getline('.')
+    if s:insert_line == line('.') && s:insert_col < col
+      " Insert mode開始位置以降を変換対象とする
+      " XXX: CTRL-Dでインデントを減らした場合には未対応
+      let line = strpart(line, s:insert_col - 1)
+      let col = col - s:insert_col + 1
+    endif
+    " g:tcvime#seq2kanji_patにマッチする文字を取得
+    let chars = matchstr(line, g:tcvime#seq2kanji_pat . '\%' . col . 'c')
+    if a:n < 0 " そのまま残す文字数
+      let keepcnt = -a:n
+      let chars = matchstr(chars, '.\{' . keepcnt . '}\zs.*$')
+    endif
+  else
+    let chars = matchstr(getline('.'), '.\{,' . a:n . '}\%' . col . 'c')
+  endif
+  if strlen(chars) == 0
+    return ''
+  endif
+  call feedkeys(g:tcvime_enable_key . chars, 't')
+  return substitute(chars, '.', "\<BS>", 'g')
 endfunction
 
 " 設定
