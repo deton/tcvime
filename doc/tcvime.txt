@@ -188,6 +188,16 @@ Visual Modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
   設定例:
 	let tcvime_keymap_for_help = 'tutcode'
 
+'tcvime_mazegaki_edit_nocand'			*'tcvime_mazegaki_edit_nocand'*
+  Normal modeの交ぜ書き変換で候補が無い場合に辞書編集を開始するかどうか。
+  省略値: 0
+  設定例:
+    let tcvime_mazegaki_edit_nocand = 1
+  (なお、再帰的な交ぜ書き変換には未対応のため、
+  辞書編集中にさらに交ぜ書き変換すると、元の交ぜ書き変換は中断される。
+  つまり、新たに登録した候補上で確定操作をしても、
+  元の交ぜ書き変換への確定は不可。手でコピーする必要あり)
+
 TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
   lmapのカスタマイズ用の関数。tcvime#SetKeymap()からコールバックされる。
   設定例は|tcvime-setting|参照。

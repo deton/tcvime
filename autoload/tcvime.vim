@@ -9,6 +9,9 @@ scriptencoding cp932
 let s:save_cpo = &cpo
 set cpo&vim
 
+if !exists("tcvime_mazegaki_edit_nocand")
+  let tcvime_mazegaki_edit_nocand = 0
+endif
 if !exists("tcvime_keymap_for_help")
   let tcvime_keymap_for_help = &keymap
 endif
@@ -935,25 +938,30 @@ endfunction
 
 " 交ぜ書き変換辞書データファイルをオープン
 function! s:Candidate_FileOpen(foredit)
+  if s:SelectWindowByName(s:candidate_file) > 0
+    if a:foredit
+      set noreadonly
+      set buflisted
+    endif
+    return 1
+  endif
   if filereadable(s:candidate_file) != 1
     return 0
   endif
-  if s:SelectWindowByName(s:candidate_file) < 0
-    let cmd = ':sv '
-    if a:foredit
-      let cmd = ':sp '
-    endif
-    execute 'silent normal! ' . cmd . s:candidate_file . "\<CR>"
-    nnoremap <buffer> <silent> <Tab> :<C-U>call <SID>Candwin_NextCand()<CR>
-    nnoremap <buffer> <silent> <C-N> :<C-U>call <SID>Candwin_NextCand()<CR>
-    nnoremap <buffer> <silent> <C-P> :<C-U>call <SID>Candwin_PrevCand()<CR>
-    nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
-    nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>Candwin_Select()<CR>
-    nnoremap <buffer> <silent> q :<C-U>quit<CR>
-    nnoremap <buffer> <silent> <C-E> :<C-U>quit<CR>
-    if !a:foredit
-      set nobuflisted
-    endif
+  let cmd = ':sv '
+  if a:foredit
+    let cmd = ':sp '
+  endif
+  execute 'silent normal! ' . cmd . s:candidate_file . "\<CR>"
+  nnoremap <buffer> <silent> <Tab> :<C-U>call <SID>Candwin_NextCand()<CR>
+  nnoremap <buffer> <silent> <C-N> :<C-U>call <SID>Candwin_NextCand()<CR>
+  nnoremap <buffer> <silent> <C-P> :<C-U>call <SID>Candwin_PrevCand()<CR>
+  nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
+  nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>Candwin_Select()<CR>
+  nnoremap <buffer> <silent> q :<C-U>quit<CR>
+  nnoremap <buffer> <silent> <C-E> :<C-U>quit<CR>
+  if !a:foredit
+    set nobuflisted
   endif
   return 1
 endfunction
@@ -987,13 +995,20 @@ function! s:CandidateSearch(keyword, close)
       let s:last_candidate = s:last_candidate_list[0]
     endif
   endif
-  if a:close || ret <= 1
+  if a:close || ret == 1 " Insert modeか、候補が1つのみ
     if !&modified
       quit
     endif
-  else
+    return ret
+  endif
+  if ret > 1 " 候補が複数: このバッファ上で候補選択
     call search(' /', 'e')
     call search('/')
+    return ret
+  endif
+  " 候補無し
+  if g:tcvime_mazegaki_edit_nocand
+    call tcvime#MazegakiDic_Edit()
   endif
   return ret
 endfunction
