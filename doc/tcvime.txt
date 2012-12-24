@@ -196,7 +196,7 @@ Visual Modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
   (なお、再帰的な交ぜ書き変換には未対応のため、
   辞書編集中にさらに交ぜ書き変換すると、元の交ぜ書き変換は中断される。
   つまり、新たに登録した候補上で確定操作をしても、
-  元の交ぜ書き変換への確定は不可。手でコピーする必要あり)
+  元の交ぜ書き変換への確定は不可。再度変換操作をするか手でコピーする必要あり)
 
 TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
   lmapのカスタマイズ用の関数。tcvime#SetKeymap()からコールバックされる。
@@ -393,6 +393,11 @@ endfunction
 " tcvime#SetKeymap()からコールバックされる。
 function! TcvimeCustomKeymap()
   " (TUT-Code用の例)
+  " 既存のlmapを上書きしたい場合は<buffer>指定が必要(もしくはlunmap)
+  lmap <buffer> w<Space> ～
+  lmap <buffer> s<Space> ―
+  lmap <buffer> k<Space> 〈
+  lmap <buffer> l<Space> 〉
   " alaで後置型部首合成変換
   lmap <silent> ala <Plug>TcvimeIBushu
   " aljで前置型交ぜ書き変換の読み入力開始
