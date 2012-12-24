@@ -359,25 +359,34 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 
 if has('keymap')
   set iminsert=0 imsearch=0
-  " 切替時にインデントが解除されるのを回避するため、1<C-H>
-  imap <C-J> 1<C-H><C-O>:call <SID>EnableKeymap('tutcode')<CR>
-  imap <silent> <C-L> 1<C-H><C-O>:call <SID>DisableKeymap()<CR>
+  imap <C-J> <C-R>=<SID>EnableKeymap('tutcodep')<CR>
+  imap <silent> <C-L> <C-R>=<SID>DisableKeymap()<CR>
   imap <silent> <ESC> <ESC>:set imsearch=0<CR>
   nmap <silent> <C-K>k <Plug>TcvimeNKatakana
   vmap <silent> <C-K>k <Plug>TcvimeVKatakana
 endif
 
 function! s:EnableKeymap(keymapname)
+  " 既にオンの場合は何もしない
+  if &iminsert
+    return ''
+  endif
   call tcvime#SetKeymap(a:keymapname)
   " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
   " (lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可。(<C-R>=なので))
   imap <silent> <Space> <Plug>TcvimeIConvOrSpace
+  return "\<C-^>"
 endfunction
 
 function! s:DisableKeymap()
+  " 既にオフの場合は何もしない
+  if !&iminsert
+    return ''
+  endif
   let &iminsert = 0
   silent! iunmap <Space>
   TcvimeCloseHelp
+  return "\<C-^>"
 endfunction
 
 " lmapのカスタマイズを行う関数。
