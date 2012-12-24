@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-23
+" Last Change: 2012-12-24
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -28,7 +28,7 @@ endif
 " 後置型シーケンス→漢字変換で、文字数が指定されていない際に、
 " このパターンにマッチする文字が続く間は漢字に変換する。
 if !exists("g:tcvime#seq2kanji_pat")
-  let g:tcvime#seq2kanji_pat = "[0-9a-zA-Z ;,\\./']*"
+  let g:tcvime#seq2kanji_pat = "[0-9a-z ;,\\./']*"
 endif
 
 " 後置型カタカナ変換で、文字数が指定されていない際に、
