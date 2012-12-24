@@ -12,9 +12,6 @@ set cpo&vim
 if !exists("tcvime_mazegaki_edit_nocand")
   let tcvime_mazegaki_edit_nocand = 0
 endif
-if !exists("tcvime_enable_key")
-  let tcvime_enable_key = "\<C-^>"
-endif
 if !exists("tcvime_keymap_for_help")
   let tcvime_keymap_for_help = &keymap
 endif
@@ -59,12 +56,7 @@ let g:tcvime#katakana = 'ƒ@ƒAƒBƒCƒDƒEƒFƒGƒHƒIƒJƒKƒLƒMƒNƒOƒPƒQƒRƒSƒTƒUƒVƒWƒXƒYƒZƒ
 "     lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR>
 "     lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
 "     lmap <silent> al2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
-"     lmap <silent> al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
-"     lmap <silent> al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
-"     lmap <silent> al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
-"     lmap <silent> al6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
-"     lmap <silent> al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
-"     lmap <silent> al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
+"     ...
 "     lmap <silent> al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
 " w’è‚µ‚½•¶š”‚Ì‚Ğ‚ç‚ª‚È‚ğc‚µ‚ÄƒJƒ^ƒJƒi•ÏŠ·‚·‚éê‡‚Ìİ’è—á:
 "     lmap <silent> alq <C-R>=tcvime#InputConvertKatakana(-1)<CR>
@@ -186,14 +178,14 @@ function! tcvime#kata2hira(str)
 endfunction
 
 " “ü—ÍƒV[ƒPƒ“ƒX‚ğŠ¿š‚É•ÏŠ·‚·‚éB
-" lmap–³Œø‚Ì‚Ü‚Ü“ü—Í‚µ‚½•¶š—ñ‚ğŒã‚©‚çŠ¿š‚É•ÏŠ·‚µ‚½‚¢ê‡Œü‚¯B
-"   imap <Space>, <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
+" lmap–³Œø‚Ì‚Ü‚Ü“ü—Í‚µ‚½•¶š—ñ‚ğAlmap—LŒø‚É‚µ‚½’¼Œã‚ÉŠ¿š‚É•ÏŠ·‚·‚é‚½‚ßB
+"   lmap al; <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
 function! tcvime#InputConvertSeq2Kanji(n)
   let chars = s:AcquireYomi(g:tcvime#seq2kanji_pat, col('.'), a:n)
   if chars == ''
     return ''
   endif
-  call feedkeys(g:tcvime_enable_key . chars, 't')
+  call feedkeys(chars, 't')
   return substitute(chars, '.', "\<BS>", 'g')
 endfunction
 
