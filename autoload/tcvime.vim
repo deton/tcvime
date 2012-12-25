@@ -199,12 +199,12 @@ let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
 " keymap‚ğİ’è‚·‚é
 function! tcvime#SetKeymap(keymapname)
   if &l:keymap !=# a:keymapname
-    let &l:keymap = a:keymapname
+    execute 'set keymap=' . a:keymapname
     if exists('*TcvimeCustomKeymap')
       call TcvimeCustomKeymap()
     endif
   else
-    let &l:iminsert = 1
+    set iminsert=1
   endif
 endfunction
 

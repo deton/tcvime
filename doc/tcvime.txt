@@ -383,7 +383,7 @@ function! s:DisableKeymap()
   if !&iminsert
     return ''
   endif
-  let &iminsert = 0
+  set iminsert=0
   silent! iunmap <Space>
   TcvimeCloseHelp
   return "\<C-^>"
