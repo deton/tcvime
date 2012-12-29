@@ -393,11 +393,6 @@ endfunction
 " tcvime#SetKeymap()からコールバックされる。
 function! TcvimeCustomKeymap()
   " (TUT-Code用の例)
-  " 既存のlmapを上書きしたい場合は<buffer>指定が必要(もしくはlunmap)
-  lmap <buffer> w<Space> ～
-  lmap <buffer> s<Space> ―
-  lmap <buffer> k<Space> 〈
-  lmap <buffer> l<Space> 〉
   " alaで後置型部首合成変換
   lmap <silent> ala <Plug>TcvimeIBushu
   " aljで前置型交ぜ書き変換の読み入力開始
