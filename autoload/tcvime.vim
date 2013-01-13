@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2012-12-24
+" Last Change: 2013-01-13
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -720,7 +720,7 @@ endfunction
 " ヘルプ用バッファを開く
 function! s:OpenHelpBuffer()
   if s:SelectWindowByName(s:helpbufname) < 0
-    execute "silent normal! :sp " . s:helpbufname . "\<CR>"
+    silent execute 'sp ' . s:helpbufname
     set buftype=nofile
     set bufhidden=delete
     set noswapfile
@@ -930,7 +930,7 @@ function! s:SearchKeymap(ch, keymap)
       return ""
     endif
   endif
-  execute "silent normal! :sv " . kmfile . "\<CR>"
+  silent execute 'sv ' . kmfile
   set nobuflisted
   let dummy = search('loadkeymap', 'w')
   if search('^[^"].*[^ 	]\+[ 	]\+' . a:ch, 'w') != 0
@@ -967,11 +967,11 @@ function! s:Candidate_FileOpen(foredit)
   if filereadable(s:candidate_file) != 1
     return 0
   endif
-  let cmd = ':sv '
+  let cmd = 'sv '
   if a:foredit
-    let cmd = ':sp '
+    let cmd = 'sp '
   endif
-  execute 'silent normal! ' . cmd . s:candidate_file . "\<CR>"
+  silent execute cmd . s:candidate_file
   nnoremap <buffer> <silent> <Tab> :<C-U>call <SID>Candwin_NextCand()<CR>
   nnoremap <buffer> <silent> <C-N> :<C-U>call <SID>Candwin_NextCand()<CR>
   nnoremap <buffer> <silent> <C-P> :<C-U>call <SID>Candwin_PrevCand()<CR>
@@ -1080,7 +1080,7 @@ function! s:Bushu_FileOpen()
     return 0
   endif
   if s:SelectWindowByName(s:bushu_file) < 0
-    execute 'silent normal! :sv '.s:bushu_file."\<CR>"
+    silent execute 'sv '.s:bushu_file
     set nobuflisted
   endif
   return 1
@@ -1316,7 +1316,7 @@ function! tcvime#KanjiTable_FileOpen()
     return
   endif
   if s:SelectWindowByName(s:kanjitable_file) < 0
-    execute 'silent normal! :sv '.s:kanjitable_file."\<CR>"
+    silent execute 'sv '.s:kanjitable_file
   endif
   nnoremap <buffer> <silent> <CR> :<C-U>call <SID>KanjiTable_CopyChar()<CR>
   nnoremap <buffer> <silent> q :<C-U>quit<CR>
