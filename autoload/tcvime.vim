@@ -367,7 +367,31 @@ function! tcvime#InputPostConvert(count, katuyo)
     return ''
   endif
   let s:status_column = col('.') - len
-  return s:InputConvertSub(yomi, a:katuyo)
+  return s:InputConvertSub(yomi, a:katuyo, 1)
+endfunction
+
+let s:mazegaki_yomi_max = 10
+
+" Insert modeで後置型交ぜ書き変換を開始する。読み文字数指定無し。
+function! tcvime#InputPostConvertStart(katuyo)
+  let s:status_line = line(".")
+  let yomi = matchstr(getline('.'), '.\{,' . s:mazegaki_yomi_max . '}\%' . col('.') . 'c')
+  while yomi != ''
+    let len = strlen(yomi)
+    let s:status_column = col('.') - len
+    let ret = s:InputConvertSub(yomi, a:katuyo, 0)
+    " 候補が見つかった場合は終了
+    if ret != '' || s:completeyomi != ''
+      return ret
+    endif
+    " 候補が見つからなかったら、読みを1文字減らして検索
+    let strlist = matchlist(yomi, '.\(.*\)')
+    let yomi = strlist[1]
+  endwhile
+  let s:last_keyword = ''
+  let s:last_count = 0
+  call s:StatusReset()
+  return ''
 endfunction
 
 " Insert modeで、読みがあれば交ぜ書き変換を開始し、無ければ' 'を返す。
@@ -378,7 +402,7 @@ function! s:InputConvertOrSpace()
     return ' '
   endif
   let lastyomi = s:last_keyword
-  let ret = s:InputConvertSub(status, 0)
+  let ret = s:InputConvertSub(status, 0, 1)
   " 候補無し && 前回と同じ読み→前回も変換不可。再度<Space>なので' 'を返す。
   " でないと、' 'を挿入できなくなったように見えるので。
   " <Plug>TcvimeIStartキーを押して読み開始位置リセットすれば挿入できるけど。
@@ -400,10 +424,10 @@ function! s:InputConvertOrStart(katuyo)
     let s:last_keyword = ''
     return s:InputStart()
   endif
-  return s:InputConvertSub(status, a:katuyo)
+  return s:InputConvertSub(status, a:katuyo, 1)
 endfunction
 
-function! s:InputConvertSub(yomi, katuyo)
+function! s:InputConvertSub(yomi, katuyo, finish)
   let s:completeyomi = ''
   let inschars = ''
   let s:is_katuyo = a:katuyo
@@ -420,7 +444,9 @@ function! s:InputConvertSub(yomi, katuyo)
     autocmd Tcvime CursorMovedI * call <SID>OnCursorMovedI()
     call complete(s:status_column, s:last_candidate_list)
   elseif ncands == 0
-    echo '交ぜ書き辞書中には見つかりません: <' . a:yomi . '>'
+    if a:finish
+      echo '交ぜ書き辞書中には見つかりません: <' . a:yomi . '>'
+    endif
   else
     echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
   endif
