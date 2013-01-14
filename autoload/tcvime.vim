@@ -382,8 +382,16 @@ function! tcvime#InputPostConvertStart(katuyo)
   " 前置型交ぜ書き変換の読みとして指定された文字列があれば、変換対象とする
   let yomi = s:StatusGet('.', col)
   if yomi == ''
-    let s:status_line = line(".")
-    let yomi = matchstr(getline('.'), g:tcvime#yomi_pat . '\{,' . s:mazegaki_yomi_max . '}\%' . col . 'c')
+    let line = getline('.')
+    let c = col
+    if s:insert_line == line('.') && s:insert_col < col
+      " Insert mode開始位置以降を変換対象とする
+      " XXX: CTRL-Dでインデントを減らした場合には未対応
+      let line = strpart(line, s:insert_col - 1)
+      let c = col - s:insert_col + 1
+    endif
+    let yomi = matchstr(line, g:tcvime#yomi_pat . '\{,' . s:mazegaki_yomi_max . '}\%' . c . 'c')
+    let s:status_line = line('.')
   endif
   while yomi != ''
     let len = strlen(yomi)
