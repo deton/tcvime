@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-01-13
+" Last Change: 2013-01-14
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -338,6 +338,7 @@ function! s:InputStart()
 endfunction
 
 let s:completeyomi = ''
+let s:completeop = 0
 
 " Insert modeで後置型交ぜ書き変換を行う。
 " 活用する語の変換の場合は、
@@ -394,6 +395,40 @@ function! tcvime#InputPostConvertStart(katuyo)
   return ''
 endfunction
 
+" 交ぜ書き変換の読みを縮める
+function! tcvime#InputConvertShrink()
+  if !pumvisible()
+    return '>'
+  endif
+  let s:completeop = 1
+  return "\<C-E>"
+endfunction
+
+function! s:InputConvertShrink()
+  let yomi = s:completeyomi
+  let oldlen = strlen(yomi)
+  " 読みを1文字減らして検索
+  let strlist = matchlist(yomi, '.\(.*\)')
+  let yomi = strlist[1]
+  while yomi != ''
+    let len = strlen(yomi)
+    let s:status_column += oldlen - len
+    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0)
+    " 候補が見つかった場合は終了
+    if ret != '' || s:completeyomi != ''
+      return ret
+    endif
+    " 候補が見つからなかったら、読みを1文字減らして検索
+    let oldlen = strlen(yomi)
+    let strlist = matchlist(yomi, '.\(.*\)')
+    let yomi = strlist[1]
+  endwhile
+  let s:last_keyword = ''
+  let s:last_count = 0
+  call s:StatusReset()
+  return ''
+endfunction
+
 " Insert modeで、読みがあれば交ぜ書き変換を開始し、無ければ' 'を返す。
 function! s:InputConvertOrSpace()
   let status = s:StatusGet('.', col('.'))
@@ -437,10 +472,11 @@ function! s:InputConvertSub(yomi, katuyo, finish)
     let key = a:yomi
   endif
   let ncands = s:CandidateSearch(key, 1)
-  if ncands == 1
+  if ncands == 1 && a:finish
     let inschars = s:InputFix(col('.'))
   elseif ncands > 0
     let s:completeyomi = a:yomi
+    inoremap > <C-R>=tcvime#InputConvertShrink()<CR>
     autocmd Tcvime CursorMovedI * call <SID>OnCursorMovedI()
     call complete(s:status_column, s:last_candidate_list)
   elseif ncands == 0
@@ -458,7 +494,15 @@ function! s:OnCursorMovedI()
   if s:completeyomi == ''
     return
   endif
-  autocmd! Tcvime CursorMovedI * call <SID>OnCursorMovedI()
+  autocmd! Tcvime CursorMovedI *
+  " 読みの伸縮操作
+  if s:completeop == 1
+    let s:completeop = 0
+    call s:InputConvertShrink()
+    return
+  else
+    silent! iunmap >
+  endif
   let col = col('.')
   if col == 1
     " <CR>で確定して改行が挿入されて行頭になった場合。TODO: autoindent対応
