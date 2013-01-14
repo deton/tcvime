@@ -371,12 +371,15 @@ function! tcvime#InputPostConvert(count, katuyo)
   return s:InputConvertSub(yomi, a:katuyo, 1)
 endfunction
 
+" 後置型交ぜ書き変換で、文字数が指定されていない際に、
+" このパターンにマッチする文字を読みとして取得する。
+let g:tcvime#yomi_pat = '[^	-~、。，．・「」（）]'
 let s:mazegaki_yomi_max = 10
 
 " Insert modeで後置型交ぜ書き変換を開始する。読み文字数指定無し。
 function! tcvime#InputPostConvertStart(katuyo)
   let s:status_line = line(".")
-  let yomi = matchstr(getline('.'), '.\{,' . s:mazegaki_yomi_max . '}\%' . col('.') . 'c')
+  let yomi = matchstr(getline('.'), g:tcvime#yomi_pat . '\{,' . s:mazegaki_yomi_max . '}\%' . col('.') . 'c')
   while yomi != ''
     let len = strlen(yomi)
     let s:status_column = col('.') - len
