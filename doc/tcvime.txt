@@ -93,6 +93,20 @@ keymapのset後に以下のlmapを行うことで可能です。
   lmap <silent> 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
   lmap <silent> 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
 
+読みの文字数を指定しないで、後置型交ぜ書き変換を開始することもできます。
+
+設定例(ag0を入力した際に後置型交ぜ書き変換を開始する場合):
+
+  lmap <silent> ag0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
+
+読みを縮めるには、候補選択ポップアップメニュー表示中に>キーを押すか、
+確定後(候補数1個の場合は自動確定されます)に、
+<Plug>TcvimeIShrinkにマップしたキーシーケンスを入力してください。
+
+設定例(al>を入力した際に直前の交ぜ書き変換を縮める場合):
+
+  lmap <silent> al> <Plug>TcvimeIShrink
+
 Insert Modeでの部首合成変換			*tcvime-insert-bushu*
 ---------------------------
 <Leader>b	カーソル位置の直前の2文字の部首合成変換を行います。
@@ -242,6 +256,11 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
    例(aloを指定する場合):
      lmap <silent> alo <Plug>TcvimeIKatuyo
+
+'<Plug>TcvimeIShrink'				*'<Plug>TcvimeIShrink'*
+   交ぜ書き変換: 直前の後置型交ぜ書き変換を縮めるキー。省略値: (無し: 未割当て)
+   例(al>を指定する場合):
+     lmap <silent> al> <Plug>TcvimeIShrink
 
 '<Plug>TcvimeIBushu'				*'<Plug>TcvimeIBushu'*
    部首合成変換: 直前の2文字の部首合成変換実行キー。省略値: <Leader>b
@@ -393,16 +412,18 @@ endfunction
 " tcvime#SetKeymap()からコールバックされる。
 function! TcvimeCustomKeymap()
   " (TUT-Code用の例)
-  " alaで後置型部首合成変換
+  " 後置型部首合成変換
   lmap <silent> ala <Plug>TcvimeIBushu
-  " aljで前置型交ぜ書き変換の読み入力開始
+  " 前置型交ぜ書き変換の読み入力開始
   lmap <silent> alj <Plug>TcvimeIStart
-  " al<Space>で前置型交ぜ書き変換
+  " 前置型交ぜ書き変換
   lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
-  " aloで前置型交ぜ書き変換(活用する語として変換)
+  " 前置型交ぜ書き変換(活用する語として変換)
   lmap <silent> alo <Plug>TcvimeIKatuyo
-  " aluで直前のカタカナ変換・交ぜ書き変換・部首合成変換の取り消し
+  " 直前のカタカナ変換・交ぜ書き変換・部首合成変換の取り消し
   lmap <silent> alu <C-R>=tcvime#InputConvertUndo()<CR>
+  " 直前の交ぜ書き変換を縮める
+  lmap <silent> al> <Plug>TcvimeIShrink
   " 直前のカタカナ変換を縮める
   lmap <silent> alz <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
   lmap <silent> alx <C-R>=tcvime#InputConvertKatakanaShrink(2)<CR>
@@ -427,6 +448,8 @@ function! TcvimeCustomKeymap()
   lmap <silent> alr <C-R>=tcvime#InputConvertKatakana(-4)<CR>
   lmap <silent> alt <C-R>=tcvime#InputConvertKatakana(-5)<CR>
   lmap <silent> aly <C-R>=tcvime#InputConvertKatakana(-6)<CR>
+  " 後置型交ぜ書き変換: 読みの文字数指定無し
+  lmap <silent> ag0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
   " tc2同様の後置型交ぜ書き変換を行うための設定:
   " " 活用しない語
   " lmap <silent> 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
