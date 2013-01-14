@@ -259,6 +259,7 @@ function! tcvime#MappingOn()
   inoremap <script> <silent> <Plug>TcvimeIConvOrSpace <C-R>=<SID>InputConvertOrSpace()<CR>
   inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=<SID>InputConvertOrStart(1)<CR>
   inoremap <script> <silent> <Plug>TcvimeIBushu <C-R>=<SID>InputConvertBushu(col('.'))<CR>
+  inoremap <script> <silent> <Plug>TcvimeIShrink <C-R>=tcvime#InputConvertUndo()<CR><C-R>=<SID>InputConvertShrinkLatest(0)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKatuyo :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKatakana :<C-U>call <SID>ConvertKatakana(v:count)<CR>
@@ -445,6 +446,44 @@ function! s:InputConvertShrink()
   return ''
 endfunction
 
+" 直前の後置型交ぜ書き変換を縮める
+function! s:InputConvertShrinkLatest(katuyo)
+  if pumvisible()
+    let s:completeop = 1
+    return "\<C-E>"
+  endif
+  " カーソル位置前が、直前に変換した文字列でない場合は、何もしない。
+  " 変換後に別の文字を入力した後で間違ってこの関数が呼ばれて、
+  " 古い変換の内容をもとに上書きすると困るので。
+  let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
+  let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
+  if chars != s:commit_str
+    return ''
+  endif
+  let strlist = matchlist(chars, '.\(.*\)')
+  if len(strlist) < 1
+    return ''
+  endif
+  let yomi = strlist[1]
+  let s:status_line = line('.')
+  while yomi != ''
+    let len = strlen(yomi)
+    let s:status_column = col('.') - len
+    let ret = s:InputConvertSub(yomi, a:katuyo, 0)
+    " 候補が見つかった場合は終了
+    if ret != '' || s:completeyomi != ''
+      return ret
+    endif
+    " 候補が見つからなかったら、読みを1文字減らして検索
+    let strlist = matchlist(yomi, '.\(.*\)')
+    let yomi = strlist[1]
+  endwhile
+  let s:last_keyword = ''
+  let s:last_count = 0
+  call s:StatusReset()
+  return ''
+endfunction
+
 " Insert modeで、読みがあれば交ぜ書き変換を開始し、無ければ' 'を返す。
 function! s:InputConvertOrSpace()
   let status = s:StatusGet('.', col('.'))
@@ -488,7 +527,7 @@ function! s:InputConvertSub(yomi, katuyo, finish)
     let key = a:yomi
   endif
   let ncands = s:CandidateSearch(key, 1)
-  if ncands == 1 && a:finish
+  if ncands == 1
     let inschars = s:InputFix(col('.'))
   elseif ncands > 0
     let s:completeyomi = a:yomi
