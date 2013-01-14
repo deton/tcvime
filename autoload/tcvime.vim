@@ -378,11 +378,16 @@ let s:mazegaki_yomi_max = 10
 
 " Insert modeで後置型交ぜ書き変換を開始する。読み文字数指定無し。
 function! tcvime#InputPostConvertStart(katuyo)
-  let s:status_line = line(".")
-  let yomi = matchstr(getline('.'), g:tcvime#yomi_pat . '\{,' . s:mazegaki_yomi_max . '}\%' . col('.') . 'c')
+  let col = col('.')
+  " 前置型交ぜ書き変換の読みとして指定された文字列があれば、変換対象とする
+  let yomi = s:StatusGet('.', col)
+  if yomi == ''
+    let s:status_line = line(".")
+    let yomi = matchstr(getline('.'), g:tcvime#yomi_pat . '\{,' . s:mazegaki_yomi_max . '}\%' . col . 'c')
+  endif
   while yomi != ''
     let len = strlen(yomi)
-    let s:status_column = col('.') - len
+    let s:status_column = col - len
     let ret = s:InputConvertSub(yomi, a:katuyo, 0)
     " 候補が見つかった場合は終了
     if ret != '' || s:completeyomi != ''
