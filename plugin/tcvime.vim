@@ -133,6 +133,14 @@ scriptencoding cp932
 "    'tcvime_keymap_for_help'
 "       文字ヘルプ表示に使うkeymap。現在のバッファで&keymapが未設定の場合に使用
 "
+"    'tcvime_learning'
+"       交ぜ書き変換で確定した候補を学習して、
+"       以降の変換時に先頭になるように交ぜ書き変換辞書を更新するかどうか。
+"       省略値: 0
+"       設定例:
+"         let tcvime_learning = 1
+"       (なお、辞書更新後保存を行うため、辞書が大きい場合は時間がかかる。)
+"
 "    'tcvime_mazegaki_edit_nocand'
 "       Normal modeの交ぜ書き変換で候補が無い場合に辞書編集を開始するかどうか。
 "       省略値: 0
