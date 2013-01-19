@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-01-14
+" Last Change: 2013-01-19
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -191,7 +191,7 @@ if !exists(":TcvimeCloseHelp")
 endif
 " 交ぜ書き変換辞書ファイルを編集用に開く
 if !exists(":TcvimeEditMazegaki")
-  command! TcvimeEditMazegaki call tcvime#MazegakiDic_Edit()
+  command! TcvimeEditMazegaki call tcvime#MazegakiDic_Edit(1)
 endif
 
 TcvimeOn

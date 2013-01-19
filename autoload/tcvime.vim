@@ -22,6 +22,11 @@ if !exists("tcvime_keyboard")
 "  let tcvime_keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 endif
 
+" 交ぜ書き変換で確定した候補を以降の変換で先頭に持ってくるかどうか
+if !exists("tcvime_learning")
+  let tcvime_learning = 0
+endif
+
 " 後置型シーケンス→漢字変換で、文字数が指定されていない際に、
 " このパターンにマッチする文字が続く間は漢字に変換する。
 if !exists("g:tcvime#seq2kanji_pat")
@@ -568,6 +573,9 @@ function! s:OnCursorMovedI()
     let status = s:StatusGet('.', col)
   endif
   if status != s:completeyomi
+    if g:tcvime_learning
+      call s:LearnCand(status)
+    endif
     " XXX: ポップアップメニュー無効の場合、自動ヘルプ表示できない
     call s:ShowAutoHelp(s:completeyomi, status)
   endif
@@ -592,6 +600,9 @@ function! s:InputFix(col)
   if s:IsCandidateOK(str)
     let inschars = s:last_candidate
     if strlen(inschars) > 0
+      if g:tcvime_learning
+	call s:LearnCand(inschars)
+      endif
       call s:ShowAutoHelp(str, inschars)
       let bs = substitute(str, '.', "\<BS>", "g")
       let inschars = bs . inschars
@@ -1152,7 +1163,7 @@ function! s:CandidateSearch(keyword, close)
   endif
   " 候補無し
   if g:tcvime_mazegaki_edit_nocand
-    call tcvime#MazegakiDic_Edit()
+    call tcvime#MazegakiDic_Edit(1)
   endif
   return ret
 endfunction
@@ -1183,12 +1194,13 @@ function! s:Candwin_Select()
 endfunction
 
 " 交ぜ書き辞書を編集用に開いて、直前に変換した読みを検索する
-function! tcvime#MazegakiDic_Edit()
+function! tcvime#MazegakiDic_Edit(addnew)
   if !s:Candidate_FileOpen(1)
-    return -1
+    return -2
   endif
+  " 直前が交ぜ書き変換でない場合も、辞書ファイルは開く
   if s:last_keyword == ''
-    return 0
+    return -1
   endif
   let ret = search('^' . s:last_keyword . ' ', 'cw')
   if ret
@@ -1196,7 +1208,33 @@ function! tcvime#MazegakiDic_Edit()
     return ret
   endif
   " 読みが無ければ新たに挿入
-  execute 'normal! O' . s:last_keyword . ' /' . s:last_keyword . "/\<ESC>"
+  if a:addnew
+    execute 'normal! O' . s:last_keyword . ' /' . s:last_keyword . "/\<ESC>"
+  endif
+  return 0
+endfunction
+
+" 交ぜ書き変換で確定した候補を学習して、以降の変換で先頭に出るように辞書編集
+function! s:LearnCand(str)
+  let ret = tcvime#MazegakiDic_Edit(0)
+  if ret == -2
+    return
+  elseif ret <= 0
+    quit
+    return
+  endif
+  let candstr = strpart(getline('.'), col('.') - 1)
+  let candlist = split(candstr, '/', 1)
+  " ['', '候補1', '候補2', '候補3', ...., '']
+  let i = index(candlist, a:str)
+  if i <= 1 " 1:既に先頭の場合は変更不要
+    quit
+    return
+  endif
+  call remove(candlist, i)
+  call insert(candlist, a:str, 1)
+  call setline('.', s:last_keyword . ' ' . join(candlist, '/'))
+  wq
 endfunction
 
 " 部首合成辞書データファイルをオープン
