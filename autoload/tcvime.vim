@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-01-14
+" Last Change: 2013-01-19
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -259,7 +259,7 @@ function! tcvime#MappingOn()
   inoremap <script> <silent> <Plug>TcvimeIConvOrSpace <C-R>=<SID>InputConvertOrSpace()<CR>
   inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=<SID>InputConvertOrStart(1)<CR>
   inoremap <script> <silent> <Plug>TcvimeIBushu <C-R>=<SID>InputConvertBushu(col('.'))<CR>
-  inoremap <script> <silent> <Plug>TcvimeIShrink <C-R>=tcvime#InputConvertUndo()<CR><C-R>=<SID>InputConvertShrinkLatest(0)<CR>
+  inoremap <script> <silent> <Plug>TcvimeIShrink <C-R>=tcvime#InputConvertUndo()<CR><C-R>=<SID>InputConvertShrinkLatest()<CR>
   nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKatuyo :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
   nnoremap <script> <silent> <Plug>TcvimeNKatakana :<C-U>call <SID>ConvertKatakana(v:count)<CR>
@@ -447,7 +447,7 @@ function! s:InputConvertShrink()
 endfunction
 
 " ’¼‘O‚ÌŒã’uŒ^Œğ‚º‘‚«•ÏŠ·‚ğk‚ß‚é
-function! s:InputConvertShrinkLatest(katuyo)
+function! s:InputConvertShrinkLatest()
   if pumvisible()
     let s:completeop = 1
     return "\<C-E>"
@@ -469,7 +469,7 @@ function! s:InputConvertShrinkLatest(katuyo)
   while yomi != ''
     let len = strlen(yomi)
     let s:status_column = col('.') - len
-    let ret = s:InputConvertSub(yomi, a:katuyo, 0)
+    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0)
     " Œó•â‚ªŒ©‚Â‚©‚Á‚½ê‡‚ÍI—¹
     if ret != '' || s:completeyomi != ''
       return ret

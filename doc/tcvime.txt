@@ -448,8 +448,10 @@ function! TcvimeCustomKeymap()
   lmap <silent> alr <C-R>=tcvime#InputConvertKatakana(-4)<CR>
   lmap <silent> alt <C-R>=tcvime#InputConvertKatakana(-5)<CR>
   lmap <silent> aly <C-R>=tcvime#InputConvertKatakana(-6)<CR>
-  " 後置型交ぜ書き変換: 読みの文字数指定無し
+  " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用しない語
   lmap <silent> ag0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
+  " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用する語
+  lmap <silent> at0 <C-R>=tcvime#InputPostConvertStart(1)<CR>
   " tc2同様の後置型交ぜ書き変換を行うための設定:
   " " 活用しない語
   " lmap <silent> 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
