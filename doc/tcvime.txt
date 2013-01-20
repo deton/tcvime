@@ -17,7 +17,71 @@
 1. 概要						*tcvime-overview*
 
 tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供するプラグインです。
-次の3つの機能を提供します: 交ぜ書き変換、部首合成変換、文字ヘルプ表表示。
+以下の機能を提供します:
+
+|tcvime-mazegaki|		交ぜ書き変換
+|tcvime-bushu|			部首合成変換
+|tcvime-katakana|		カタカナ変換
+|tcvime-help|			文字ヘルプ表表示
+|tcvime-normal-kanjitable|	漢字表からの漢字挿入
+
+交ぜ書き変換					*tcvime-mazegaki*
+------------
+
+|tcvime-insert-mazegaki|	Insert Modeでの交ぜ書き変換
+|tcvime-insert-mazegaki-katuyo|	Insert Modeでの交ぜ書き変換(活用する語)
+|tcvime-insert-mazegaki-postfix|	Insert Modeでの後置型交ぜ書き変換
+|tcvime-normal-mazegaki|	Normal Modeでの交ぜ書き変換
+|tcvime-normal-mazegaki-katuyo|	Normal Modeでの交ぜ書き変換(活用する語)
+|tcvime-visual-mazegaki|	Visual Modeでの交ぜ書き変換
+|tcvime-visual-mazegaki-katuyo|	Visual Modeでの交ぜ書き変換(活用する語)
+
+交ぜ書き変換で確定した候補はデフォルトでは学習しません。
+学習(候補リスト内の位置を移動)するには、
+|'tcvime_movecandto'|オプションを0以上に設定してください。
+
+また、新規単語の登録用に、交ぜ書き変換辞書ファイルを開く
+|:TcvimeEditMazegaki|コマンドを用意しています。
+
+候補が無い場合に単語登録(辞書編集)を開始したい場合は、
+|'tcvime_mazegaki_edit_nocand'|オプションを1に設定してください。
+(ただし編集開始可能なのはNormal Modeの交ぜ書き変換時のみ)
+
+部首合成変換					*tcvime-bushu*
+------------
+
+|tcvime-insert-bushu|		Insert Modeでの部首合成変換
+|tcvime-normal-bushu|		Normal Modeでの部首合成変換
+
+カタカナ変換					*tcvime-katakana*
+------------
+
+|'<Plug>TcvimeNKatakana'|  Normal Modeでのカタカナ変換
+|'<Plug>TcvimeNKataHira'|  Normal Modeでのカタカナ変換(ひらがなを指定文字数残す)
+|'<Plug>TcvimeVKatakana'|  Visual Modeでのカタカナ変換
+
+Insert Mode用には、lmap用の後置型カタカナ変換関数を用意しています。
+|tcvime-setting|
+例:
+  " 後置型カタカナ変換: 指定文字数をカタカナ変換。0:ひらがなが続く間
+  lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR>
+  lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
+  " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
+  lmap <silent> alq <C-R>=tcvime#InputConvertKatakana(-1)<CR>
+  " 直前のカタカナ変換を縮める
+  lmap <silent> alz <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
+
+カタカナモード切り替えは例えばkeymap/tutcodek.vimを参照してください。
+'でひらがな/カタカナモード切り替えができるようにしたtutcodeのkeymapです。
+ただし、r,f,t等でひらがな使用不可(<C-R>=を使っているため。
+loadkeymapでなく、|:map-<expr>|を使ってlmap <expr>で登録する形にすれば
+おそらく可能)
+
+文字ヘルプ表表示				*tcvime-help*
+----------------
+
+|tcvime-normal-help|		文字ヘルプ表表示(Normal Mode)
+|tcvime-visual-help|		文字ヘルプ表表示(Visual Mode)
 
 ==============================================================================
 2. 操作法					*tcvime-usage*
@@ -26,6 +90,16 @@ tcvimeの機能は'mapleader'で指定されたキーの後に'q'などのキーを入力することで
 実行されます。tcvimeでは'mapleader'のデフォルトはCTRL-K(CTRLキーを押しながらk)
 です。説明中の<Leader>という文字列はmapleaderを表しています。つまり、
 mapleaderがCTRL-Kの場合、<Leader>q は CTRL-Kの後にqを入力する、ということです。
+
+なお、Insert Modeの場合は、keymapのset後にlmapで機能の割り当てが可能です。
+|tcvime-setting|
+例:
+  " 後置型部首合成変換
+  lmap <silent> ala <Plug>TcvimeIBushu
+  " 前置型交ぜ書き変換の読み入力開始
+  lmap <silent> alj <Plug>TcvimeIStart
+  " 前置型交ぜ書き変換
+  lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
 
 |tcvime-insert-mazegaki|	Insert Modeでの交ぜ書き変換
 |tcvime-insert-mazegaki-katuyo|	Insert Modeでの交ぜ書き変換(活用する語)
@@ -178,7 +252,7 @@ Visual Modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
 
 文字ヘルプ表表示(Visual Mode)			*tcvime-visual-help*
 -----------------------------
-<Leader>?	Visual modeで選択中の(複数)文字のヘルプ表を表示します。
+<Leader>?	Visual Modeで選択中の(複数)文字のヘルプ表を表示します。
 
 漢字テーブルファイル表示(Normal Mode)		*tcvime-normal-kanjitable*
 -------------------------------------
@@ -214,7 +288,7 @@ Visual Modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
    使用時の排他処理を省くため)、辞書が大きい場合は時間がかかる。)
 
 'tcvime_mazegaki_edit_nocand'			*'tcvime_mazegaki_edit_nocand'*
-  Normal modeの交ぜ書き変換で候補が無い場合に辞書編集を開始するかどうか。
+  Normal Modeの交ぜ書き変換で候補が無い場合に辞書編集を開始するかどうか。
   省略値: 0
   設定例:
     let tcvime_mazegaki_edit_nocand = 1
