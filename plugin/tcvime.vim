@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-01-19
+" Last Change: 2013-01-20
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -133,13 +133,16 @@ scriptencoding cp932
 "    'tcvime_keymap_for_help'
 "       文字ヘルプ表示に使うkeymap。現在のバッファで&keymapが未設定の場合に使用
 "
-"    'tcvime_learning'
-"       交ぜ書き変換で確定した候補を学習して、
-"       以降の変換時に先頭になるように交ぜ書き変換辞書を更新するかどうか。
-"       省略値: 0
-"       設定例:
-"         let tcvime_learning = 1
-"       (なお、辞書更新後保存を行うため、辞書が大きい場合は時間がかかる。)
+"    'tcvime_movecandto'
+"       交ぜ書き変換で確定した候補の、
+"       候補リスト内の移動先位置(先頭は0。移動させない場合は-1)。
+"       ただし、確定した候補が、指定位置以前にある場合は移動しない。
+"       つまり、指定位置より前にある候補の順番は固定。
+"       省略値: -1
+"       設定例(tc2と同様に5番目に移動。先頭4個の順番は固定):
+"         let tcvime_movecandto = 4
+"       (なお、確定・候補移動のたびに交ぜ書き変換辞書を保存するため(複数Vim
+"       使用時の排他処理を省くため)、辞書が大きい場合は時間がかかる。)
 "
 "    'tcvime_mazegaki_edit_nocand'
 "       Normal modeの交ぜ書き変換で候補が無い場合に辞書編集を開始するかどうか。

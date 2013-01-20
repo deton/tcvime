@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-01-19
+" Last Change: 2013-01-20
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -22,9 +22,9 @@ if !exists("tcvime_keyboard")
 "  let tcvime_keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 endif
 
-" 交ぜ書き変換で確定した候補を以降の変換で先頭に持ってくるかどうか
-if !exists("tcvime_learning")
-  let tcvime_learning = 0
+" 交ぜ書き変換で確定した候補の、候補リスト内の移動先位置(0が先頭。-1は移動無し)
+if !exists("tcvime_movecandto")
+  let tcvime_movecandto = -1
 endif
 
 " 後置型シーケンス→漢字変換で、文字数が指定されていない際に、
@@ -573,7 +573,7 @@ function! s:OnCursorMovedI()
     let status = s:StatusGet('.', col)
   endif
   if status != s:completeyomi
-    if g:tcvime_learning
+    if g:tcvime_movecandto >= 0
       call s:LearnCand(status)
     endif
     " XXX: ポップアップメニュー無効の場合、自動ヘルプ表示できない
@@ -600,7 +600,7 @@ function! s:InputFix(col)
   if s:IsCandidateOK(str)
     let inschars = s:last_candidate
     if strlen(inschars) > 0
-      if g:tcvime_learning
+      if g:tcvime_movecandto >= 0
 	call s:LearnCand(inschars)
       endif
       call s:ShowAutoHelp(str, inschars)
@@ -1214,7 +1214,7 @@ function! tcvime#MazegakiDic_Edit(addnew)
   return 0
 endfunction
 
-" 交ぜ書き変換で確定した候補を学習して、以降の変換で先頭に出るように辞書編集
+" 交ぜ書き変換で確定した候補を学習して、候補リスト内位置を移動して、辞書保存
 function! s:LearnCand(str)
   let ret = tcvime#MazegakiDic_Edit(0)
   if ret == -2
@@ -1227,12 +1227,13 @@ function! s:LearnCand(str)
   let candlist = split(candstr, '/', 1)
   " ['', '候補1', '候補2', '候補3', ...., '']
   let i = index(candlist, a:str)
-  if i <= 1 " 1:既に先頭の場合は変更不要
+  let moveto = g:tcvime_movecandto + 1
+  if i <= moveto " 学習対象外の位置にあるか、既に学習済みの位置の場合は変更不要
     quit
     return
   endif
   call remove(candlist, i)
-  call insert(candlist, a:str, 1)
+  call insert(candlist, a:str, moveto)
   call setline('.', s:last_keyword . ' ' . join(candlist, '/'))
   wq
 endfunction
