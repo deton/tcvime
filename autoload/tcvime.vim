@@ -1278,7 +1278,7 @@ function! s:BushuHelpSearch(char1, char2)
     return ''
   endif
   " —á: "™BƒCê* “`E" (*‚ªŒã’u‚³‚ê‚Ä‚¢‚ê‚Î‹t‡‚Å‚àOK)
-  if search('\%(^.\| \)\%(' . a:char1 . a:char2 . '\*\?\)\|\%(' . a:char2 . a:char1 . '\*\)\%( \|$\)', 'cw') != 0
+  if search('\%(^.\| \)\%(' . a:char1 . a:char2 . '\*\?\|' . a:char2 . a:char1 . '\*\)\%( \|$\)', 'cw') != 0
     let retchar = matchstr(getline('.'), '^.')
   else
     let retchar = ''
