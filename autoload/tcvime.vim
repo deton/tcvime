@@ -197,6 +197,7 @@ endfunction
 " 設定
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
+let s:bushuhelp_file = globpath($VIM.','.&runtimepath, 'bushu.help')
 let s:kanjitable_file = globpath($VIM.','.&runtimepath, 'kanjitable.txt')
 let s:helpbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeHelp__'
 let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
@@ -619,7 +620,7 @@ function! s:InputConvertBushu(col)
     let chars = matchstr(getline('.'), '..\%' . a:col . 'c')
     let char1 = matchstr(chars, '^.')
     let char2 = matchstr(chars, '.$')
-    let retchar = s:BushuSearch(char1, char2)
+    let retchar = s:BushuConvert(char1, char2)
     let len = strlen(retchar)
     if len > 0
       let inschars = "\<BS>\<BS>" . retchar
@@ -1238,6 +1239,18 @@ function! s:LearnCand(str)
   wq
 endfunction
 
+" 部首ヘルプファイルをオープン
+function! s:BushuHelp_FileOpen()
+  if filereadable(s:bushuhelp_file) != 1
+    return 0
+  endif
+  if s:SelectWindowByName(s:bushuhelp_file) < 0
+    silent execute 'sv '.s:bushuhelp_file
+    set nobuflisted
+  endif
+  return 1
+endfunction
+
 " 部首合成辞書データファイルをオープン
 function! s:Bushu_FileOpen()
   if filereadable(s:bushu_file) != 1
@@ -1248,6 +1261,30 @@ function! s:Bushu_FileOpen()
     set nobuflisted
   endif
   return 1
+endfunction
+
+" 部首合成変換
+function! s:BushuConvert(char1, char2)
+  let retchar = s:BushuHelpSearch(a:char1, a:char2)
+  if s:BushuCharOK(retchar, a:char1, a:char2)
+    return retchar
+  endif
+  return s:BushuSearch(a:char1, a:char2)
+endfunction
+
+" 部首ヘルプファイルを検索して部首合成変換
+function! s:BushuHelpSearch(char1, char2)
+  if !s:BushuHelp_FileOpen()
+    return ''
+  endif
+  " 例: "傳イ専* 伝・" (*が後置されていれば逆順でもOK)
+  if search('\%(^.\| \)\%(' . a:char1 . a:char2 . '\*\?\)\|\%(' . a:char2 . a:char1 . '\*\)\%( \|$\)', 'cw') != 0
+    let retchar = matchstr(getline('.'), '^.')
+  else
+    let retchar = ''
+  endif
+  quit!
+  return retchar
 endfunction
 
 " 等価文字を検索して返す。等価文字がない場合はもとの文字そのものを返す
