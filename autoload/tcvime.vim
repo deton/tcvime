@@ -1025,7 +1025,7 @@ endfunction
 
 " 部首合成辞書から、指定された文字を含む行を検索して表示する
 function! s:ShowHelpBushuDic(ch)
-  let lines = s:SearchBushuDic(a:ch)
+  let lines = s:ListBushuHelp(a:ch)
   call s:SelectWindowByName(s:helpbufname)
   if empty(lines)
     return -1
@@ -1044,12 +1044,38 @@ function! s:ShowHelpBushuDic(ch)
   return 0
 endfunction
 
+" 部首合成変換ヘルプに表示する行の配列を返す
+function! s:ListBushuHelp(ch)
+  let lines = s:SearchBushuHelp(a:ch)
+  if !empty(lines)
+    return lines
+  endif
+  return s:SearchBushuDic(a:ch)
+endfunction
+
+" bushu.helpファイルから、指定された文字を含む行を検索する
+function! s:SearchBushuHelp(ch)
+  let lines = []
+  if !s:BushuHelp_FileOpen()
+    return lines
+  endif
+  silent! normal! G$
+  if search('^' . a:ch, 'w') != 0
+    call add(lines, getline('.'))
+    while search('^' . a:ch, 'W') != 0
+      call add(lines, getline('.'))
+    endwhile
+  endif
+  quit!
+  return lines
+endfunction
+
 " 部首合成辞書から、指定された文字を含む行を検索する
 function! s:SearchBushuDic(ch)
-  if !s:Bushu_FileOpen()
-    return ""
-  endif
   let lines = []
+  if !s:Bushu_FileOpen()
+    return lines
+  endif
   silent! normal! G$
   if search(a:ch, 'w') != 0
     call add(lines, getline('.'))
