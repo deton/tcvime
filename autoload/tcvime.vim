@@ -1027,20 +1027,21 @@ endfunction
 function! s:ShowHelpBushuDic(ch)
   let lines = s:SearchBushuDic(a:ch)
   call s:SelectWindowByName(s:helpbufname)
-  if strlen(lines) > 0
-    " バッファ頭でなければ区切りの空行挿入。直前が複数行の部首辞書内容の時必要
-    if line('.') > 1
-      silent! execute "normal! o\<ESC>"
-    endif
-    let v:errmsg = ''
-    silent! execute 'normal! O' . lines . "\<ESC>"
-    if v:errmsg != '' " XXX: ポップアップメニュー無効時、E523: Not allowed here
-      return -2
-    endif
-    return 0
-  else
+  if empty(lines)
     return -1
   endif
+  let lnum = line('.')
+  if lnum == 1
+    let lnum = 0
+  else
+    " バッファ頭でなければ区切りの空行挿入。直前が複数行の部首辞書内容の時必要
+    call add(lines, '')
+  endif
+  let failed = append(lnum, lines)
+  if failed
+    return -2
+  endif
+  return 0
 endfunction
 
 " 部首合成辞書から、指定された文字を含む行を検索する
@@ -1048,12 +1049,12 @@ function! s:SearchBushuDic(ch)
   if !s:Bushu_FileOpen()
     return ""
   endif
-  let lines = ""
+  let lines = []
   silent! normal! G$
   if search(a:ch, 'w') != 0
-    let lines = getline('.')
+    call add(lines, getline('.'))
     while search(a:ch, 'W') != 0
-      let lines = lines . "\<CR>" . getline('.')
+      call add(lines, getline('.'))
     endwhile
   endif
   quit!
