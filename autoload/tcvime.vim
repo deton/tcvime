@@ -615,20 +615,22 @@ endfunction
 
 " ’¼‘O‚Ì2•¶š‚Ì•”ñ‡¬•ÏŠ·‚ğs‚¤
 function! s:InputConvertBushu(col)
-  let inschars = ''
-  if a:col > 2
-    let chars = matchstr(getline('.'), '..\%' . a:col . 'c')
-    let char1 = matchstr(chars, '^.')
-    let char2 = matchstr(chars, '.$')
-    let retchar = s:BushuConvert(char1, char2)
-    let len = strlen(retchar)
-    if len > 0
-      let inschars = "\<BS>\<BS>" . retchar
-      call s:ShowAutoHelp(chars, retchar)
-    else
-      echo '•”ñ‡¬•ÏŠ·‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½: <' . char1 . '>, <' . char2 . '>'
-    endif
+  if a:col <= 2
+    return ''
   endif
+  let chars = matchlist(getline('.'), '\(.\)\(.\)\%' . a:col . 'c')
+  if empty(chars)
+    return ''
+  endif
+  let char1 = chars[1]
+  let char2 = chars[2]
+  let retchar = s:BushuConvert(char1, char2)
+  if retchar == ''
+    echo '•”ñ‡¬•ÏŠ·‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½: <' . char1 . '>, <' . char2 . '>'
+    return ''
+  endif
+  call s:ShowAutoHelp(chars[0], retchar)
+  let inschars = "\<BS>\<BS>" . retchar
   return inschars
 endfunction
 
