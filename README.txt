@@ -1,6 +1,6 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
 							     Version: 1.3.0
-							     Date: 2013-01-XX
+							     Date: 2013-02-XX
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -40,6 +40,7 @@ UNIXでの使用上の注意
   autoload/tcvime.vim 'runtimepath'/autoload/ プラグインから呼び出す関数
   doc/tcvime.txt      'runtimepath'/doc/    スクリプトの説明書
   mazegaki.dic        'runtimepath'か$VIM   交ぜ書き変換用辞書
+  bushu.help          'runtimepath'か$VIM   ユーザ用部首合成辞書
   bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
   kanjitable.txt      'runtimepath'か$VIM   漢字テーブルファイル
   keymap/tutcodep.vim 'runtimepath'/keymap/ tutcodeに新常用漢字対応等63文字追加
@@ -64,7 +65,7 @@ UNIXでの使用上の注意
     含まれているものです。
 
 更新履歴
-  - 1.3.0 (2013-01-XX)
+  - 1.3.0 (2013-02-XX)
    - 交ぜ書き変換の候補選択方法を改良:
      - Insert mode: Vimの補完ポップアップメニューで選択・確定
      - Normal mode: 交ぜ書き変換辞書ファイルのバッファで選択・確定
@@ -88,7 +89,9 @@ UNIXでの使用上の注意
    - 交ぜ書き変換辞書を編集用に開いて直前に変換した読みを検索するコマンドを追加
      (交ぜ書き変換辞書への単語登録・削除用)
      - Normal mode交ぜ書き変換で候補が無い場合に辞書編集を開始するオプション追加
-   - bushu.helpファイルがあれば優先して部首合成変換や部首合成ヘルプ表示に使用
+   - ユーザ用部首合成辞書(bushu.help)ファイルがあれば
+     優先して部首合成変換や部首合成ヘルプ表示に使用
+   - bushu.helpを同梱(tc-2.3.1-22.6のbushu34h.helpをJIS X 0208のみにしたもの)
    - 自動ヘルプ機能追加(issue #2):
      部首合成変換や交ぜ書き変換で確定した文字列のヘルプ表を表示。
    - Visual modeで選択した複数文字に対してヘルプ表を表示する機能を追加(issue #1)
