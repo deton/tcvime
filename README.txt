@@ -18,20 +18,6 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
   http://www.kaoriya.net/software/vim に含まれています。
   なお、tutcode keymapはこのtcvimeのアーカイブにも含まれています。
 
-UNIXでの使用上の注意
-  keymapを使うために、configure時に--with-features=bigを指定して
-  コンパイルしておいてください。
-
-  tcvime.vim, mazegaki.dic, bushu.rev, kanjitable.txtはcp932エンコーディング
-  になっています。
-  これらをそのまま使うには、Vimがiconv入りで作られており、
-  かつ、(香り屋版に含まれているvimrcで設定されているように)、fileencodingsに
-  cp932が含まれている必要があります。
-
-  あるいは、これらのファイルのエンコーディングを
-  euc-jpなどに変換しておいてください。
-  (その場合、スクリプト(*.vim)中のscriptencoding cp932の変更もお忘れなく。)
-
 準備
   アーカイブに含まれるファイルを次の場所に置いてください。
 
@@ -39,17 +25,23 @@ UNIXでの使用上の注意
   plugin/tcvime.vim   'runtimepath'/plugin/ プラグインスクリプト本体
   autoload/tcvime.vim 'runtimepath'/autoload/ プラグインから呼び出す関数
   doc/tcvime.txt      'runtimepath'/doc/    スクリプトの説明書
-  mazegaki.dic        'runtimepath'か$VIM   交ぜ書き変換用辞書
-  bushu.help          'runtimepath'か$VIM   ユーザ用部首合成辞書
-  bushu.rev           'runtimepath'か$VIM   部首合成変換用辞書
-  kanjitable.txt      'runtimepath'か$VIM   漢字テーブルファイル
+  mazegaki.dic        'runtimepath'         交ぜ書き変換用辞書
+  bushu.help          'runtimepath'         ユーザ用部首合成辞書
+  bushu.rev           'runtimepath'         部首合成変換用辞書
+  kanjitable.txt      'runtimepath'         漢字テーブルファイル
   keymap/tutcodep.vim 'runtimepath'/keymap/ tutcodeに新常用漢字対応等63文字追加
   keymap/tutcodek.vim 'runtimepath'/keymap/ 'でひらがな/カタカナモード切り替え
 					    ができるようにしたtutcodeのkeymap。
 					    ただし、r,f,t等でひらがな使用不可
 
-  'runtimepath'や$VIMで示されるディレクトリは、Vim上で
-  :echo &runtimepath や :echo $VIM を実行することで確認できます。
+  'runtimepath'で示されるディレクトリは、Vim上で
+  :echo &runtimepath を実行することで確認できます。
+  (UNIXでは$HOME/.vim/、Windowsでは$HOME/vimfiles/)
+
+  辞書ファイルや.txtファイルの漢字コードはShift_JISです。
+  EUC-JPやUTF-8環境で、各ファイルをvimでそのまま開いても正しく読めない場合は、
+  環境に合わせて漢字コードを変換しておいてください。
+  (でないと各ファイルを使う部首合成変換や交ぜ書き変換が動作しません)
 
 使い方
   tcvime.txtを参照してください。
