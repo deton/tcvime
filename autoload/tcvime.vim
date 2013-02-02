@@ -351,6 +351,7 @@ function! tcvime#MappingOn()
   vnoremap <script> <silent> <Plug>TcvimeVConvert :<C-U>call tcvime#ConvertOp(visualmode(), 1)<CR>
   vnoremap <script> <silent> <Plug>TcvimeVKatuyo :<C-U>call tcvime#ConvertOpKatuyo(visualmode(), 1)<CR>
   vnoremap <script> <silent> <Plug>TcvimeVKatakana :<C-U>call tcvime#ConvertOpKatakana(visualmode(), 1)<CR>
+  vnoremap <script> <silent> <Plug>TcvimeVKanji2Seq :<C-U>call tcvime#ConvertOpKanji2Seq(visualmode(), 1)<CR>
 
   if set_mapleader
     unlet g:mapleader
@@ -781,6 +782,30 @@ function! s:ConvertOpKatakanaSub(beg, end)
   "execute 's/\%' . a:beg . 'c.*\%' . col("'^") . 'c/\=tcvime#hira2kata(submatch(0))/'
   " XXX: 最後の文字が変換に含まれない。\%>'>にすると行末まで変換される
   "s/\%'<.*\%'>/\=tcvime#hira2kata(submatch(0))/
+  call cursor(0, col)
+endfunction
+
+" operatorfuncとして、選択された文字列を入力シーケンスに変換する
+function! tcvime#ConvertOpKanji2Seq(type, ...)
+  let sel_save = &selection
+  let &selection = "inclusive"
+
+  if a:0  " Invoked from Visual mode, use '< and '> marks.
+    call s:ConvertOpKanji2SeqSub(col("'<"), col("'>"))
+  elseif a:type == 'char'
+    call s:ConvertOpKanji2SeqSub(col("'["), col("']"))
+  endif
+
+  let &selection = sel_save
+endfunction
+
+function! s:ConvertOpKanji2SeqSub(beg, end)
+  let col = col('.')
+  call cursor(0, a:end)
+  execute "normal! a\<ESC>"
+  let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
+  let inschars = s:Kanji2Seq(chars, 0)
+  call s:InsertString(inschars)
   call cursor(0, col)
 endfunction
 

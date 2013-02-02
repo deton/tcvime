@@ -4,7 +4,7 @@
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-01-20
+" Last Change: 2013-02-02
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 scriptencoding cp932
@@ -121,6 +121,9 @@ scriptencoding cp932
 "       省略値: <Leader>o
 "    '<Plug>TcvimeVKatakana'
 "       カタカナ変換: 選択中の文字列をカタカナに変換するキー。
+"       省略値: (無し: 未割当て)
+"    '<Plug>TcvimeVKanji2Seq'
+"       カタカナ変換: 選択中の文字列を入力シーケンスに変換するキー。
 "       省略値: (無し: 未割当て)
 "
 " オプション:
