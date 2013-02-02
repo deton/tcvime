@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-01-22
+" Last Change: 2013-02-02
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -81,6 +81,22 @@ function! tcvime#InputConvertKatakana(n)
     endif
   endif
   return tcvime#InputConvertKatakanaPos(col, cnt)
+endfunction
+
+" 後置型でカタカナ文字列を伸ばす
+function! tcvime#InputConvertKatakanaExtend(n)
+  let cnt = a:n
+  if cnt == 0
+    cnt = 1
+  endif
+  " 現位置以前に位置する、連続するカタカナと指定文字数以下のひらがなを取得
+  let m = matchlist(getline('.'), '\([ぁ-ん]\{,' . cnt . '}\)\([ァ-ヶー]*\)\%' . col('.') . 'c')
+  if empty(m)
+    return ''
+  endif
+  let s:prev_str = m[0]
+  let s:commit_str = tcvime#hira2kata(m[1]) . m[2]
+  return substitute(s:prev_str, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
 let s:prev_str = ''
