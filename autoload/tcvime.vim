@@ -211,21 +211,50 @@ function! tcvime#InputConvertSeq2Kanji(n)
 endfunction
 
 " 漢字文字列を入力シーケンスに変換する。
-" lmap有効になっているのに、URL等をペーストした場合に、元に戻すため。
+" 文字数を指定しない場合、英単語入力前にスペースを入力しておくと、
+" スペース以降の文字を英字に変換して、区切り用に入力したスペースを削除。
+" 例:" code "と打鍵すると" 演各 "と表示され、開始キーで、"code"に変換。
 function! tcvime#InputConvertKanji2Seq(n)
-  let chars = s:AcquireYomi('.*', col('.'), a:n)
-  if chars == ''
+  " "undo "→"趣・"、"code "→"演各 "
+  let chars = s:AcquireYomi(' \=[^ ]\+ \=', col('.'), a:n)
+  return s:Kanji2Seq(chars, 1)
+endfunction
+
+" 漢字文字列を入力シーケンスに変換する。
+" 対象文字列は、Insert mode開始位置以降もしくは現在行全て。
+" lmap有効になっているのに、URL等をペーストした場合に、元に戻すため。
+function! tcvime#InputConvertKanji2SeqAll()
+  let line = getline('.')
+  let col = col('.')
+  if s:insert_line == line('.') && s:insert_col < col
+    " Insert mode開始位置以降を変換対象とする
+    " XXX: CTRL-Dでインデントを減らした場合には未対応
+    let line = strpart(line, s:insert_col - 1)
+    let col = col - s:insert_col + 1
+  endif
+  let chars = matchstr(line, '.*' . '\%' . col . 'c')
+  return s:Kanji2Seq(chars, 0)
+endfunction
+
+" 漢字文字列を入力シーケンスに置換するための文字列を返す。
+function! s:Kanji2Seq(str, trim)
+  if a:str == ''
     return ''
   endif
-  let arr = split(chars, '\zs')
-  call map(arr, 's:Kanji2Seq(v:val)')
-  let s:prev_str = chars
-  let s:commit_str = join(arr, '')
-  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
+  let arr = split(a:str, '\zs')
+  call map(arr, 's:Kanji2SeqChar(v:val)')
+  let s:prev_str = a:str
+  let seq = join(arr, '')
+  if a:trim
+    let seq = substitute(seq, '^ \+', '', '')
+    let seq = substitute(seq, ' \+$', '', '')
+  endif
+  let s:commit_str = seq
+  return substitute(a:str, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
 " 漢字1文字を入力シーケンスに変換する。
-function! s:Kanji2Seq(ch)
+function! s:Kanji2SeqChar(ch)
   if char2nr(a:ch) < 0x80
     return a:ch
   endif
