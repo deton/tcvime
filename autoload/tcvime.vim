@@ -215,6 +215,7 @@ function! s:Seq2Kanji(str)
   if a:str == ''
     return ''
   endif
+  let hassetkeymap = 0
   let keymap = &keymap
   if empty(keymap)
     let keymap = g:tcvime_keymap_for_help
@@ -223,6 +224,7 @@ function! s:Seq2Kanji(str)
       return ''
     endif
     call tcvime#SetKeymap(keymap)
+    let hassetkeymap = 1
   endif
 
   let kstr = ''
@@ -247,6 +249,9 @@ function! s:Seq2Kanji(str)
     endif
     let s = strpart(s, i)
   endwhile
+  if hassetkeymap
+    set iminsert=0
+  endif
   let s:prev_str = a:str
   let s:commit_str = kstr
   return substitute(a:str, '.', "\<BS>", 'g') . s:commit_str
