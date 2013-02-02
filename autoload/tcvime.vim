@@ -210,6 +210,32 @@ function! tcvime#InputConvertSeq2Kanji(n)
   return substitute(chars, '.', "\<BS>", 'g')
 endfunction
 
+" 漢字文字列を入力シーケンスに変換する。
+" lmap有効になっているのに、URL等をペーストした場合に、元に戻すため。
+function! tcvime#InputConvertKanji2Seq(n)
+  let chars = s:AcquireYomi('.*', col('.'), a:n)
+  if chars == ''
+    return ''
+  endif
+  let arr = split(chars, '\zs')
+  call map(arr, 's:Kanji2Seq(v:val)')
+  let s:prev_str = chars
+  let s:commit_str = join(arr, '')
+  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
+endfunction
+
+" 漢字1文字を入力シーケンスに変換する。
+function! s:Kanji2Seq(ch)
+  if char2nr(a:ch) < 0x80
+    return a:ch
+  endif
+  let seq = s:SearchKeymap(a:ch)
+  if seq == ''
+    return a:ch
+  endif
+  return seq
+endfunction
+
 " 設定
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
@@ -927,14 +953,6 @@ endfunction
 
 " 指定された文字配列のヘルプ表を表示する
 function! s:ShowHelp(ar, forcebushu)
-  let keymap = &keymap
-  if strlen(keymap) == 0
-    let keymap = g:tcvime_keymap_for_help
-    if strlen(keymap) == 0
-      echo 'tcvime文字ヘルプ表示には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
-      return
-    endif
-  endif
   let curbuf = bufnr('')
   call s:OpenHelpBuffer()
   let winwidth = winwidth(0)
@@ -952,7 +970,7 @@ function! s:ShowHelp(ar, forcebushu)
     if a:forcebushu == 1
       let ret = s:ShowHelpBushuDic(ch)
     else
-      let ret = s:ShowHelpChar(ch, keymap)
+      let ret = s:ShowHelpChar(ch)
     endif
     if ret == -1 " ストローク表も部首合成辞書も表示できなかった場合
       call add(skipchars, ch)
@@ -999,8 +1017,8 @@ function! s:ShowHelp(ar, forcebushu)
 endfunction
 
 " 指定された文字のヘルプ表を表示する
-function! s:ShowHelpChar(ch, keymap)
-  let keyseq = s:SearchKeymap(a:ch, a:keymap)
+function! s:ShowHelpChar(ch)
+  let keyseq = s:SearchKeymap(a:ch)
   if strlen(keyseq) > 0
     call s:SelectWindowByName(s:helpbufname)
     return s:ShowHelpSequence(a:ch, keyseq)
@@ -1104,10 +1122,19 @@ function! s:SearchBushuDic(ch)
 endfunction
 
 " 指定された文字を入力するためのストロークをkeymapファイルから検索する
-function! s:SearchKeymap(ch, keymap)
-  let kmfile = globpath(&rtp, "keymap/" . a:keymap . "_" . &encoding . ".vim")
+function! s:SearchKeymap(ch)
+  let keymap = &keymap
+  if strlen(keymap) == 0
+    let keymap = g:tcvime_keymap_for_help
+    if strlen(keymap) == 0
+      echo 'tcvime文字ヘルプ表示には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
+      return ''
+    endif
+  endif
+
+  let kmfile = globpath(&rtp, "keymap/" . keymap . "_" . &encoding . ".vim")
   if filereadable(kmfile) != 1
-    let kmfile = globpath(&rtp, "keymap/" . a:keymap . ".vim")
+    let kmfile = globpath(&rtp, "keymap/" . keymap . ".vim")
     if filereadable(kmfile) != 1
       return ""
     endif
@@ -1117,6 +1144,7 @@ function! s:SearchKeymap(ch, keymap)
   let dummy = search('loadkeymap', 'w')
   if search('^[^"].*[^ 	]\+[ 	]\+' . a:ch, 'w') != 0
     let keyseq = substitute(getline('.'), '[ 	]\+.*$', '', '')
+    let keyseq = substitute(keyseq, '<Space>', ' ', 'g')
   else
     let keyseq = ""
   endif
