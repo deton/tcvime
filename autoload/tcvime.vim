@@ -210,6 +210,48 @@ function! tcvime#InputConvertSeq2Kanji(n)
   return substitute(chars, '.', "\<BS>", 'g')
 endfunction
 
+" 入力シーケンスを漢字文字列に置換するための文字列を返す。
+function! s:Seq2Kanji(str)
+  if a:str == ''
+    return ''
+  endif
+  let keymap = &keymap
+  if empty(keymap)
+    let keymap = g:tcvime_keymap_for_help
+    if empty(keymap)
+      echo 'tcvime入力シーケンス→漢字変換には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
+      return ''
+    endif
+    call tcvime#SetKeymap(keymap)
+  endif
+
+  let kstr = ''
+  let s = a:str
+  while !empty(s)
+    let len = strlen(s)
+    let kanji = ''
+    let i = 1
+    let seq = strpart(s, 0, i)
+    while i <= len && !empty(mapcheck(seq, 'l'))
+      let kanji = maparg(seq, 'l')
+      if !empty(kanji)
+	break
+      endif
+      let i += 1
+      let seq = strpart(s, 0, i)
+    endwhile
+    if empty(kanji)
+      let kstr .= seq
+    else
+      let kstr .= kanji
+    endif
+    let s = strpart(s, i)
+  endwhile
+  let s:prev_str = a:str
+  let s:commit_str = kstr
+  return substitute(a:str, '.', "\<BS>", 'g') . s:commit_str
+endfunction
+
 " 漢字文字列を入力シーケンスに変換する。
 " 文字数を指定しない場合、英単語入力前にスペースを入力しておくと、
 " スペース以降の文字を英字に変換して、区切り用に入力したスペースを削除。
@@ -352,6 +394,7 @@ function! tcvime#MappingOn()
   vnoremap <script> <silent> <Plug>TcvimeVKatuyo :<C-U>call tcvime#ConvertOpKatuyo(visualmode(), 1)<CR>
   vnoremap <script> <silent> <Plug>TcvimeVKatakana :<C-U>call tcvime#ConvertOpKatakana(visualmode(), 1)<CR>
   vnoremap <script> <silent> <Plug>TcvimeVKanji2Seq :<C-U>call tcvime#ConvertOpKanji2Seq(visualmode(), 1)<CR>
+  vnoremap <script> <silent> <Plug>TcvimeVSeq2Kanji :<C-U>call tcvime#ConvertOpSeq2Kanji(visualmode(), 1)<CR>
 
   if set_mapleader
     unlet g:mapleader
@@ -805,6 +848,30 @@ function! s:ConvertOpKanji2SeqSub(beg, end)
   execute "normal! a\<ESC>"
   let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
   let inschars = s:Kanji2Seq(chars, 0)
+  call s:InsertString(inschars)
+  call cursor(0, col)
+endfunction
+
+" operatorfuncとして、選択された文字列を入力シーケンスとみなして漢字に変換する
+function! tcvime#ConvertOpSeq2Kanji(type, ...)
+  let sel_save = &selection
+  let &selection = "inclusive"
+
+  if a:0  " Invoked from Visual mode, use '< and '> marks.
+    call s:ConvertOpSeq2KanjiSub(col("'<"), col("'>"))
+  elseif a:type == 'char'
+    call s:ConvertOpSeq2KanjiSub(col("'["), col("']"))
+  endif
+
+  let &selection = sel_save
+endfunction
+
+function! s:ConvertOpSeq2KanjiSub(beg, end)
+  let col = col('.')
+  call cursor(0, a:end)
+  execute "normal! a\<ESC>"
+  let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
+  let inschars = s:Seq2Kanji(chars)
   call s:InsertString(inschars)
   call cursor(0, col)
 endfunction
