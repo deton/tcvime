@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-02-02
+" Last Change: 2013-02-03
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -25,6 +25,12 @@ endif
 " 交ぜ書き変換で確定した候補の、候補リスト内の移動先位置(0が先頭。-1は移動無し)
 if !exists("tcvime_movecandto")
   let tcvime_movecandto = -1
+endif
+
+" 交ぜ書き変換候補選択用キー。
+" 注: このキーで始まるlmapやimapがある場合は、|'timeoutlen'|待ちが発生。
+if !exists('g:tcvime#selectkeys')
+  let g:tcvime#selectkeys = ['1','2','3','4','5','6','7','8','9','0']
 endif
 
 " 後置型シーケンス→漢字変換で、文字数が指定されていない際に、
@@ -547,6 +553,9 @@ function! tcvime#InputConvertShrink()
   return "\<C-E>"
 endfunction
 
+" 交ぜ書き変換の読みを縮める。
+" tcvime#InputConvertShrink()が呼ばれると、ポップアップメニューを
+" <C-E>が終了され、s:OnCursorMovedI()からこの関数が呼ばれる
 function! s:InputConvertShrink()
   let yomi = s:completeyomi
   let oldlen = strlen(yomi)
@@ -659,7 +668,20 @@ function! s:InputConvertSub(yomi, katuyo, finish)
     let s:completeyomi = a:yomi
     inoremap > <C-R>=tcvime#InputConvertShrink()<CR>
     autocmd Tcvime CursorMovedI * call <SID>OnCursorMovedI()
-    call complete(s:status_column, s:last_candidate_list)
+    " 候補選択用menuキー追加
+    let items = []
+    let i = 0
+    let len = len(s:last_candidate_list)
+    while i < len
+      let menu = ''
+      if i < len(g:tcvime#selectkeys)
+	let menu = g:tcvime#selectkeys[i]
+	execute 'inoremap ' . g:tcvime#selectkeys[i] . ' <C-R>=tcvime#InputConvertSelectCand(' . i . ')<CR>'
+      endif
+      call add(items, {'word': s:last_candidate_list[i], 'menu': menu})
+      let i += 1
+    endwhile
+    call complete(s:status_column, items)
   elseif ncands == 0
     if a:finish
       echo '交ぜ書き辞書中には見つかりません: <' . a:yomi . '>'
@@ -676,14 +698,25 @@ function! s:OnCursorMovedI()
     return
   endif
   autocmd! Tcvime CursorMovedI *
+
+  " ポップアップメニュー操作用の一時mapを削除
+  silent! iunmap >
+  let i = 0
+  let len = len(s:last_candidate_list)
+  while i < len
+    if i < len(g:tcvime#selectkeys)
+      silent! execute 'iunmap ' . g:tcvime#selectkeys[i]
+    endif
+    let i += 1
+  endwhile
+
   " 読みの伸縮操作
   if s:completeop == 1
     let s:completeop = 0
     call s:InputConvertShrink()
     return
-  else
-    silent! iunmap >
   endif
+
   let col = col('.')
   if col == 1
     " <CR>で確定して改行が挿入されて行頭になった場合。TODO: autoindent対応
@@ -702,6 +735,16 @@ function! s:OnCursorMovedI()
   endif
   let s:completeyomi = ''
   call s:StatusReset()
+endfunction
+
+" ポップアップメニュー表示時に、指定された番号の候補を確定する
+function! tcvime#InputConvertSelectCand(idx)
+  if !pumvisible()
+    return g:tcvime#selectkeys[a:idx]
+  endif
+  let s:last_candidate = s:last_candidate_list[a:idx]
+  let bs = substitute(s:completeyomi, '.', "\<BS>", 'g')
+  return "\<C-E>" . bs . s:last_candidate
 endfunction
 
 " 確定しようとしている候補が問題ないかどうかチェック
