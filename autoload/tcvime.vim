@@ -325,6 +325,8 @@ let s:bushuhelp_file = globpath($VIM.','.&runtimepath, 'bushu.help')
 let s:kanjitable_file = globpath($VIM.','.&runtimepath, 'kanjitable.txt')
 let s:helpbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeHelp__'
 let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
+let s:candbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeCand__'
+let s:candbufname = substitute(s:candbufname, '\\', '/', 'g')
 
 " keymapを設定する
 function! tcvime#SetKeymap(keymapname)
@@ -671,7 +673,7 @@ function! s:InputConvertSub(yomi, katuyo, finish)
   else
     let key = a:yomi
   endif
-  let ncands = s:CandidateSearch(key, 1)
+  let ncands = s:CandidateSearch(key)
   if ncands == 1
     if !pumvisible()
       let inschars = s:InputFix(col('.'))
@@ -982,9 +984,10 @@ function! s:ConvertSub(yomi, katuyo)
     if s:is_katuyo
       let chars = chars . '―'
     endif
-    let ncands = s:CandidateSearch(chars, 0)
+    let ncands = s:CandidateSearch(chars)
     if ncands > 1
-      " 辞書ファイルバッファを表示中
+      call s:Candwin_SetCands(s:last_candidate_list)
+      call s:SelectWindowByName(s:candbufname)
     elseif ncands == 1
       call s:FixCandidate()
     elseif ncands == 0
@@ -1376,13 +1379,6 @@ function! s:Candidate_FileOpen(foredit)
     let cmd = 'sp '
   endif
   silent execute cmd . s:candidate_file
-  nnoremap <buffer> <silent> <Tab> :<C-U>call <SID>Candwin_NextCand()<CR>
-  nnoremap <buffer> <silent> <C-N> :<C-U>call <SID>Candwin_NextCand()<CR>
-  nnoremap <buffer> <silent> <C-P> :<C-U>call <SID>Candwin_PrevCand()<CR>
-  nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
-  nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>Candwin_Select()<CR>
-  nnoremap <buffer> <silent> q :<C-U>quit<CR>
-  nnoremap <buffer> <silent> <C-E> :<C-U>quit<CR>
   if !a:foredit
     set nobuflisted
   endif
@@ -1396,11 +1392,9 @@ let s:last_candidate_list = []
 let s:is_katuyo = 0
 
 " 辞書から未確定文字列を検索
-" @param close 検索後にバッファを閉じるかどうか。
-"   Normal mode時は辞書バッファ上で候補選択をするので開いたままにできるように。
 " @return -1:辞書が開けない場合, 0:文字列が見つからない場合,
 "   1:候補が1つだけ見つかった場合, 2:候補が2つ以上見つかった場合
-function! s:CandidateSearch(keyword, close)
+function! s:CandidateSearch(keyword)
   let s:last_keyword = a:keyword
   let s:last_candidate = ''
   if !s:Candidate_FileOpen(0)
@@ -1418,15 +1412,10 @@ function! s:CandidateSearch(keyword, close)
       let s:last_candidate = s:last_candidate_list[0]
     endif
   endif
-  if a:close || ret == 1 " Insert modeか、候補が1つのみ
+  if ret > 0
     if !&modified
       quit
     endif
-    return ret
-  endif
-  if ret > 1 " 候補が複数: このバッファ上で候補選択
-    call search(' /', 'e')
-    call search('/')
     return ret
   endif
   " 候補無し
@@ -1434,31 +1423,6 @@ function! s:CandidateSearch(keyword, close)
     call tcvime#MazegakiDic_Edit(1)
   endif
   return ret
-endfunction
-
-" 次候補に移動する
-function! s:Candwin_NextCand()
-  call search('/', '', line('.'))
-endfunction
-
-" 次候補に移動する
-function! s:Candwin_PrevCand()
-  call search('/', 'b', line('.'))
-endfunction
-
-" カーソル位置の候補を確定する
-function! s:Candwin_Select()
-  let [lnum, beg] = searchpos('/\zs', 'bc', line('.'))
-  if beg == 0
-    let [lnum, beg] = searchpos('/\zs', '', line('.'))
-  endif
-  let [lnum, end] = searchpos('\ze/', '', line('.'))
-  let chars = matchstr(getline('.'), '\%' . beg . 'c' . '.*\%' . end . 'c')
-  let s:last_candidate = chars
-  if !&modified
-    quit
-  endif
-  call s:FixCandidate()
 endfunction
 
 " 交ぜ書き辞書を編集用に開いて、直前に変換した読みを検索する
@@ -1794,6 +1758,70 @@ endfunction
 function! s:KanjiTable_CopyChar()
   let ch = matchstr(getline('.'), '\%' . col('.') . 'c.')
   execute "normal! \<C-W>pa" . ch . "\<ESC>\<C-W>p"
+endfunction
+
+"==============================================================================
+" 候補選択バッファ
+
+" 候補選択バッファを開く
+function! s:Candwin_Open()
+  if s:SelectWindowByName(s:candbufname) < 0
+    execute "silent normal! :sp " . s:candbufname . "\<CR>"
+    set buftype=nofile
+    set bufhidden=delete
+    set noswapfile
+    set nobuflisted
+  endif
+  %d _
+  nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
+  nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>Candwin_Select()<CR>
+  nnoremap <buffer> <silent> q :<C-U>quit<CR>
+  nnoremap <buffer> <silent> <C-E> :<C-U>quit<CR>
+endfunction
+
+" 候補選択バッファを閉じる
+function! s:Candwin_Close()
+  if s:SelectWindowByName(s:candbufname) > 0
+    bwipeout!
+  endif
+endfunction
+
+" 候補をセットする
+function! s:Candwin_SetCands(candlist)
+  call s:Candwin_Open()
+
+  " 候補選択用キーのラベルを追加
+  let lenlist = map(copy(a:candlist), 'strlen(v:val)')
+  let maxlen = max(lenlist)
+  let items = []
+  let i = 0
+  let len = len(a:candlist)
+  while i < len
+    let key = ''
+    if i < len(g:tcvime#selectkeys)
+      let key = repeat(' ', maxlen - lenlist[i] + 1) . g:tcvime#selectkeys[i]
+      execute 'nnoremap <buffer> <silent> ' . key . ' :<C-U>call <SID>Candwin_SelectIndex(' . i . ')<CR>'
+    endif
+    call add(items, a:candlist[i] . key)
+    let i += 1
+  endwhile
+  call append(0, items)
+  silent! $g/^$/d _
+  call cursor(1, 1)
+  wincmd p
+endfunction
+
+" 現在行の候補を確定する
+function! s:Candwin_Select()
+  let s:last_candidate = substitute(getline('.'), '\%( \+.\)\=$', '', '')
+  bwipeout!
+  call s:FixCandidate()
+endfunction
+
+" 指定indexの候補を確定する
+function! s:Candwin_SelectIndex(index)
+  call cursor(a:index + 1, 1)
+  call s:Candwin_Select()
 endfunction
 
 let &cpo = s:save_cpo
