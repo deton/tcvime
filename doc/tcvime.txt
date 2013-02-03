@@ -22,19 +22,21 @@ tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供するプラグインです。
 |tcvime-mazegaki|		交ぜ書き変換
 |tcvime-bushu|			部首合成変換
 |tcvime-katakana|		カタカナ変換
+|tcvime-seq2kanji|		入力シーケンス→漢字変換
+|tcvime-kanji2seq|		漢字→入力シーケンス変換
 |tcvime-help|			文字ヘルプ表表示
 |tcvime-normal-kanjitable|	漢字表からの漢字挿入
 
 交ぜ書き変換					*tcvime-mazegaki*
 ------------
 
-|tcvime-insert-mazegaki|	Insert Modeでの交ぜ書き変換
-|tcvime-insert-mazegaki-katuyo|	Insert Modeでの交ぜ書き変換(活用する語)
-|tcvime-insert-mazegaki-postfix|	Insert Modeでの後置型交ぜ書き変換
-|tcvime-normal-mazegaki|	Normal Modeでの交ぜ書き変換
-|tcvime-normal-mazegaki-katuyo|	Normal Modeでの交ぜ書き変換(活用する語)
-|tcvime-visual-mazegaki|	Visual Modeでの交ぜ書き変換
-|tcvime-visual-mazegaki-katuyo|	Visual Modeでの交ぜ書き変換(活用する語)
+|tcvime-insert-mazegaki|	Insert modeでの交ぜ書き変換
+|tcvime-insert-mazegaki-katuyo|	Insert modeでの交ぜ書き変換(活用する語)
+|tcvime-insert-mazegaki-postfix|	Insert modeでの後置型交ぜ書き変換
+|tcvime-normal-mazegaki|	Normal modeでの交ぜ書き変換
+|tcvime-normal-mazegaki-katuyo|	Normal modeでの交ぜ書き変換(活用する語)
+|tcvime-visual-mazegaki|	Visual modeでの交ぜ書き変換
+|tcvime-visual-mazegaki-katuyo|	Visual modeでの交ぜ書き変換(活用する語)
 
 交ぜ書き変換で確定した候補はデフォルトでは学習しません。
 学習(候補リスト内の位置を移動)するには、
@@ -45,13 +47,13 @@ tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供するプラグインです。
 
 候補が無い場合に単語登録(辞書編集)を開始したい場合は、
 |'tcvime_mazegaki_edit_nocand'|オプションを1に設定してください。
-(ただし編集開始可能なのはNormal Modeの交ぜ書き変換時のみ)
+(ただし編集開始可能なのはNormal modeの交ぜ書き変換時のみ)
 
 部首合成変換					*tcvime-bushu*
 ------------
 
-|tcvime-insert-bushu|		Insert Modeでの部首合成変換
-|tcvime-normal-bushu|		Normal Modeでの部首合成変換
+|tcvime-insert-bushu|		Insert modeでの部首合成変換
+|tcvime-normal-bushu|		Normal modeでの部首合成変換
 
 ユーザ用部首合成辞書(~/.vim/bushu.help)ファイルがあれば、
 優先して部首合成に使用します。
@@ -65,20 +67,22 @@ bushu.helpの例:
 カタカナ変換					*tcvime-katakana*
 ------------
 
-|'<Plug>TcvimeNKatakana'|  Normal Modeでのカタカナ変換
-|'<Plug>TcvimeNKataHira'|  Normal Modeでのカタカナ変換(ひらがなを指定文字数残す)
-|'<Plug>TcvimeVKatakana'|  Visual Modeでのカタカナ変換
+|'<Plug>TcvimeNKatakana'|  Normal modeでのカタカナ変換
+|'<Plug>TcvimeNKataHira'|  Normal modeでのカタカナ変換(ひらがなを指定文字数残す)
+|'<Plug>TcvimeVKatakana'|  Visual modeでのカタカナ変換
 
-Insert Mode用には、lmap用の後置型カタカナ変換関数を用意しています。
+Insert mode用には、lmap用の後置型カタカナ変換関数を用意しています。
 |tcvime-setting|
 例:
   " 後置型カタカナ変換: 指定文字数をカタカナ変換。0:ひらがなが続く間
-  lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR>
-  lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
+  lmap <silent> e0 <C-R>=tcvime#InputConvertKatakana(0)<CR>
+  lmap <silent> e1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
   " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
-  lmap <silent> alq <C-R>=tcvime#InputConvertKatakana(-1)<CR>
+  lmap <silent> el1 <C-R>=tcvime#InputConvertKatakana(-1)<CR>
   " 直前のカタカナ変換を縮める
-  lmap <silent> alz <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
+  lmap <silent> r1 <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
+  " 後置型でカタカナ文字列を伸ばす
+  lmap <silent> w1 <C-R>=tcvime#InputConvertKatakanaExtend(1)<CR>
 
 カタカナモード切り替えは例えばkeymap/tutcodek.vimを参照してください。
 'でひらがな/カタカナモード切り替えができるようにしたtutcodeのkeymapです。
@@ -86,11 +90,44 @@ Insert Mode用には、lmap用の後置型カタカナ変換関数を用意しています。
 loadkeymapでなく、|:map-<expr>|を使ってlmap <expr>で登録する形にすれば
 おそらく可能)
 
+入力シーケンス→漢字変換			*tcvime-seq2kanji*
+------------------------
+keymapが有効になっていない時に入力したシーケンスを漢字に変換する機能です。
+
+|'<Plug>TcvimeVSeq2Kanji'|  Visual modeでの入力シーケンス→漢字変換
+
+Insert mode用には、lmap用の後置型入力シーケンス→漢字変換関数を用意しています。
+|tcvime-setting|
+例:
+  lmap <silent> al; <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
+
+漢字→入力シーケンス変換			*tcvime-kanji2seq*
+------------------------
+keymap有効のままでアルファベットを入力すると、入力したシーケンスに対応する
+漢字になりますが、元のアルファベットに戻したい場合に使うための機能です。
+
+|'<Plug>TcvimeVKanji2Seq'|  Visual modeでの漢字→入力シーケンス変換
+
+keymap有効のままで英単語を入力して、後置型で英字に変換する使い方もあります。
+(keymapのオンオフを切り替えるのが面倒な場合向け)
+
+文字数を指定しない場合、英単語入力前にスペースを入力しておくと、
+スペース以降の文字を英字に変換して、区切り用に入力したスペースを削除。
+例:" code "と打鍵すると" 演各 "と表示され、開始キーで、"code"に変換。
+
+Insert mode用には、lmap用の後置型漢字→入力シーケンス変換関数を用意しています。
+|tcvime-setting|
+例:
+  " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
+  lmap <silent> q0 <C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
+  " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
+  lmap <silent> ql0 <C-R>=tcvime#InputConvertKanji2SeqAll()<CR>
+
 文字ヘルプ表表示				*tcvime-help*
 ----------------
 
-|tcvime-normal-help|		文字ヘルプ表表示(Normal Mode)
-|tcvime-visual-help|		文字ヘルプ表表示(Visual Mode)
+|tcvime-normal-help|		文字ヘルプ表表示(Normal mode)
+|tcvime-visual-help|		文字ヘルプ表表示(Visual mode)
 
 ユーザ用部首合成辞書(~/.vim/bushu.help)ファイルがあれば、
 優先して部首合成ヘルプ表示に使用します。
@@ -103,7 +140,7 @@ tcvimeの機能は'mapleader'で指定されたキーの後に'q'などのキーを入力することで
 です。説明中の<Leader>という文字列はmapleaderを表しています。つまり、
 mapleaderがCTRL-Kの場合、<Leader>q は CTRL-Kの後にqを入力する、ということです。
 
-なお、Insert Modeの場合は、keymapのset後にlmapで機能の割り当てが可能です。
+なお、Insert modeの場合は、keymapのset後にlmapで機能の割り当てが可能です。
 |tcvime-setting|
 例:
   " 後置型部首合成変換
@@ -113,21 +150,21 @@ mapleaderがCTRL-Kの場合、<Leader>q は CTRL-Kの後にqを入力する、ということです。
   " 前置型交ぜ書き変換
   lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
 
-|tcvime-insert-mazegaki|	Insert Modeでの交ぜ書き変換
-|tcvime-insert-mazegaki-katuyo|	Insert Modeでの交ぜ書き変換(活用する語)
-|tcvime-insert-mazegaki-postfix|	Insert Modeでの後置型交ぜ書き変換
-|tcvime-insert-bushu|		Insert Modeでの部首合成変換
-|tcvime-normal-mazegaki|	Normal Modeでの交ぜ書き変換
-|tcvime-normal-mazegaki-katuyo|	Normal Modeでの交ぜ書き変換(活用する語)
-|tcvime-normal-bushu|		Normal Modeでの部首合成変換
-|tcvime-visual-mazegaki|	Visual Modeでの交ぜ書き変換
-|tcvime-visual-mazegaki-katuyo|	Visual Modeでの交ぜ書き変換(活用する語)
-|tcvime-normal-help|		文字ヘルプ表表示(Normal Mode)
-|tcvime-visual-help|		文字ヘルプ表表示(Visual Mode)
-|tcvime-normal-kanjitable|	漢字テーブルファイル表示(Normal Mode)
+|tcvime-insert-mazegaki|	Insert modeでの交ぜ書き変換
+|tcvime-insert-mazegaki-katuyo|	Insert modeでの交ぜ書き変換(活用する語)
+|tcvime-insert-mazegaki-postfix|	Insert modeでの後置型交ぜ書き変換
+|tcvime-insert-bushu|		Insert modeでの部首合成変換
+|tcvime-normal-mazegaki|	Normal modeでの交ぜ書き変換
+|tcvime-normal-mazegaki-katuyo|	Normal modeでの交ぜ書き変換(活用する語)
+|tcvime-normal-bushu|		Normal modeでの部首合成変換
+|tcvime-visual-mazegaki|	Visual modeでの交ぜ書き変換
+|tcvime-visual-mazegaki-katuyo|	Visual modeでの交ぜ書き変換(活用する語)
+|tcvime-normal-help|		文字ヘルプ表表示(Normal mode)
+|tcvime-visual-help|		文字ヘルプ表表示(Visual mode)
+|tcvime-normal-kanjitable|	漢字テーブルファイル表示(Normal mode)
 
 
-Insert Modeでの交ぜ書き変換			*tcvime-insert-mazegaki*
+Insert modeでの交ぜ書き変換			*tcvime-insert-mazegaki*
 ---------------------------
 <Leader>q	読みの始まりをマークします。
 		確定直後など、何もマークされていない場合は、<Leader><Space>
@@ -148,7 +185,7 @@ Insert Modeでの交ぜ書き変換			*tcvime-insert-mazegaki*
     "あい"が"哀"に置き換えられます。
 
 
-Insert Modeでの交ぜ書き変換(活用する語)		*tcvime-insert-mazegaki-katuyo*
+Insert modeでの交ぜ書き変換(活用する語)		*tcvime-insert-mazegaki-katuyo*
 ---------------------------------------
 基本的には活用しない語の交ぜ書き変換と同じです。
 活用しない部分まで入力してから、<Leader>o で変換します。
@@ -160,7 +197,7 @@ Insert Modeでの交ぜ書き変換(活用する語)		*tcvime-insert-mazegaki-katuyo*
 例: "<Leader>qあお<Leader>o"と打つと、ポップアップメニューで"仰"等の候補が
     表示されます。CTRL-Yを打つと、"あお"が"仰"に置き換えられます。
 
-Insert Modeでの後置型交ぜ書き変換	*tcvime-insert-mazegaki-postfix*
+Insert modeでの後置型交ぜ書き変換	*tcvime-insert-mazegaki-postfix*
 ---------------------------------
 読みの文字数を指定して後置型で交ぜ書き変換を開始することもできます。
 
@@ -181,9 +218,9 @@ keymapのset後に以下のlmapを行うことで可能です。
 
 読みの文字数を指定しないで、後置型交ぜ書き変換を開始することもできます。
 
-設定例(ag0を入力した際に後置型交ぜ書き変換を開始する場合):
+設定例(f0を入力した際に後置型交ぜ書き変換を開始する場合):
 
-  lmap <silent> ag0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
+  lmap <silent> f0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
 
 読みを縮めるには、候補選択ポップアップメニュー表示中に>キーを押すか、
 確定後(候補数1個の場合は自動確定されます)に、
@@ -193,43 +230,35 @@ keymapのset後に以下のlmapを行うことで可能です。
 
   lmap <silent> al> <Plug>TcvimeIShrink
 
-Insert Modeでの部首合成変換			*tcvime-insert-bushu*
+Insert modeでの部首合成変換			*tcvime-insert-bushu*
 ---------------------------
 <Leader>b	カーソル位置の直前の2文字の部首合成変換を行います。
 
 例: "木口<Leader>b"と打つと、"木口"が"杏"に置き換えられます。
 
 
-Normal Modeでの交ぜ書き変換			*tcvime-normal-mazegaki*
+Normal modeでの交ぜ書き変換			*tcvime-normal-mazegaki*
 ---------------------------
 [count]<Leader><Space>	カーソル位置以前の[count]文字の交ぜ書き変換を行います。
 
 例: "あい"と表示されているとき、"い"の上にカーソルを置いて
-    "2<Leader><Space>"と打つと、交ぜ書き変換用辞書ファイルの
-    "~/.vim/mazegaki.dic"というバッファが開いて、
-    読みを検索して"^あい "が見つかった行にカーソルが表示されます。
-      あい /娃/哀/愛/挨/姶/相/藍/曖/隘/
-    CTRL-Nで次候補、CTRL-Pで前候補に移動して、候補を選択後、
-    CTRL-Yを打つと、"あい"が選択した候補に置き換えられます。
-    '/'の上にカーソルがある場合、直前の候補が確定されます。
+    "2<Leader><Space>"と打つと、__TcvimeCand__というバッファが開いて、
+    候補が各行に表示されます。通常の行移動操作で候補を選択後、
+    リターンキーやCTRL-Yを打つと、"あい"が選択した候補に置き換えられます。
 
 
-Normal Modeでの交ぜ書き変換(活用する語)		*tcvime-normal-mazegaki-katuyo*
+Normal modeでの交ぜ書き変換(活用する語)		*tcvime-normal-mazegaki-katuyo*
 -----------------------------------------
 [count]<Leader>o	カーソル位置以前の[count]文字に"―"を付加した文字列を
 			読みとして交ぜ書き変換辞書から検索します。
 
 例: "あお"と表示されているとき、"お"の上にカーソルを置いて
-    "2<Leader>o"と打つと、交ぜ書き変換用辞書ファイルの
-    "~/.vim/mazegaki.dic"というバッファが開いて、
-    読みを検索して"^あお― "が見つかった行にカーソルが表示されます。
-      あお― /仰/青/扇/煽/蒼/
-    CTRL-Nで次候補、CTRL-Pで前候補に移動して、候補を選択後、
-    CTRL-Yを打つと、"あお"が選択した候補に置き換えられます。
-    '/'の上にカーソルがある場合、直前の候補が確定されます。
+    "2<Leader>o"と打つと、__TcvimeCand__というバッファが開いて、
+    候補が各行に表示されます。通常の行移動操作で候補を選択後、
+    リターンキーやCTRL-Yを打つと、"あお"が選択した候補に置き換えられます。
 
 
-Normal Modeでの部首合成変換			*tcvime-normal-bushu*
+Normal modeでの部首合成変換			*tcvime-normal-bushu*
 ---------------------------
 <Leader>b	カーソル位置以前の2文字の部首合成変換を行います。
 
@@ -237,18 +266,18 @@ Normal Modeでの部首合成変換			*tcvime-normal-bushu*
     "<Leader>b"と打つと、"木口"が"杏"に置き換えられます。
 
 
-Visual Modeでの交ぜ書き変換			*tcvime-visual-mazegaki*
+Visual modeでの交ぜ書き変換			*tcvime-visual-mazegaki*
 ---------------------------
-<Leader><Space>	Visual Modeで選択した文字列の交ぜ書き変換を行います。
+<Leader><Space>	Visual modeで選択した文字列の交ぜ書き変換を行います。
 
 
-Visual Modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
+Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
 -----------------------------------------
-<Leader>o	Visual Modeで選択した文字列"―"を付加した文字列を
+<Leader>o	Visual modeで選択した文字列"―"を付加した文字列を
 		読みとして交ぜ書き変換辞書から検索します。
 
 
-文字ヘルプ表表示(Normal Mode)			*tcvime-normal-help*
+文字ヘルプ表表示(Normal mode)			*tcvime-normal-help*
 -----------------------------
 <Leader>?	カーソル位置の文字のヘルプ表を表示します。使用中のkeymapで
 		直接入力できない文字の場合は、部首合成変換辞書を検索して、
@@ -262,11 +291,11 @@ Visual Modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
         ・・・・    ・・・・
         ・・1 2     ・・・・
 
-文字ヘルプ表表示(Visual Mode)			*tcvime-visual-help*
+文字ヘルプ表表示(Visual mode)			*tcvime-visual-help*
 -----------------------------
-<Leader>?	Visual Modeで選択中の(複数)文字のヘルプ表を表示します。
+<Leader>?	Visual modeで選択中の(複数)文字のヘルプ表を表示します。
 
-漢字テーブルファイル表示(Normal Mode)		*tcvime-normal-kanjitable*
+漢字テーブルファイル表示(Normal mode)		*tcvime-normal-kanjitable*
 -------------------------------------
 <Leader>t	漢字テーブルファイルを表示します。
 		漢字テーブルファイルバッファで、入力したい文字の上にカーソルを
@@ -300,7 +329,7 @@ Visual Modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
    使用時の排他処理を省くため)、辞書が大きい場合は時間がかかる。)
 
 'tcvime_mazegaki_edit_nocand'			*'tcvime_mazegaki_edit_nocand'*
-  Normal Modeの交ぜ書き変換で候補が無い場合に辞書編集を開始するかどうか。
+  Normal modeの交ぜ書き変換で候補が無い場合に辞書編集を開始するかどうか。
   省略値: 0
   設定例:
     let tcvime_mazegaki_edit_nocand = 1
@@ -313,6 +342,16 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
   lmapのカスタマイズ用の関数。tcvime#SetKeymap()からコールバックされる。
   設定例は|tcvime-setting|参照。
 
+g:tcvime#selectkeys				*'g:tcvime#selectkeys'*
+  交ぜ書き変換候補選択用キーのList。
+  候補を選ぶ際に、CTRL-Nを何回か押した後CTRL-Yで確定するかわりに、
+  このList内のキーを押すだけで候補を確定できるようになります。
+  省略値: []
+  設定例:
+    let g:tcvime#selectkeys = ['1','2','3','4','5','6','7','8','9','0']
+  注: Insert modeでの候補選択の場合、
+      このキーで始まるlmapやimapがある場合は、|'timeoutlen'|待ちが発生。
+
 'mapleader'
   キーマッピングのプレフィックス。|mapleader|を参照。省略値: CTRL-K
   CTRL-Kを指定する場合の例:
@@ -322,7 +361,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
   このプラグインを読み込みたくない場合に次のように設定します。
 	let plugin_tcvime_disable = 1
 
-キー設定オプション(Insert Mode)
+キー設定オプション(Insert mode)
 -------------------------------
 
 '<Plug>TcvimeIStart'				*'<Plug>TcvimeIStart'*
@@ -364,7 +403,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    例(alaを指定する場合):
      lmap <silent> ala <Plug>TcvimeIBushu
 
-キー設定オプション(Normal Mode)
+キー設定オプション(Normal mode)
 -------------------------------
 
 '<Plug>TcvimeNConvert'				*'<Plug>TcvimeNConvert'*
@@ -415,7 +454,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 '<Plug>TcvimeNKanjiTable'			*'<Plug>TcvimeNKanjiTable'*
    漢字テーブルファイル表示を行うキー。省略値: <Leader>t
 
-キー設定オプション(Visual Mode)
+キー設定オプション(Visual mode)
 -------------------------------
 
 '<Plug>TcvimeVHelp'				*'<Plug>TcvimeVHelp'*
@@ -434,6 +473,15 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 
 '<Plug>TcvimeVKatakana'				*'<Plug>TcvimeVKatakana'*
    カタカナ変換: 選択中の文字列をカタカナに変換するキー。
+   省略値: (無し: 未割当て)
+
+'<Plug>TcvimeVKanji2Seq'			*'<Plug>TcvimeVKanji2Seq'*
+   漢字→シーケンス変換: 選択中の文字列を入力シーケンスに変換するキー。
+   省略値: (無し: 未割当て)
+
+'<Plug>TcvimeVSeq2Kanji'			*'<Plug>TcvimeVSeq2Kanji'*
+   シーケンス→漢字変換: 選択中の文字列を入力シーケンスとみなして漢字に
+   変換するキー。
    省略値: (無し: 未割当て)
 
 ==============================================================================
@@ -480,6 +528,8 @@ if has('keymap')
   imap <silent> <ESC> <ESC>:set imsearch=0<CR>
   nmap <silent> <C-K>k <Plug>TcvimeNKatakana
   vmap <silent> <C-K>k <Plug>TcvimeVKatakana
+  vmap <silent> <C-K>a <Plug>TcvimeVKanji2Seq
+  vmap <silent> <C-K>j <Plug>TcvimeVSeq2Kanji
 endif
 
 function! s:EnableKeymap(keymapname)
@@ -521,34 +571,67 @@ function! TcvimeCustomKeymap()
   lmap <silent> alu <C-R>=tcvime#InputConvertUndo()<CR>
   " 直前の交ぜ書き変換を縮める
   lmap <silent> al> <Plug>TcvimeIShrink
-  " 直前のカタカナ変換を縮める
-  lmap <silent> alz <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
-  lmap <silent> alx <C-R>=tcvime#InputConvertKatakanaShrink(2)<CR>
-  lmap <silent> alc <C-R>=tcvime#InputConvertKatakanaShrink(3)<CR>
-  lmap <silent> alv <C-R>=tcvime#InputConvertKatakanaShrink(4)<CR>
-  lmap <silent> alb <C-R>=tcvime#InputConvertKatakanaShrink(5)<CR>
   " 後置型カタカナ変換: 指定文字数をカタカナ変換。0:ひらがなが続く間
-  lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR>
-  lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
-  lmap <silent> al2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
-  lmap <silent> al3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
-  lmap <silent> al4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
-  lmap <silent> al5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
-  lmap <silent> al6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
-  lmap <silent> al7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
-  lmap <silent> al8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
-  lmap <silent> al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
+  lmap <silent> e0 <C-R>=tcvime#InputConvertKatakana(0)<CR>
+  lmap <silent> e1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
+  lmap <silent> e2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
+  lmap <silent> e3 <C-R>=tcvime#InputConvertKatakana(3)<CR>
+  lmap <silent> e4 <C-R>=tcvime#InputConvertKatakana(4)<CR>
+  lmap <silent> e5 <C-R>=tcvime#InputConvertKatakana(5)<CR>
+  lmap <silent> e6 <C-R>=tcvime#InputConvertKatakana(6)<CR>
+  lmap <silent> e7 <C-R>=tcvime#InputConvertKatakana(7)<CR>
+  lmap <silent> e8 <C-R>=tcvime#InputConvertKatakana(8)<CR>
+  lmap <silent> e9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
   " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
-  lmap <silent> alq <C-R>=tcvime#InputConvertKatakana(-1)<CR>
-  lmap <silent> alw <C-R>=tcvime#InputConvertKatakana(-2)<CR>
-  lmap <silent> ale <C-R>=tcvime#InputConvertKatakana(-3)<CR>
-  lmap <silent> alr <C-R>=tcvime#InputConvertKatakana(-4)<CR>
-  lmap <silent> alt <C-R>=tcvime#InputConvertKatakana(-5)<CR>
-  lmap <silent> aly <C-R>=tcvime#InputConvertKatakana(-6)<CR>
+  lmap <silent> el1 <C-R>=tcvime#InputConvertKatakana(-1)<CR>
+  lmap <silent> el2 <C-R>=tcvime#InputConvertKatakana(-2)<CR>
+  lmap <silent> el3 <C-R>=tcvime#InputConvertKatakana(-3)<CR>
+  lmap <silent> el4 <C-R>=tcvime#InputConvertKatakana(-4)<CR>
+  lmap <silent> el5 <C-R>=tcvime#InputConvertKatakana(-5)<CR>
+  lmap <silent> el6 <C-R>=tcvime#InputConvertKatakana(-6)<CR>
+  " 直前のカタカナ変換を縮める
+  lmap <silent> r1 <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
+  lmap <silent> r2 <C-R>=tcvime#InputConvertKatakanaShrink(2)<CR>
+  lmap <silent> r3 <C-R>=tcvime#InputConvertKatakanaShrink(3)<CR>
+  lmap <silent> r4 <C-R>=tcvime#InputConvertKatakanaShrink(4)<CR>
+  lmap <silent> r5 <C-R>=tcvime#InputConvertKatakanaShrink(5)<CR>
+  " 後置型でカタカナ文字列を伸ばす
+  lmap <silent> w1 <C-R>=tcvime#InputConvertKatakanaExtend(1)<CR>
+  lmap <silent> w2 <C-R>=tcvime#InputConvertKatakanaExtend(2)<CR>
+  lmap <silent> w3 <C-R>=tcvime#InputConvertKatakanaExtend(3)<CR>
+  lmap <silent> w4 <C-R>=tcvime#InputConvertKatakanaExtend(4)<CR>
+  lmap <silent> w5 <C-R>=tcvime#InputConvertKatakanaExtend(5)<CR>
   " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用しない語
-  lmap <silent> ag0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
+  lmap <silent> f0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
+  " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用しない語
+  lmap <silent> f1 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
+  lmap <silent> f2 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
+  lmap <silent> f3 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
+  lmap <silent> f4 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
+  lmap <silent> f5 <C-R>=tcvime#InputPostConvert(5, 0)<CR>
+  lmap <silent> f6 <C-R>=tcvime#InputPostConvert(6, 0)<CR>
   " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用する語
-  lmap <silent> at0 <C-R>=tcvime#InputPostConvertStart(1)<CR>
+  lmap <silent> fl0 <C-R>=tcvime#InputPostConvertStart(1)<CR>
+  " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用する語
+  lmap <silent> fl1 <C-R>=tcvime#InputPostConvert(1, 1)<CR>
+  lmap <silent> fl2 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
+  lmap <silent> fl3 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
+  lmap <silent> fl4 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
+  lmap <silent> fl5 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
+  lmap <silent> fl6 <C-R>=tcvime#InputPostConvert(6, 1)<CR>
+  " 後置型入力シーケンス→漢字変換
+  lmap <silent> al; <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
+  " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
+  lmap <silent> q0 <C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
+  " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
+  lmap <silent> ql0 <C-R>=tcvime#InputConvertKanji2SeqAll()<CR>
+  " 後置型漢字→入力シーケンス変換(指定文字数)
+  lmap <silent> q1 <C-R>=tcvime#InputConvertKanji2Seq(1)<CR>
+  lmap <silent> q2 <C-R>=tcvime#InputConvertKanji2Seq(2)<CR>
+  lmap <silent> q3 <C-R>=tcvime#InputConvertKanji2Seq(3)<CR>
+  lmap <silent> q4 <C-R>=tcvime#InputConvertKanji2Seq(4)<CR>
+  lmap <silent> q5 <C-R>=tcvime#InputConvertKanji2Seq(5)<CR>
+  lmap <silent> q6 <C-R>=tcvime#InputConvertKanji2Seq(6)<CR>
   " tc2同様の後置型交ぜ書き変換を行うための設定:
   " " 活用しない語
   " lmap <silent> 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
@@ -565,7 +648,7 @@ endfunction
 ==============================================================================
 6. 問題点					*tcvime-problem*
 
-- Insert Modeの交ぜ書き変換の際、ポップアップメニューが無効で表示できない場合、
+- Insert modeの交ぜ書き変換の際、ポップアップメニューが無効で表示できない場合、
   自動ヘルプの表示はできません。
 
 - |'backspace'|オプションにstartが入っていない場合、Insertモードで部首合成

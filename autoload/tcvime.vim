@@ -28,9 +28,11 @@ if !exists("tcvime_movecandto")
 endif
 
 " 交ぜ書き変換候補選択用キー。
-" 注: このキーで始まるlmapやimapがある場合は、|'timeoutlen'|待ちが発生。
+"   let g:tcvime#selectkeys = ['1','2','3','4','5','6','7','8','9','0']
+" 注: Insert modeでの候補選択の場合、
+"     このキーで始まるlmapやimapがある場合は、|'timeoutlen'|待ちが発生。
 if !exists('g:tcvime#selectkeys')
-  let g:tcvime#selectkeys = ['1','2','3','4','5','6','7','8','9','0']
+  let g:tcvime#selectkeys = []
 endif
 
 " 後置型シーケンス→漢字変換で、文字数が指定されていない際に、
