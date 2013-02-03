@@ -549,13 +549,20 @@ function! tcvime#InputConvertShrink()
   if !pumvisible()
     return '>'
   endif
-  let s:completeop = 1
-  return "\<C-E>"
+  return s:InputConvertShrinkPum()
+endfunction
+
+" 交ぜ書き変換の読みを縮める。popup menuが表示されている場合の処理。
+function! s:InputConvertShrinkPum()
+  let ret = s:InputConvertShrink()
+  " 候補複数の場合、<C-E>をreturnしてpopupを閉じた後OnCursorMovedI()から再popup
+  if ret == ''
+    let s:completeop = 1
+  endif
+  return "\<C-E>" . ret
 endfunction
 
 " 交ぜ書き変換の読みを縮める。
-" tcvime#InputConvertShrink()が呼ばれると、ポップアップメニューを
-" <C-E>が終了され、s:OnCursorMovedI()からこの関数が呼ばれる
 function! s:InputConvertShrink()
   let yomi = s:completeyomi
   let oldlen = strlen(yomi)
@@ -567,7 +574,7 @@ function! s:InputConvertShrink()
     let s:status_column += oldlen - len
     let ret = s:InputConvertSub(yomi, s:is_katuyo, 0)
     " 候補が見つかった場合は終了
-    if ret != '' || s:completeyomi != ''
+    if s:last_candidate != ''
       return ret
     endif
     " 候補が見つからなかったら、読みを1文字減らして検索
@@ -581,11 +588,11 @@ function! s:InputConvertShrink()
   return ''
 endfunction
 
-" 直前の後置型交ぜ書き変換を縮める
+" 直前の後置型交ぜ書き変換を縮める。
+" 候補1個のため自動確定された場合用。
 function! s:InputConvertShrinkLatest()
   if pumvisible()
-    let s:completeop = 1
-    return "\<C-E>"
+    return s:InputConvertShrinkPum()
   endif
   " カーソル位置前が、直前に変換した文字列でない場合は、何もしない。
   " 変換後に別の文字を入力した後で間違ってこの関数が呼ばれて、
@@ -640,8 +647,6 @@ function! s:InputConvertOrSpace()
 endfunction
 
 " Insert modeで交ぜ書き変換を行う。読みが無い場合は読み開始マークを付ける。
-" 活用する語の変換の場合は、
-" 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! s:InputConvertOrStart(katuyo)
   let status = s:StatusGet('.', col('.'))
@@ -652,6 +657,11 @@ function! s:InputConvertOrStart(katuyo)
   return s:InputConvertSub(status, a:katuyo, 1)
 endfunction
 
+" Insert modeで交ぜ書き変換を行う。
+" 活用する語の変換の場合は、
+" 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
+" @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
+" @param finish 候補が見つからなかった時にechoするかどうか。
 function! s:InputConvertSub(yomi, katuyo, finish)
   let s:completeyomi = ''
   let inschars = ''
@@ -663,25 +673,19 @@ function! s:InputConvertSub(yomi, katuyo, finish)
   endif
   let ncands = s:CandidateSearch(key, 1)
   if ncands == 1
-    let inschars = s:InputFix(col('.'))
+    if !pumvisible()
+      let inschars = s:InputFix(col('.'))
+    else
+      " InputConvertShrink()から呼び出された場合。
+      " さらにShrinkするためのs:commit_str更新や自動ヘルプ表示を
+      " OnCursorMovedI()内でやるため、s:completeyomiを更新
+      let s:completeyomi = a:yomi
+      let inschars = substitute(a:yomi, '.', "\<BS>", 'g') . s:last_candidate
+    endif
   elseif ncands > 0
-    let s:completeyomi = a:yomi
-    inoremap > <C-R>=tcvime#InputConvertShrink()<CR>
-    autocmd Tcvime CursorMovedI * call <SID>OnCursorMovedI()
-    " 候補選択用menuキー追加
-    let items = []
-    let i = 0
-    let len = len(s:last_candidate_list)
-    while i < len
-      let menu = ''
-      if i < len(g:tcvime#selectkeys)
-	let menu = g:tcvime#selectkeys[i]
-	execute 'inoremap ' . g:tcvime#selectkeys[i] . ' <C-R>=tcvime#InputConvertSelectCand(' . i . ')<CR>'
-      endif
-      call add(items, {'word': s:last_candidate_list[i], 'menu': menu})
-      let i += 1
-    endwhile
-    call complete(s:status_column, items)
+    if !pumvisible()
+      call s:InputConvertShowPopup(a:yomi)
+    endif
   elseif ncands == 0
     if a:finish
       echo '交ぜ書き辞書中には見つかりません: <' . a:yomi . '>'
@@ -690,6 +694,27 @@ function! s:InputConvertSub(yomi, katuyo, finish)
     echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
   endif
   return inschars
+endfunction
+
+" 候補選択用ポップアップメニューを表示する
+function! s:InputConvertShowPopup(yomi)
+  let s:completeyomi = a:yomi
+  inoremap > <C-R>=tcvime#InputConvertShrink()<CR>
+  autocmd Tcvime CursorMovedI * call <SID>OnCursorMovedI()
+  " 候補選択用menuキー追加
+  let items = []
+  let i = 0
+  let len = len(s:last_candidate_list)
+  while i < len
+    let menu = ''
+    if i < len(g:tcvime#selectkeys)
+      let menu = g:tcvime#selectkeys[i]
+      execute 'inoremap ' . g:tcvime#selectkeys[i] . ' <C-R>=tcvime#InputConvertSelectCand(' . i . ')<CR>'
+    endif
+    call add(items, {'word': s:last_candidate_list[i], 'menu': menu})
+    let i += 1
+  endwhile
+  call complete(s:status_column, items)
 endfunction
 
 " complete()で選択された候補を取得して、自動ヘルプを表示する
@@ -710,10 +735,10 @@ function! s:OnCursorMovedI()
     let i += 1
   endwhile
 
-  " 読みの伸縮操作
+  " 読みの伸縮操作による再検索で複数候補が見つかった場合、再度popup menuを表示
   if s:completeop == 1
     let s:completeop = 0
-    call s:InputConvertShrink()
+    call s:InputConvertShowPopup(s:StatusGet('.', col('.')))
     return
   endif
 
@@ -1377,11 +1402,11 @@ let s:is_katuyo = 0
 "   1:候補が1つだけ見つかった場合, 2:候補が2つ以上見つかった場合
 function! s:CandidateSearch(keyword, close)
   let s:last_keyword = a:keyword
+  let s:last_candidate = ''
   if !s:Candidate_FileOpen(0)
     return -1
   endif
 
-  let s:last_candidate = ''
   if search('^' . a:keyword . ' ', 'cw') == 0
     let s:last_candidate_list = []
     let ret = 0
