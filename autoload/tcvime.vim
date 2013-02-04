@@ -1815,7 +1815,7 @@ endfunction
 
 " Œ»İs‚ÌŒó•â‚ğŠm’è‚·‚é
 function! s:Candwin_Select()
-  let s:last_candidate = substitute(getline('.'), '\%( \+.\)\=$', '', '')
+  let s:last_candidate = s:last_candidate_list[line('.') - 1]
   bwipeout!
   call s:FixCandidate()
 endfunction
