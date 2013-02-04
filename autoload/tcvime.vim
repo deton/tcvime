@@ -1808,6 +1808,7 @@ function! s:Candwin_SetCands(candlist)
   endwhile
   call append(0, items)
   silent! $g/^$/d _
+  setlocal nomodifiable
   call cursor(1, 1)
   wincmd p
 endfunction
