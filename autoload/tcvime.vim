@@ -79,16 +79,7 @@ let g:tcvime#katakana = 'ƒ@ƒAƒBƒCƒDƒEƒFƒGƒHƒIƒJƒKƒLƒMƒNƒOƒPƒQƒRƒSƒTƒUƒVƒWƒXƒYƒZƒ
 "     lmap <silent> alt <C-R>=tcvime#InputConvertKatakana(-5)<CR>
 "     lmap <silent> aly <C-R>=tcvime#InputConvertKatakana(-6)<CR>
 function! tcvime#InputConvertKatakana(n)
-  let col = col('.')
-  let cnt = a:n
-  if cnt == 0
-    " ‘O’uŒ^Œğ‚º‘‚«•ÏŠ·‚Ì“Ç‚İ‚Æ‚µ‚Äw’è‚³‚ê‚½•¶š—ñ‚ª‚ ‚ê‚ÎA•ÏŠ·‘ÎÛ‚Æ‚·‚é
-    let yomi = s:StatusGet('.', col)
-    if yomi != ''
-      let cnt = strlen(substitute(yomi, '.', 'x', 'g'))
-    endif
-  endif
-  return tcvime#InputConvertKatakanaPos(col, cnt)
+  return tcvime#InputConvertKatakanaPos(col('.'), a:n)
 endfunction
 
 " Œã’uŒ^‚ÅƒJƒ^ƒJƒi•¶š—ñ‚ğL‚Î‚·
@@ -175,23 +166,29 @@ endfunction
 
 " insert mode‚ÉAw’èˆÊ’u‚©‚çw’è‚³‚ê‚½•¶š”‚Ì•¶š—ñ‚ğæ“¾‚·‚é
 function! s:AcquireYomi(pat, col, n)
-  if a:n <= 0
-    let line = getline('.')
-    let col = a:col
-    if s:insert_line == line('.') && s:insert_col < a:col
-      " Insert modeŠJnˆÊ’uˆÈ~‚ğ•ÏŠ·‘ÎÛ‚Æ‚·‚é
-      " XXX: CTRL-D‚ÅƒCƒ“ƒfƒ“ƒg‚ğŒ¸‚ç‚µ‚½ê‡‚É‚Í–¢‘Î‰
-      let line = strpart(line, s:insert_col - 1)
-      let col = a:col - s:insert_col + 1
+  if a:n > 0
+    return matchstr(getline('.'), '.\{,' . a:n . '}\%' . a:col . 'c')
+  endif
+  let col = a:col
+  if a:n == 0
+    " ‘O’uŒ^Œğ‚º‘‚«•ÏŠ·‚Ì“Ç‚İ‚Æ‚µ‚Äw’è‚³‚ê‚½•¶š—ñ‚ª‚ ‚ê‚ÎA•ÏŠ·‘ÎÛ‚Æ‚·‚é
+    let yomi = s:StatusGet('.', col)
+    if yomi != ''
+      return yomi
     endif
-    " pat‚Éƒ}ƒbƒ`‚·‚é•¶š‚ğæ“¾
-    let chars = matchstr(line, a:pat . '\%' . col . 'c')
-    if a:n < 0 " œŠO‚·‚é•¶š”
-      let excnt = -a:n
-      let chars = matchstr(chars, '.\{' . excnt . '}\zs.*$')
-    endif
-  else
-    let chars = matchstr(getline('.'), '.\{,' . a:n . '}\%' . a:col . 'c')
+  endif
+  let line = getline('.')
+  if s:insert_line == line('.') && s:insert_col < a:col
+    " Insert modeŠJnˆÊ’uˆÈ~‚ğ•ÏŠ·‘ÎÛ‚Æ‚·‚é
+    " XXX: CTRL-D‚ÅƒCƒ“ƒfƒ“ƒg‚ğŒ¸‚ç‚µ‚½ê‡‚É‚Í–¢‘Î‰
+    let line = strpart(line, s:insert_col - 1)
+    let col = a:col - s:insert_col + 1
+  endif
+  " pat‚Éƒ}ƒbƒ`‚·‚é•¶š‚ğæ“¾
+  let chars = matchstr(line, a:pat . '\%' . col . 'c')
+  if a:n < 0 " œŠO‚·‚é•¶š”
+    let excnt = -a:n
+    let chars = matchstr(chars, '.\{' . excnt . '}\zs.*$')
   endif
   return chars
 endfunction
