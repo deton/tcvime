@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-02-03
+" Last Change: 2013-02-04
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1423,6 +1423,8 @@ function! s:CandidateSearch(keyword)
   " Œó•â–³‚µ
   if g:tcvime_mazegaki_edit_nocand
     call tcvime#MazegakiDic_Edit(1)
+  elseif !&modified
+    quit
   endif
   return ret
 endfunction
