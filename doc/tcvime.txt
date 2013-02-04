@@ -113,7 +113,8 @@ keymap有効のままで英単語を入力して、後置型で英字に変換する使い方もあります。
 
 文字数を指定しない場合、英単語入力前にスペースを入力しておくと、
 スペース以降の文字を英字に変換して、区切り用に入力したスペースを削除。
-例:" code "と打鍵すると" 演各 "と表示され、開始キーで、"code"に変換。
+  例:" code "と打鍵すると" 演各 "と表示され、開始キーで、"code"に変換。
+あるいは、読みの始まりをマークしておくと、それ以降を対象に英字に変換。
 
 Insert mode用には、lmap用の後置型漢字→入力シーケンス変換関数を用意しています。
 |tcvime-setting|
@@ -624,7 +625,7 @@ function! TcvimeCustomKeymap()
   " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
   lmap <silent> q0 <C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
-  lmap <silent> ql0 <C-R>=tcvime#InputConvertKanji2SeqAll()<CR>
+  lmap <silent> ql0 <C-R>=tcvime#InputConvertKanji2SeqAll()<CR><C-R>=<SID>DisableKeymap()<CR>
   " 後置型漢字→入力シーケンス変換(指定文字数)
   lmap <silent> q1 <C-R>=tcvime#InputConvertKanji2Seq(1)<CR>
   lmap <silent> q2 <C-R>=tcvime#InputConvertKanji2Seq(2)<CR>
