@@ -218,9 +218,9 @@ keymapのset後に以下のlmapを行うことで可能です。
 
 読みの文字数を指定しないで、後置型交ぜ書き変換を開始することもできます。
 
-設定例(f0を入力した際に後置型交ぜ書き変換を開始する場合):
+設定例(d0を入力した際に後置型交ぜ書き変換を開始する場合):
 
-  lmap <silent> f0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
+  lmap <silent> d0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
 
 読みを縮めるには、候補選択ポップアップメニュー表示中に>キーを押すか、
 確定後(候補数1個の場合は自動確定されます)に、
@@ -602,23 +602,23 @@ function! TcvimeCustomKeymap()
   lmap <silent> w4 <C-R>=tcvime#InputConvertKatakanaExtend(4)<CR>
   lmap <silent> w5 <C-R>=tcvime#InputConvertKatakanaExtend(5)<CR>
   " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用しない語
-  lmap <silent> f0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
+  lmap <silent> d0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
   " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用しない語
-  lmap <silent> f1 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
-  lmap <silent> f2 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
-  lmap <silent> f3 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
-  lmap <silent> f4 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
-  lmap <silent> f5 <C-R>=tcvime#InputPostConvert(5, 0)<CR>
-  lmap <silent> f6 <C-R>=tcvime#InputPostConvert(6, 0)<CR>
+  lmap <silent> d1 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
+  lmap <silent> d2 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
+  lmap <silent> d3 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
+  lmap <silent> d4 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
+  lmap <silent> d5 <C-R>=tcvime#InputPostConvert(5, 0)<CR>
+  lmap <silent> d6 <C-R>=tcvime#InputPostConvert(6, 0)<CR>
   " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用する語
-  lmap <silent> fl0 <C-R>=tcvime#InputPostConvertStart(1)<CR>
+  lmap <silent> dl0 <C-R>=tcvime#InputPostConvertStart(1)<CR>
   " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用する語
-  lmap <silent> fl1 <C-R>=tcvime#InputPostConvert(1, 1)<CR>
-  lmap <silent> fl2 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
-  lmap <silent> fl3 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
-  lmap <silent> fl4 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
-  lmap <silent> fl5 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
-  lmap <silent> fl6 <C-R>=tcvime#InputPostConvert(6, 1)<CR>
+  lmap <silent> dl1 <C-R>=tcvime#InputPostConvert(1, 1)<CR>
+  lmap <silent> dl2 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
+  lmap <silent> dl3 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
+  lmap <silent> dl4 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
+  lmap <silent> dl5 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
+  lmap <silent> dl6 <C-R>=tcvime#InputPostConvert(6, 1)<CR>
   " 後置型入力シーケンス→漢字変換
   lmap <silent> al; <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
