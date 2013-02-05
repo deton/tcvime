@@ -1381,6 +1381,7 @@ function! s:Candidate_FileOpen(foredit)
     let cmd = 'sp '
   endif
   silent execute cmd . s:candidate_file
+  nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>MazegakiDic_CandSelect()<CR>
   if !a:foredit
     set nobuflisted
   endif
@@ -1427,6 +1428,21 @@ function! s:CandidateSearch(keyword, finish)
     quit
   endif
   return ret
+endfunction
+
+" 交ぜ書き辞書上のカーソル位置の候補を確定する
+function! s:MazegakiDic_CandSelect()
+  let [lnum, beg] = searchpos('/\zs', 'bc', line('.'))
+  if beg == 0
+    let [lnum, beg] = searchpos('/\zs', '', line('.'))
+  endif
+  let [lnum, end] = searchpos('\ze/', '', line('.'))
+  let chars = matchstr(getline('.'), '\%' . beg . 'c' . '.*\%' . end . 'c')
+  let s:last_candidate = chars
+  if !&modified
+    quit
+  endif
+  call s:FixCandidate()
 endfunction
 
 " 交ぜ書き辞書を編集用に開いて、直前に変換した読みを検索する
