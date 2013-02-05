@@ -675,7 +675,7 @@ function! s:InputConvertSub(yomi, katuyo, finish)
   else
     let key = a:yomi
   endif
-  let ncands = s:CandidateSearch(key)
+  let ncands = s:CandidateSearch(key, a:finish)
   if ncands == 1
     if !pumvisible()
       let inschars = s:InputFix(col('.'))
@@ -986,7 +986,7 @@ function! s:ConvertSub(yomi, katuyo)
     if s:is_katuyo
       let chars = chars . '\'
     endif
-    let ncands = s:CandidateSearch(chars)
+    let ncands = s:CandidateSearch(chars, 0)
     if ncands > 1
       call s:Candwin_SetCands(s:last_candidate_list)
       call s:SelectWindowByName(s:candbufname)
@@ -1396,7 +1396,7 @@ let s:is_katuyo = 0
 " «‘‚©‚ç–¢Šm’è•¶š—ñ‚ğŒŸõ
 " @return -1:«‘‚ªŠJ‚¯‚È‚¢ê‡, 0:•¶š—ñ‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡,
 "   1:Œó•â‚ª1‚Â‚¾‚¯Œ©‚Â‚©‚Á‚½ê‡, 2:Œó•â‚ª2‚ÂˆÈãŒ©‚Â‚©‚Á‚½ê‡
-function! s:CandidateSearch(keyword)
+function! s:CandidateSearch(keyword, finish)
   let s:last_keyword = a:keyword
   let s:last_candidate = ''
   if !s:Candidate_FileOpen(0)
@@ -1421,7 +1421,7 @@ function! s:CandidateSearch(keyword)
     return ret
   endif
   " Œó•â–³‚µ
-  if g:tcvime_mazegaki_edit_nocand
+  if a:finish && g:tcvime_mazegaki_edit_nocand
     call tcvime#MazegakiDic_Edit(1)
   elseif !&modified
     quit
