@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-02-04
+" Last Change: 2013-02-05
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -66,30 +66,33 @@ let g:tcvime#katakana = 'ƒ@ƒAƒBƒCƒDƒEƒFƒGƒHƒIƒJƒKƒLƒMƒNƒOƒPƒQƒRƒSƒTƒUƒVƒWƒXƒYƒZƒ
 " u—á‚¦‚Î‚ ‚Õ‚è‚¯[‚µ‚å‚ñvalw¨u—á‚¦‚ÎƒAƒvƒŠƒP[ƒVƒ‡ƒ“v
 "
 " tutcode keymap‚ÅŒã’uŒ^ƒJƒ^ƒJƒi•ÏŠ·‚ğs‚¤‚½‚ß‚Ìİ’è—á:
-"     lmap <silent> all <C-R>=tcvime#InputConvertKatakana(0)<CR>
-"     lmap <silent> al1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
-"     lmap <silent> al2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
+"     lmap <silent> e0 <C-R>=tcvime#InputConvertKatakana(0)<CR>
+"     lmap <silent> e1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
+"     lmap <silent> e2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
 "     ...
-"     lmap <silent> al9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
+"     lmap <silent> e9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
 " w’è‚µ‚½•¶š”‚Ì‚Ğ‚ç‚ª‚È‚ğc‚µ‚ÄƒJƒ^ƒJƒi•ÏŠ·‚·‚éê‡‚Ìİ’è—á:
-"     lmap <silent> alq <C-R>=tcvime#InputConvertKatakana(-1)<CR>
-"     lmap <silent> alw <C-R>=tcvime#InputConvertKatakana(-2)<CR>
-"     lmap <silent> ale <C-R>=tcvime#InputConvertKatakana(-3)<CR>
-"     lmap <silent> alr <C-R>=tcvime#InputConvertKatakana(-4)<CR>
-"     lmap <silent> alt <C-R>=tcvime#InputConvertKatakana(-5)<CR>
-"     lmap <silent> aly <C-R>=tcvime#InputConvertKatakana(-6)<CR>
+"     lmap <silent> el1 <C-R>=tcvime#InputConvertKatakana(-1)<CR>
+"     lmap <silent> el2 <C-R>=tcvime#InputConvertKatakana(-2)<CR>
+"     lmap <silent> el3 <C-R>=tcvime#InputConvertKatakana(-3)<CR>
+"     lmap <silent> el4 <C-R>=tcvime#InputConvertKatakana(-4)<CR>
+"     lmap <silent> el5 <C-R>=tcvime#InputConvertKatakana(-5)<CR>
+"     lmap <silent> el6 <C-R>=tcvime#InputConvertKatakana(-6)<CR>
 function! tcvime#InputConvertKatakana(n)
   return tcvime#InputConvertKatakanaPos(col('.'), a:n)
 endfunction
 
 " Œã’uŒ^‚ÅƒJƒ^ƒJƒi•¶š—ñ‚ğL‚Î‚·
 function! tcvime#InputConvertKatakanaExtend(n)
-  let cnt = a:n
-  if cnt == 0
-    cnt = 1
+  let line = getline('.')
+  let col = col('.')
+  if a:n == 0
+    " ˜A‘±‚·‚éƒJƒ^ƒJƒiˆÈ‘O‚Ì˜A‘±‚·‚é‚Ğ‚ç‚ª‚È‚ğƒJƒ^ƒJƒi‚É
+    let m = matchlist(line, '\([‚Ÿ-‚ñ][‚Ÿ-‚ñ[]*\)\([ƒ@-ƒ–[]*\)\%' . col . 'c')
+  else
+    " Œ»ˆÊ’uˆÈ‘O‚ÉˆÊ’u‚·‚éA˜A‘±‚·‚éƒJƒ^ƒJƒi‚Æw’è•¶š”ˆÈ‰º‚Ì‚Ğ‚ç‚ª‚È‚ğæ“¾
+    let m = matchlist(line, '\([‚Ÿ-‚ñ[]\{,' . a:n . '}\)\([ƒ@-ƒ–[]*\)\%' . col . 'c')
   endif
-  " Œ»ˆÊ’uˆÈ‘O‚ÉˆÊ’u‚·‚éA˜A‘±‚·‚éƒJƒ^ƒJƒi‚Æw’è•¶š”ˆÈ‰º‚Ì‚Ğ‚ç‚ª‚È‚ğæ“¾
-  let m = matchlist(getline('.'), '\([‚Ÿ-‚ñ]\{,' . cnt . '}\)\([ƒ@-ƒ–[]*\)\%' . col('.') . 'c')
   if empty(m)
     return ''
   endif
@@ -117,7 +120,7 @@ function! tcvime#InputConvertKatakanaShrink(n)
   endif
   let cnt = a:n
   if cnt == 0
-    cnt = 1
+    let cnt = 1
   endif
   let str = s:prev_str
   let strlist = matchlist(str, '\(.\{,' . cnt . '}\)\(.*\)')
