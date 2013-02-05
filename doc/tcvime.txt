@@ -227,9 +227,9 @@ keymapのset後に以下のlmapを行うことで可能です。
 確定後(候補数1個の場合は自動確定されます)に、
 <Plug>TcvimeIShrinkにマップしたキーシーケンスを入力してください。
 
-設定例(al>を入力した際に直前の交ぜ書き変換を縮める場合):
+設定例(d>を入力した際に直前の交ぜ書き変換を縮める場合):
 
-  lmap <silent> al> <Plug>TcvimeIShrink
+  lmap <silent> d> <Plug>TcvimeIShrink
 
 Insert modeでの部首合成変換			*tcvime-insert-bushu*
 ---------------------------
@@ -396,8 +396,8 @@ g:tcvime#selectkeys				*'g:tcvime#selectkeys'*
 
 '<Plug>TcvimeIShrink'				*'<Plug>TcvimeIShrink'*
    交ぜ書き変換: 直前の後置型交ぜ書き変換を縮めるキー。省略値: (無し: 未割当て)
-   例(al>を指定する場合):
-     lmap <silent> al> <Plug>TcvimeIShrink
+   例(d>を指定する場合):
+     lmap <silent> d> <Plug>TcvimeIShrink
 
 '<Plug>TcvimeIBushu'				*'<Plug>TcvimeIBushu'*
    部首合成変換: 直前の2文字の部首合成変換実行キー。省略値: <Leader>b
@@ -571,7 +571,7 @@ function! TcvimeCustomKeymap()
   " 直前のカタカナ変換・交ぜ書き変換・部首合成変換の取り消し
   lmap <silent> alu <C-R>=tcvime#InputConvertUndo()<CR>
   " 直前の交ぜ書き変換を縮める
-  lmap <silent> al> <Plug>TcvimeIShrink
+  lmap <silent> d> <Plug>TcvimeIShrink
   " 後置型カタカナ変換: 指定文字数をカタカナ変換。0:ひらがなが続く間
   lmap <silent> e0 <C-R>=tcvime#InputConvertKatakana(0)<CR>
   lmap <silent> e1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
