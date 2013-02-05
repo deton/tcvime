@@ -214,8 +214,36 @@ function! tcvime#InputConvertSeq2Kanji(n)
   if chars == ''
     return ''
   endif
-  call feedkeys(chars, 't')
-  return substitute(chars, '.', "\<BS>", 'g')
+  "call feedkeys(chars, 't')
+  "return substitute(chars, '.', "\<BS>", 'g')
+  let kanji = s:Seq2Kanji(chars)
+  let s:prev_str = chars
+  let s:commit_str = kanji
+  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
+endfunction
+
+" 直前の入力シーケンス→漢字変換を縮める
+function! tcvime#InputConvertSeq2KanjiShrink()
+  if s:prev_str == ''
+    return ''
+  endif
+  " カーソル位置前が、直前に変換した文字列でない場合は、何もしない
+  let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
+  let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
+  if chars != s:commit_str
+    let s:prev_str = ''
+    return ''
+  endif
+  let str = s:prev_str
+  let strlist = matchlist(str, '\(.\)\(.*\)')
+  " 縮めた1文字は削除。CTRL-Jでオンにしそこねてjだけ入った場合に削除したい。
+  let kanji = s:Seq2Kanji(strlist[2])
+  " Shrinkを繰り返し呼んだ際に1文字ずつ縮めるため、prev_strを縮める
+  let s:prev_str = strlist[2]
+  " undo用にprev_strに対応するcommit_strをセット
+  let commitprev = s:commit_str
+  let s:commit_str = kanji
+  return substitute(commitprev, '.', "\<BS>", 'g') . kanji
 endfunction
 
 " 入力シーケンスを漢字文字列に置換するための文字列を返す。
@@ -260,9 +288,7 @@ function! s:Seq2Kanji(str)
   if hassetkeymap
     set iminsert=0
   endif
-  let s:prev_str = a:str
-  let s:commit_str = kstr
-  return substitute(a:str, '.', "\<BS>", 'g') . s:commit_str
+  return kstr
 endfunction
 
 " 漢字文字列を入力シーケンスに変換する。
@@ -948,7 +974,8 @@ function! s:ConvertOpSeq2KanjiSub(beg, end)
   call cursor(0, a:end)
   execute "normal! a\<ESC>"
   let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
-  let inschars = s:Seq2Kanji(chars)
+  let kstr = s:Seq2Kanji(chars)
+  let inschars = substitute(a:str, '.', "\<BS>", 'g') . kstr
   call s:InsertString(inschars)
   call cursor(0, col)
 endfunction
