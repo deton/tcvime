@@ -100,6 +100,9 @@ Insert mode用には、lmap用の後置型入力シーケンス→漢字変換関数を用意しています。
 |tcvime-setting|
 例:
   lmap <silent> t0 <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
+  " 直前の後置型入力シーケンス→漢字変換を縮める: 1:縮めた文字を削除する
+  lmap <silent> t> <C-R>=tcvime#InputConvertSeq2KanjiShrink(0)<CR>
+  lmap <silent> tl> <C-R>=tcvime#InputConvertSeq2KanjiShrink(1)<CR>
 
 漢字→入力シーケンス変換			*tcvime-kanji2seq*
 ------------------------
@@ -624,8 +627,9 @@ function! TcvimeCustomKeymap()
   lmap <silent> dl6 <C-R>=tcvime#InputPostConvert(6, 1)<CR>
   " 後置型入力シーケンス→漢字変換
   lmap <silent> t0 <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
-  " 直前の後置型入力シーケンス→漢字変換を縮める
-  lmap <silent> t> <C-R>=tcvime#InputConvertSeq2KanjiShrink()<CR>
+  " 直前の後置型入力シーケンス→漢字変換を縮める: 1:縮めた文字を削除する
+  lmap <silent> t> <C-R>=tcvime#InputConvertSeq2KanjiShrink(0)<CR>
+  lmap <silent> tl> <C-R>=tcvime#InputConvertSeq2KanjiShrink(1)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
   lmap <silent> q0 <C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)

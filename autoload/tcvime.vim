@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-02-05
+" Last Change: 2013-02-06
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -223,7 +223,8 @@ function! tcvime#InputConvertSeq2Kanji(n)
 endfunction
 
 " 直前の入力シーケンス→漢字変換を縮める
-function! tcvime#InputConvertSeq2KanjiShrink()
+" @param drop 縮めた文字を削除するかどうか
+function! tcvime#InputConvertSeq2KanjiShrink(drop)
   if s:prev_str == ''
     return ''
   endif
@@ -238,12 +239,16 @@ function! tcvime#InputConvertSeq2KanjiShrink()
   let strlist = matchlist(str, '\(.\)\(.*\)')
   " 縮めた1文字は削除。CTRL-Jでオンにしそこねてjだけ入った場合に削除したい。
   let kanji = s:Seq2Kanji(strlist[2])
+  let newstr = kanji
+  if !a:drop
+    let newstr = strlist[1] . kanji
+  endif
   " Shrinkを繰り返し呼んだ際に1文字ずつ縮めるため、prev_strを縮める
   let s:prev_str = strlist[2]
   " undo用にprev_strに対応するcommit_strをセット
   let commitprev = s:commit_str
   let s:commit_str = kanji
-  return substitute(commitprev, '.', "\<BS>", 'g') . kanji
+  return substitute(commitprev, '.', "\<BS>", 'g') . newstr
 endfunction
 
 " 入力シーケンスを漢字文字列に置換するための文字列を返す。
@@ -975,7 +980,7 @@ function! s:ConvertOpSeq2KanjiSub(beg, end)
   execute "normal! a\<ESC>"
   let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
   let kstr = s:Seq2Kanji(chars)
-  let inschars = substitute(a:str, '.', "\<BS>", 'g') . kstr
+  let inschars = substitute(chars, '.', "\<BS>", 'g') . kstr
   call s:InsertString(inschars)
   call cursor(0, col)
 endfunction
