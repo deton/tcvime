@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-02-06
+" Last Change: 2013-02-09
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -208,14 +208,25 @@ endfunction
 
 " 入力シーケンスを漢字に変換する。
 " lmap無効のまま入力した文字列を、lmap有効にした直後に漢字に変換するため。
-"   lmap al; <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
+"   lmap t0 <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
+" 入力シーケンス中に後置型部首合成変換等があってもOK。
 function! tcvime#InputConvertSeq2Kanji(n)
   let chars = s:AcquireYomi(g:tcvime#seq2kanji_pat, col('.'), a:n)
   if chars == ''
     return ''
   endif
-  "call feedkeys(chars, 't')
-  "return substitute(chars, '.', "\<BS>", 'g')
+  call feedkeys(chars, 't')
+  return substitute(chars, '.', "\<BS>", 'g')
+endfunction
+
+" 入力シーケンスを漢字に変換する。
+" 入力シーケンス中の後置型部首合成変換等には未対応。
+" tcvime#InputConvertSeq2KanjiShrink()により、後から変換を縮める操作に対応。
+function! tcvime#InputConvertSeq2KanjiWithShrink(n)
+  let chars = s:AcquireYomi(g:tcvime#seq2kanji_pat, col('.'), a:n)
+  if chars == ''
+    return ''
+  endif
   let kanji = s:Seq2Kanji(chars)
   let s:prev_str = chars
   let s:commit_str = kanji
@@ -286,6 +297,7 @@ function! s:Seq2Kanji(str)
     if empty(kanji)
       let kstr .= seq
     else
+      " XXX: <Plug>や<C-R>=等には未対応
       let kstr .= kanji
     endif
     let s = strpart(s, i)
