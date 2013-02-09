@@ -315,7 +315,9 @@ endfunction
 function! tcvime#InputConvertKanji2Seq(n)
   " "undo "→"趣・"、"code "→"演各 "
   let chars = s:AcquireYomi(' \=[^ ]\+ \=', col('.'), a:n)
-  return s:Kanji2Seq(chars, 1)
+  let seq = s:Kanji2Seq(chars, 1)
+  let s:commit_str = seq
+  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
 " 漢字文字列を入力シーケンスに変換する。
@@ -331,7 +333,9 @@ function! tcvime#InputConvertKanji2SeqAll()
     let col = col - s:insert_col + 1
   endif
   let chars = matchstr(line, '.*' . '\%' . col . 'c')
-  return s:Kanji2Seq(chars, 0)
+  let seq = s:Kanji2Seq(chars, 0)
+  let s:commit_str = seq
+  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
 " 漢字文字列を入力シーケンスに置換するための文字列を返す。
@@ -347,8 +351,7 @@ function! s:Kanji2Seq(str, trim)
     let seq = substitute(seq, '^ \+', '', '')
     let seq = substitute(seq, ' \+$', '', '')
   endif
-  let s:commit_str = seq
-  return substitute(a:str, '.', "\<BS>", 'g') . s:commit_str
+  return seq
 endfunction
 
 " 漢字1文字を入力シーケンスに変換する。
@@ -453,6 +456,7 @@ function! tcvime#MappingOn()
   vnoremap <script> <silent> <Plug>TcvimeVKatakana :<C-U>call tcvime#ConvertOpKatakana(visualmode(), 1)<CR>
   vnoremap <script> <silent> <Plug>TcvimeVKanji2Seq :<C-U>call tcvime#ConvertOpKanji2Seq(visualmode(), 1)<CR>
   vnoremap <script> <silent> <Plug>TcvimeVSeq2Kanji :<C-U>call tcvime#ConvertOpSeq2Kanji(visualmode(), 1)<CR>
+  vnoremap <script> <silent> <Plug>TcvimeVShiftSeq :<C-U>call tcvime#ConvertOpShiftSeq(visualmode(), 1)<CR>
 
   if set_mapleader
     unlet g:mapleader
@@ -967,7 +971,8 @@ function! s:ConvertOpKanji2SeqSub(beg, end)
   call cursor(0, a:end)
   execute "normal! a\<ESC>"
   let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
-  let inschars = s:Kanji2Seq(chars, 0)
+  let seq = s:Kanji2Seq(chars, 0)
+  let inschars = substitute(chars, '.', "\<BS>", 'g') . seq
   call s:InsertString(inschars)
   call cursor(0, col)
 endfunction
@@ -994,6 +999,37 @@ function! s:ConvertOpSeq2KanjiSub(beg, end)
   let kstr = s:Seq2Kanji(chars)
   let inschars = substitute(chars, '.', "\<BS>", 'g') . kstr
   call s:InsertString(inschars)
+  call cursor(0, col)
+endfunction
+
+" operatorfuncとして、選択された文字列の入力シーケンスをずらして漢字に変換。
+" シーケンスがずれて意味不明な漢字文字列になったものを修復するため。
+" 例: 「電地給月分動田新同 」→「うかもしれません。」
+function! tcvime#ConvertOpShiftSeq(type, ...)
+  let sel_save = &selection
+  let &selection = "inclusive"
+
+  if a:0  " Invoked from Visual mode, use '< and '> marks.
+    call s:ConvertOpShiftSeqSub(col("'<"), col("'>"))
+  elseif a:type == 'char'
+    call s:ConvertOpShiftSeqSub(col("'["), col("']"))
+  endif
+
+  let &selection = sel_save
+endfunction
+
+function! s:ConvertOpShiftSeqSub(beg, end)
+  let col = col('.')
+  call cursor(0, a:end)
+  execute "normal! a\<ESC>"
+  let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
+  let seq = s:Kanji2Seq(chars, 0)
+  let m = matchlist(seq, '.\(.*\)')
+  if !empty(m)
+    let kstr = s:Seq2Kanji(m[1])
+    let inschars = substitute(chars, '.', "\<BS>", 'g') . kstr
+    call s:InsertString(inschars)
+  endif
   call cursor(0, col)
 endfunction
 

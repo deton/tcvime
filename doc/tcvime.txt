@@ -124,6 +124,13 @@ Insert mode用には、lmap用の後置型漢字→入力シーケンス変換関数を用意しています。
   " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
   lmap <silent> ql0 <C-R>=tcvime#InputConvertKanji2SeqAll()<CR>
 
+なお、シーケンスがずれて意味不明な漢字文字列になったものを修復するには、
+以下のキーを用意しています。
+
+|'<Plug>TcvimeVShiftSeq'|  Visual modeでの漢字→入力シーケンスシフト→漢字変換
+
+使用例: 「電地給月分動田新同 」→「うかもしれません。」
+
 文字ヘルプ表表示				*tcvime-help*
 ----------------
 
@@ -483,6 +490,11 @@ g:tcvime#selectkeys				*'g:tcvime#selectkeys'*
 '<Plug>TcvimeVSeq2Kanji'			*'<Plug>TcvimeVSeq2Kanji'*
    シーケンス→漢字変換: 選択中の文字列を入力シーケンスとみなして漢字に
    変換するキー。
+   省略値: (無し: 未割当て)
+
+'<Plug>TcvimeVShiftSeq'				*'<Plug>TcvimeVShiftSeq'*
+   漢字→シーケンス→漢字変換: 選択中の文字列の入力シーケンスをずらして
+   漢字に変換するキー。
    省略値: (無し: 未割当て)
 
 ==============================================================================
