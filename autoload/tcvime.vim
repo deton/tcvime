@@ -43,7 +43,11 @@ endif
 
 " 後置型カタカナ変換で、文字数が指定されていない際に、
 " このパターンにマッチする文字が続く間はカタカナに変換する。
-let g:tcvime#hira2kata_pat = '[ぁ-ん][ぁ-んー]*'
+let g:tcvime#hira2kata_pat = ' \=[ぁ-ん][ぁ-んー]*'
+" 読み開始位置マークを' '入力で代替する
+if exists('g:tcvime#yomimarkchar')
+  let g:tcvime#hira2kata_pat = g:tcvime#yomimarkchar . '\=' . tcvime#hira2kata_pat
+endif
 
 let g:tcvime#hiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん'
 let g:tcvime#katakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲン'
@@ -86,13 +90,18 @@ endfunction
 function! tcvime#InputConvertKatakanaExtend(n)
   let line = getline('.')
   let col = col('.')
+  let pat = '\([ァ-ヶー]*\)\%' . col . 'c' " 現位置以前の連続するカタカナ
   if a:n == 0
     " 連続するカタカナ以前の連続するひらがなをカタカナに
-    let m = matchlist(line, '\([ぁ-ん][ぁ-んー]*\)\([ァ-ヶー]*\)\%' . col . 'c')
+    let pat = '\([ぁ-ん][ぁ-んー]*\)' . pat
   else
     " 現位置以前に位置する、連続するカタカナと指定文字数以下のひらがなを取得
-    let m = matchlist(line, '\([ぁ-んー]\{,' . a:n . '}\)\([ァ-ヶー]*\)\%' . col . 'c')
+    let pat = '\([ぁ-んー]\{,' . a:n . '}\)'
   endif
+  if exists('g:tcvime#yomimarkchar')
+    let pat = g:tcvime#yomimarkchar . '\=' . pat
+  endif
+  let m = matchlist(line, pat)
   if empty(m)
     return ''
   endif
@@ -164,6 +173,9 @@ function! tcvime#InputConvertKatakanaPos(col, n)
   endif
   let s:prev_str = chars
   let s:commit_str = tcvime#hira2kata(chars)
+  if exists('g:tcvime#yomimarkchar')
+    let s:commit_str = substitute(s:commit_str, '^' . g:tcvime#yomimarkchar . '\=', '', '')
+  endif
   return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
