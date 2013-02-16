@@ -43,7 +43,7 @@ endif
 
 " 後置型カタカナ変換で、文字数が指定されていない際に、
 " このパターンにマッチする文字が続く間はカタカナに変換する。
-let g:tcvime#hira2kata_pat = ' \=[ぁ-ん][ぁ-んー]*'
+let g:tcvime#hira2kata_pat = '[ぁ-ん][ぁ-んー]*'
 " 読み開始位置マークを' '入力で代替する
 if exists('g:tcvime#yomimarkchar')
   let g:tcvime#hira2kata_pat = g:tcvime#yomimarkchar . '\=' . tcvime#hira2kata_pat
