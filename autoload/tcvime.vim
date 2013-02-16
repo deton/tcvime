@@ -105,9 +105,10 @@ function! tcvime#InputConvertKatakanaExtend(n)
   if empty(m)
     return ''
   endif
-  let s:prev_str = m[0]
+  let yomi = m[0]
+  let s:prev_str = m[1] . m[2]
   let s:commit_str = tcvime#hira2kata(m[1]) . m[2]
-  return substitute(s:prev_str, '.', "\<BS>", 'g') . s:commit_str
+  return substitute(yomi, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
 let s:prev_str = ''
@@ -174,6 +175,7 @@ function! tcvime#InputConvertKatakanaPos(col, n)
   let s:prev_str = chars
   let s:commit_str = tcvime#hira2kata(chars)
   if exists('g:tcvime#yomimarkchar')
+    let s:prev_str = substitute(s:prev_str, '^' . g:tcvime#yomimarkchar . '\=', '', '')
     let s:commit_str = substitute(s:commit_str, '^' . g:tcvime#yomimarkchar . '\=', '', '')
   endif
   return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
