@@ -44,7 +44,10 @@ endif
 " Œã’uŒ^ƒJƒ^ƒJƒi•ÏŠ·‚ÅA•¶š”‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢Û‚ÉA
 " ‚±‚Ìƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚é•¶š‚ª‘±‚­ŠÔ‚ÍƒJƒ^ƒJƒi‚É•ÏŠ·‚·‚éB
 let g:tcvime#hira2kata_pat = '[‚Ÿ-‚ñ][‚Ÿ-‚ñ[]*'
-" “Ç‚İŠJnˆÊ’uƒ}[ƒN‚ğ' '“ü—Í‚Å‘ã‘Ö‚·‚é
+" “Ç‚İŠJnˆÊ’uƒ}[ƒN‚ğ' '“ü—Í‚Å‘ã‘Ö‚·‚éê‡‚Ìİ’è—á:
+"   let g:tcvime#yomimarkchar = ' '
+" '* ƒAƒCƒeƒ€'‚Ì‚æ‚¤‚ÉA*“™‚ÌŒã‚Ì' '‚Íc‚µ‚½‚¢ê‡‚Ìİ’è—á:
+"   let g:tcvime#yomimarkchar = '\%([[:graph:]] \zs\| \)'
 if exists('g:tcvime#yomimarkchar')
   let g:tcvime#hira2kata_pat = g:tcvime#yomimarkchar . '\=' . tcvime#hira2kata_pat
 endif
@@ -67,7 +70,7 @@ let g:tcvime#katakana = 'ƒ@ƒAƒBƒCƒDƒEƒFƒGƒHƒIƒJƒKƒLƒMƒNƒOƒPƒQƒRƒSƒTƒUƒVƒWƒXƒYƒZƒ
 "
 " •¶š”‚Æ‚µ‚Ä•‰‚Ì’l‚ğw’è‚·‚é‚ÆA‚Ğ‚ç‚ª‚È‚Æ‚µ‚Äc‚·•¶š”‚Ìw’è‚Æ‚İ‚È‚·B
 " (ƒJƒ^ƒJƒi‚É•ÏŠ·‚·‚é•¶š—ñ‚ª’·‚­‚Ä•¶š”‚ğ”‚¦‚é‚Ì‚ª–Ê“|‚Èê‡Œü‚¯)
-" u—á‚¦‚Î‚ ‚Õ‚è‚¯[‚µ‚å‚ñvalw¨u—á‚¦‚ÎƒAƒvƒŠƒP[ƒVƒ‡ƒ“v
+" u—á‚¦‚Î‚ ‚Õ‚è‚¯[‚µ‚å‚ñvel2¨u—á‚¦‚ÎƒAƒvƒŠƒP[ƒVƒ‡ƒ“v
 "
 " tutcode keymap‚ÅŒã’uŒ^ƒJƒ^ƒJƒi•ÏŠ·‚ğs‚¤‚½‚ß‚Ìİ’è—á:
 "     lmap <silent> e0 <C-R>=tcvime#InputConvertKatakana(0)<CR>
