@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-02-16
+" Last Change: 2013-03-10
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1271,9 +1271,6 @@ function! s:ShowHelp(ar, forcebushu)
     if ret == -1 " ƒXƒgƒ[ƒN•\‚à•”ñ‡¬«‘‚à•\¦‚Å‚«‚È‚©‚Á‚½ê‡
       call add(skipchars, ch)
       continue
-    elseif ret == -2 " XXX: ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[–³Œø
-      call tcvime#CloseHelpBuffer()
-      return
     endif
     let numch += 1
     if ret == 0 " ShowHelpBushuDic
@@ -1292,11 +1289,13 @@ function! s:ShowHelp(ar, forcebushu)
       continue
     endif
     let ln = line('.')
+    .,$-1g/^/s//  /
+    call cursor(ln, 1)
     let save_reg = @@
-    execute "normal! \<C-V>GkI  \<ESC>\<C-V>Gk$x" . lastfrom . "G$p"
+    silent! execute "normal! \<C-V>Gk$x" . lastfrom . "G$p"
     let @@ = save_reg
     let lastcol = col('$')
-    silent! execute ln . ',$-1d _'
+    silent! execute ln . ',$-1g/^$/d _'
   endfor
   if numch == 0
     call tcvime#CloseHelpBuffer()
@@ -1326,11 +1325,7 @@ endfunction
 " w’è‚³‚ê‚½•¶š‚Æ‚»‚ÌƒXƒgƒ[ƒN‚ğ•\‚É‚µ‚Ä•\¦‚·‚é
 function! s:ShowHelpSequence(ch, keyseq)
   let from = line('$')
-  let v:errmsg = ''
-  silent! execute 'normal! O' . g:tcvime_keyboard . "\<CR>\<ESC>"
-  if v:errmsg != '' " XXX: ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[–³ŒøAE523: Not allowed here
-    return -2
-  endif
+  call append(line('.') - 1, split(g:tcvime_keyboard, "\<CR>"))
   let to = line('$')
   let range = from . ',' . to
   let keyseq = a:keyseq
@@ -1347,8 +1342,7 @@ function! s:ShowHelpSequence(ch, keyseq)
   silent! execute range . 's@\(.\). @\1@ge'
   silent! execute range . 's@. . @E@g'
   silent! execute range . 's@@ @ge'
-  call cursor(to - 1, 1)
-  silent! execute 'normal! A    ' . a:ch . "\<ESC>"
+  call append(to - 1, '    ' . a:ch)
   call cursor(from, 1)
   return 1
 endfunction
