@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-03-10
+" Last Change: 2013-03-27
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -99,7 +99,7 @@ function! tcvime#InputConvertKatakanaExtend(n)
     let pat = '\([ぁ-ん][ぁ-んー]*\)' . pat
   else
     " 現位置以前に位置する、連続するカタカナと指定文字数以下のひらがなを取得
-    let pat = '\([ぁ-んー]\{,' . a:n . '}\)'
+    let pat = '\([ぁ-んー]\{,' . a:n . '}\)' . pat
   endif
   if exists('g:tcvime#yomimarkchar')
     let pat = g:tcvime#yomimarkchar . '\=' . pat
