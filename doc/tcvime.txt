@@ -99,7 +99,7 @@ keymapが有効になっていない時に入力したシーケンスを漢字に変換する機能です。
 Insert mode用には、lmap用の後置型入力シーケンス→漢字変換関数を用意しています。
 |tcvime-setting|
 例:
-  lmap <silent> t0 <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
+  lmap <silent> j0 <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
 
 漢字→入力シーケンス変換			*tcvime-kanji2seq*
 ------------------------
@@ -120,9 +120,9 @@ Insert mode用には、lmap用の後置型漢字→入力シーケンス変換関数を用意しています。
 |tcvime-setting|
 例:
   " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
-  lmap <silent> q0 <C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
+  lmap <silent> a0 <C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
-  lmap <silent> ql0 <C-R>=tcvime#InputConvertKanji2SeqAll()<CR>
+  lmap <silent> al0 <C-R>=tcvime#InputConvertKanji2SeqAll()<CR>
 
 なお、シーケンスがずれて意味不明な漢字文字列になったものを修復するには、
 以下のキーを用意しています。
@@ -635,18 +635,18 @@ function! TcvimeCustomKeymap()
   lmap <silent> dl5 <C-G>u<C-R>=tcvime#InputPostConvert(5, 1)<CR>
   lmap <silent> dl6 <C-G>u<C-R>=tcvime#InputPostConvert(6, 1)<CR>
   " 後置型入力シーケンス→漢字変換
-  lmap <silent> t0 <C-G>u<C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
+  lmap <silent> j0 <C-G>u<C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
-  lmap <silent> q0 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
+  lmap <silent> a0 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
-  lmap <silent> ql0 <C-G>u<C-R>=tcvime#InputConvertKanji2SeqAll()<CR><C-R>=<SID>DisableKeymap()<CR>
+  lmap <silent> al0 <C-G>u<C-R>=tcvime#InputConvertKanji2SeqAll()<CR><C-R>=<SID>DisableKeymap()<CR>
   " 後置型漢字→入力シーケンス変換(指定文字数)
-  lmap <silent> q1 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(1)<CR>
-  lmap <silent> q2 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(2)<CR>
-  lmap <silent> q3 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(3)<CR>
-  lmap <silent> q4 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(4)<CR>
-  lmap <silent> q5 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(5)<CR>
-  lmap <silent> q6 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(6)<CR>
+  lmap <silent> a1 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(1)<CR>
+  lmap <silent> a2 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(2)<CR>
+  lmap <silent> a3 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(3)<CR>
+  lmap <silent> a4 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(4)<CR>
+  lmap <silent> a5 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(5)<CR>
+  lmap <silent> a6 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(6)<CR>
   " tc2同様の後置型交ぜ書き変換を行うための設定:
   " " 活用しない語
   " lmap <silent> 18 <C-G>u<C-R>=tcvime#InputPostConvert(1, 0)<CR>
