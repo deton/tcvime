@@ -1578,6 +1578,7 @@ endfunction
 
 " 交ぜ書き変換で確定した候補を学習して、候補リスト内位置を移動して、辞書保存
 function! s:LearnCand(str)
+  let origpos = getpos('.')
   let ret = tcvime#MazegakiDic_Edit(0)
   if ret == -2
     return
@@ -1585,19 +1586,28 @@ function! s:LearnCand(str)
     quit
     return
   endif
+  let editing = &modified " 辞書編集中の交ぜ書き変換の確定かどうか
   let candstr = strpart(getline('.'), col('.') - 1)
   let candlist = split(candstr, '/', 1)
   " ['', '候補1', '候補2', '候補3', ...., '']
   let i = index(candlist, a:str)
   let moveto = g:tcvime_movecandto + 1
   if i <= moveto " 学習対象外の位置にあるか、既に学習済みの位置の場合は変更不要
-    quit
+    if !editing
+      quit
+    else
+      call setpos('.', origpos)
+    endif
     return
   endif
   call remove(candlist, i)
   call insert(candlist, a:str, moveto)
   call setline('.', s:last_keyword . ' ' . join(candlist, '/'))
-  wq
+  if !editing
+    wq
+  else
+    call setpos('.', origpos)
+  endif
 endfunction
 
 " 部首ヘルプファイルをオープン
