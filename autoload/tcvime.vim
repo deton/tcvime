@@ -1514,6 +1514,7 @@ function! s:CandidateSearch(keyword, finish)
     return -1
   endif
 
+  let origpos = getpos('.')
   if search('^' . a:keyword . ' ', 'cw') == 0
     let s:last_candidate_list = []
     let ret = 0
@@ -1525,6 +1526,8 @@ function! s:CandidateSearch(keyword, finish)
       let s:last_candidate = s:last_candidate_list[0]
     endif
   endif
+  " 候補無し→交ぜ書き辞書編集→交ぜ書き変換の場合に、編集中の位置に戻すため
+  call setpos('.', origpos)
   if ret > 0
     if !&modified
       quit
