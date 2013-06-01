@@ -1083,7 +1083,7 @@ function! s:ConvertSub(yomi, katuyo)
     if s:is_katuyo
       let chars = chars . '\'
     endif
-    let ncands = s:CandidateSearch(chars, 0)
+    let ncands = s:CandidateSearch(chars, 1)
     if ncands > 1
       call s:Candwin_SetCands(s:last_candidate_list)
       call s:SelectWindowByName(s:candbufname)
