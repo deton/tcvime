@@ -1574,7 +1574,7 @@ function! tcvime#MazegakiDic_Edit(addnew)
   endif
   " “Ç‚İ‚ª–³‚¯‚ê‚ÎV‚½‚É‘}“ü
   if a:addnew
-    execute 'normal! O' . s:last_keyword . ' /' . s:last_keyword . "/\<ESC>"
+    execute 'normal! ggO' . s:last_keyword . ' /' . s:last_keyword . "/\<ESC>"
   endif
   return 0
 endfunction
