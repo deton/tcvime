@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-03-27
+" Last Change: 2013-06-06
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1492,6 +1492,8 @@ function! s:Candidate_FileOpen(foredit)
   endif
   silent execute cmd . s:candidate_file
   nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>MazegakiDic_CandSelect()<CR>
+  " 候補無し時、自動開始された辞書編集をキャンセルしたい場合用。
+  nnoremap <buffer> <silent> <C-E> :<C-U>call <SID>MazegakiDic_Cancel()<CR>
   if !a:foredit
     set nobuflisted
   endif
@@ -1577,6 +1579,16 @@ function! tcvime#MazegakiDic_Edit(addnew)
     execute 'normal! ggO' . s:last_keyword . ' /' . s:last_keyword . "/\<ESC>"
   endif
   return 0
+endfunction
+
+" 候補無し時、自動開始された辞書編集をキャンセルしたい場合用。
+function! s:MazegakiDic_Cancel()
+  " (新エントリ用の行挿入をundoしてquit。
+  " :quit!だと、辞書を本当に編集中の場合に、誤って<C-E>を押すと作業が失われる)
+  if &modified
+    undo
+  endif
+  quit
 endfunction
 
 " 交ぜ書き変換で確定した候補を学習して、候補リスト内位置を移動して、辞書保存
