@@ -863,6 +863,8 @@ function! s:InputFix(col)
       let bs = substitute(str, '.', "\<BS>", "g")
       let inschars = bs . inschars
     endif
+  else
+    " echom str s:last_candidate s:is_katuyo s:last_keyword " DEBUG
   endif
   call s:StatusReset()
   return inschars
@@ -1507,6 +1509,7 @@ let s:is_katuyo = 0
 function! s:CandidateSearch(keyword, finish)
   let s:last_keyword = a:keyword
   let s:last_candidate = ''
+  let altbufnr = bufnr('')
   if !s:Candidate_FileOpen(0)
     return -1
   endif
@@ -1532,7 +1535,13 @@ function! s:CandidateSearch(keyword, finish)
     return ret
   endif
   " 候補無し
+  " 交ぜ書き変換辞書編集を自動開始
   if a:finish && g:tcvime_mazegaki_edit_nocand
+    if bufnr('') != altbufnr
+      " 確定操作で元のバッファに戻れるように、直前にいたバッファ番号を取っておく
+      let b:altbufnr = altbufnr
+    " else 交ぜ書き辞書編集中にさらに交ぜ書き変換した場合はそのまま
+    endif
     call tcvime#MazegakiDic_Edit(1)
   elseif !&modified
     quit
@@ -1540,7 +1549,7 @@ function! s:CandidateSearch(keyword, finish)
   return ret
 endfunction
 
-" 交ぜ書き辞書上のカーソル位置の候補を確定する
+" 交ぜ書き辞書の編集を完了し、交ぜ書き辞書上のカーソル位置の候補を確定する
 function! s:MazegakiDic_CandSelect()
   let [lnum, beg] = searchpos('/\zs', 'bc', line('.'))
   if beg == 0
@@ -1549,16 +1558,33 @@ function! s:MazegakiDic_CandSelect()
   let [lnum, end] = searchpos('\ze/', '', line('.'))
   let chars = matchstr(getline('.'), '\%' . beg . 'c' . '.*\%' . end . 'c')
   let s:last_candidate = chars
+  let s:last_keyword = matchstr(getline('.'), '^[^ ]*')
+  let bufnr = b:altbufnr
   if !&modified
     quit
   endif
-  call s:FixCandidate()
+
+  execute bufwinnr(bufnr) . 'wincmd w'
+  let s:status_line = line('.')
+  execute "normal! a\<ESC>"
+  let s:status_colend = col("'^.")
+  let s:status_column = s:status_colend - strlen(s:last_keyword)
+  let inschars = s:InputFix(col("'^"))
+  " 編集未保存状態だと、LearnCand()で辞書バッファに切り替えたままになるので戻す
+  execute bufwinnr(bufnr) . 'wincmd w'
+  let s:last_count = 0
+  call s:InsertString(inschars)
 endfunction
 
 " 交ぜ書き辞書を編集用に開いて、直前に変換した読みを検索する
 function! tcvime#MazegakiDic_Edit(addnew)
+  let altbufnr = bufnr('')
   if !s:Candidate_FileOpen(1)
     return -2
+  endif
+  " :TcvimeEditMazegakiコマンド実行時用
+  if !exists('b:altbufnr')
+    let b:altbufnr = altbufnr
   endif
   " 直前が交ぜ書き変換でない場合も、辞書ファイルは開く
   if s:last_keyword == ''
