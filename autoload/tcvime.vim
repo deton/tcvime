@@ -1560,9 +1560,7 @@ function! s:MazegakiDic_CandSelect()
   let s:last_candidate = chars
   let s:last_keyword = matchstr(getline('.'), '^[^ ]*')
   let bufnr = b:altbufnr
-  if !&modified
-    quit
-  endif
+  xit
 
   execute bufwinnr(bufnr) . 'wincmd w'
   let s:status_line = line('.')
@@ -1570,8 +1568,6 @@ function! s:MazegakiDic_CandSelect()
   let s:status_colend = col("'^.")
   let s:status_column = s:status_colend - strlen(s:last_keyword)
   let inschars = s:InputFix(col("'^"))
-  " 編集未保存状態だと、LearnCand()で辞書バッファに切り替えたままになるので戻す
-  execute bufwinnr(bufnr) . 'wincmd w'
   let s:last_count = 0
   call s:InsertString(inschars)
 endfunction
