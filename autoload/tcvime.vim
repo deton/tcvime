@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-06-06
+" Last Change: 2013-06-08
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -481,7 +481,6 @@ function! tcvime#MappingOn()
 
   augroup Tcvime
   autocmd!
-  execute "autocmd BufReadCmd ".s:helpbufname." call <SID>Help_BufReadCmd()"
   autocmd InsertEnter * call <SID>OnInsertEnter()
   augroup END
 endfunction
@@ -1189,10 +1188,6 @@ call s:StatusReset()
 
 "==============================================================================
 " ヘルプ表示
-
-" 空のヘルプ用バッファを作る
-function! s:Help_BufReadCmd()
-endfunction
 
 " ヘルプ用バッファを開く
 function! s:OpenHelpBuffer()
