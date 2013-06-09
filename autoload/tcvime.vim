@@ -4,7 +4,7 @@ scriptencoding cp932
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-06-08
+" Last Change: 2013-06-09
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1515,11 +1515,12 @@ function! s:CandidateSearch(keyword, finish)
   endif
 
   let origpos = getpos('.')
-  if search('^' . a:keyword . ' ', 'cw') == 0
+  let pat = '^\V' . substitute(a:keyword, '\\', '\\\\', 'g') . ' '
+  if search(pat, 'cw') == 0
     let s:last_candidate_list = []
     let ret = 0
   else
-    let candstr = substitute(getline('.'), '^' . a:keyword . ' ', '', '')
+    let candstr = substitute(getline('.'), pat, '', '')
     let s:last_candidate_list = split(candstr, '/')
     let ret = len(s:last_candidate_list)
     if ret > 0
@@ -1586,7 +1587,8 @@ function! tcvime#MazegakiDic_Edit(addnew)
   if s:last_keyword == ''
     return -1
   endif
-  let ret = search('^' . s:last_keyword . ' ', 'cw')
+  let pat = '^\V' . substitute(s:last_keyword, '\\', '\\\\', 'g') . ' '
+  let ret = search(pat, 'cw')
   if ret
     call search(' /', 'e')
     return ret
