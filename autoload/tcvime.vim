@@ -1515,7 +1515,7 @@ function! s:CandidateSearch(keyword, finish)
   endif
 
   let origpos = getpos('.')
-  let pat = '^\V' . substitute(a:keyword, '\\', '\\\\', 'g') . ' '
+  let pat = '^\V' . escape(a:keyword, '\') . ' '
   if search(pat, 'cw') == 0
     let s:last_candidate_list = []
     let ret = 0
@@ -1587,7 +1587,7 @@ function! tcvime#MazegakiDic_Edit(addnew)
   if s:last_keyword == ''
     return -1
   endif
-  let pat = '^\V' . substitute(s:last_keyword, '\\', '\\\\', 'g') . ' '
+  let pat = '^\V' . escape(s:last_keyword, '\') . ' '
   let ret = search(pat, 'cw')
   if ret
     call search(' /', 'e')
