@@ -1325,14 +1325,12 @@ function! s:ShowHelpSequence(ch, keyseq)
   call append(line('.') - 1, split(g:tcvime_keyboard, "\<CR>"))
   let to = line('$')
   let range = from . ',' . to
-  let keyseq = a:keyseq
+  let keys = split(a:keyseq, '\zs')
   let i = 0
-  while strlen(keyseq) > 0
-    let i = i + 1
-    let key = strpart(keyseq, 0, 1)
-    let keyseq = strpart(keyseq, 1)
-    silent! execute range . 's@\V' . key . ' @' . i . '@'
-  endwhile
+  for key in keys
+    let i += 1
+    silent! execute range . 's@\V' . escape(key, '\') . ' @' . i . '@'
+  endfor
   silent! execute range . 's@^\(....................\). . @\1@e'
   silent! execute range . 's@^\(................\). . @\1@e'
   silent! execute range . 's@\(.\)\(.\)@\1\2@ge'
