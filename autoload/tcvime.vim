@@ -1381,9 +1381,10 @@ function! s:SearchBushuHelp(ch)
     return lines
   endif
   silent! normal! G$
-  if search('^' . a:ch, 'w') != 0
+  let pat = '^\V' . escape(a:ch, '\')
+  if search(pat, 'w') != 0
     call add(lines, getline('.'))
-    while search('^' . a:ch, 'W') != 0
+    while search(pat, 'W') != 0
       call add(lines, getline('.'))
     endwhile
   endif
@@ -1398,9 +1399,10 @@ function! s:SearchBushuDic(ch)
     return lines
   endif
   silent! normal! G$
-  if search(a:ch, 'w') != 0
+  let pat = '\V' . escape(a:ch, '\')
+  if search(pat, 'w') != 0
     call add(lines, getline('.'))
-    while search(a:ch, 'W') != 0
+    while search(pat, 'W') != 0
       call add(lines, getline('.'))
     endwhile
   endif
@@ -1683,7 +1685,9 @@ function! s:BushuHelpSearch(char1, char2)
     return ''
   endif
   " ó·: "ôBÉCêÍ* ì`ÅE" (*Ç™å„íuÇ≥ÇÍÇƒÇ¢ÇÍÇŒãtèáÇ≈Ç‡OK)
-  if search('\%(^.\| \)\%(' . a:char1 . a:char2 . '\*\?\|' . a:char2 . a:char1 . '\*\)\%( \|$\)', 'cw') != 0
+  let e1 = escape(a:char1, '\')
+  let e2 = escape(a:char2, '\')
+  if search('\%(^.\| \)\%(\V' . e1 . e2 . '*\?\|' . e2 . e1 . '*\)\%( \|\$\)', 'cw') != 0
     let retchar = matchstr(getline('.'), '^.')
   else
     let retchar = ''
@@ -1697,7 +1701,7 @@ function! s:BushuAlternative(ch)
   if !s:Bushu_FileOpen()
     return a:ch
   endif
-  if search('^.' . a:ch . '$', 'w') != 0
+  if search('^.\V' . escape(a:ch, '\') . '\$', 'w') != 0
     let retchar = matchstr(getline('.'), '^.')
   else
     let retchar = a:ch
@@ -1712,7 +1716,7 @@ function! s:BushuSearchCompose(char1, char2)
   if !s:Bushu_FileOpen()
     return ''
   endif
-  if search('^.' . a:char1 . a:char2, 'w') != 0
+  if search('^.\V' . escape(a:char1 . a:char2, '\'), 'w') != 0
     let retchar = matchstr(getline('.'), '^.')
   else
     let retchar = ''
@@ -1728,7 +1732,7 @@ function! s:BushuDecompose(ch)
   if !s:Bushu_FileOpen()
     return 0
   endif
-  if search('^' . a:ch . '..', 'w') != 0
+  if search('^\V' . escape(a:ch, '\') . '\.\.', 'w') != 0
     let chars = matchstr(getline('.'), '^...')
     let s:decomp1 = substitute(chars, '^.\(.\).', '\1', '')
     let s:decomp2 = matchstr(chars, '.$')
