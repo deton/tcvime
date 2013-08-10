@@ -1464,7 +1464,7 @@ endfunction
 " SelectWindowByName(name)
 "   Acitvate selected window by a:name.
 function! s:SelectWindowByName(name)
-  let num = bufwinnr('^' . a:name . '$')
+  let num = bufwinnr(a:name)
   if num > 0 && num != winnr()
     execute num . 'wincmd w'
   endif
