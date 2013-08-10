@@ -1948,7 +1948,8 @@ function! s:Candwin_Open()
     set noswapfile
     set nobuflisted
   endif
-  %d _
+  setlocal modifiable
+  silent! %d _
   nnoremap <buffer> <silent> <CR> :<C-U>call <SID>Candwin_Select()<CR>
   nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>Candwin_Select()<CR>
   nnoremap <buffer> <silent> q :<C-U>quit<CR>
