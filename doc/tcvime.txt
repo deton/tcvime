@@ -1,607 +1,607 @@
 *tcvime.txt*   mazegaki/bushu conversion for tcode/tutcode keymaps.
 
-			  tcvime������
+			  tcvime説明書
 
-�������ړ��͂̕⏕�@�\�v���O�C��		*tcvime*
+漢字直接入力の補助機能プラグイン		*tcvime*
 
-1. �T�v					|tcvime-overview|
-2. ����@				|tcvime-usage|
-3. �I�v�V����				|tcvime-option|
-4. �R�}���h				|tcvime-command|
-5. �����t�@�C��				|tcvime-file|
-6. �ݒ��				|tcvime-setting|
-7. ���_				|tcvime-problem|
+1. 概要					|tcvime-overview|
+2. 操作法				|tcvime-usage|
+3. オプション				|tcvime-option|
+4. コマンド				|tcvime-command|
+5. 辞書ファイル				|tcvime-file|
+6. 設定例				|tcvime-setting|
+7. 問題点				|tcvime-problem|
 
 {Vi does not have any of these features}
 
 ==============================================================================
-1. �T�v						*tcvime-overview*
+1. 概要						*tcvime-overview*
 
-tcode,tutcode���̊������ړ���keymap�p�̓��͕⏕�@�\��񋟂���v���O�C���ł��B
-�ȉ��̋@�\��񋟂��܂�:
+tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供するプラグインです。
+以下の機能を提供します:
 
-|tcvime-mazegaki|		���������ϊ�
-|tcvime-bushu|			���񍇐��ϊ�
-|tcvime-katakana|		�J�^�J�i�ϊ�
-|tcvime-seq2kanji|		���̓V�[�P���X�������ϊ�
-|tcvime-kanji2seq|		���������̓V�[�P���X�ϊ�
-|tcvime-help|			�����w���v�\�\��
-|tcvime-normal-kanjitable|	�����\����̊����}��
+|tcvime-mazegaki|		交ぜ書き変換
+|tcvime-bushu|			部首合成変換
+|tcvime-katakana|		カタカナ変換
+|tcvime-seq2kanji|		入力シーケンス→漢字変換
+|tcvime-kanji2seq|		漢字→入力シーケンス変換
+|tcvime-help|			文字ヘルプ表表示
+|tcvime-normal-kanjitable|	漢字表からの漢字挿入
 
-���������ϊ�					*tcvime-mazegaki*
+交ぜ書き変換					*tcvime-mazegaki*
 ------------
 
-|tcvime-insert-mazegaki|	Insert mode�ł̌��������ϊ�
-|tcvime-insert-mazegaki-katuyo|	Insert mode�ł̌��������ϊ�(���p�����)
-|tcvime-insert-mazegaki-postfix|	Insert mode�ł̌�u�^���������ϊ�
-|tcvime-normal-mazegaki|	Normal mode�ł̌��������ϊ�
-|tcvime-normal-mazegaki-katuyo|	Normal mode�ł̌��������ϊ�(���p�����)
-|tcvime-visual-mazegaki|	Visual mode�ł̌��������ϊ�
-|tcvime-visual-mazegaki-katuyo|	Visual mode�ł̌��������ϊ�(���p�����)
+|tcvime-insert-mazegaki|	Insert modeでの交ぜ書き変換
+|tcvime-insert-mazegaki-katuyo|	Insert modeでの交ぜ書き変換(活用する語)
+|tcvime-insert-mazegaki-postfix|	Insert modeでの後置型交ぜ書き変換
+|tcvime-normal-mazegaki|	Normal modeでの交ぜ書き変換
+|tcvime-normal-mazegaki-katuyo|	Normal modeでの交ぜ書き変換(活用する語)
+|tcvime-visual-mazegaki|	Visual modeでの交ぜ書き変換
+|tcvime-visual-mazegaki-katuyo|	Visual modeでの交ぜ書き変換(活用する語)
 
-���������ϊ��Ŋm�肵�����̓f�t�H���g�ł͊w�K���܂���B
-�w�K(��⃊�X�g���̈ʒu���ړ�)����ɂ́A
-|'tcvime_movecandto'|�I�v�V������0�ȏ�ɐݒ肵�Ă��������B
+交ぜ書き変換で確定した候補はデフォルトでは学習しません。
+学習(候補リスト内の位置を移動)するには、
+|'tcvime_movecandto'|オプションを0以上に設定してください。
 
-�܂��A�V�K�P��̓o�^�p�ɁA���������ϊ������t�@�C�����J��
-|:TcvimeEditMazegaki|�R�}���h��p�ӂ��Ă��܂��B
+また、新規単語の登録用に、交ぜ書き変換辞書ファイルを開く
+|:TcvimeEditMazegaki|コマンドを用意しています。
 
-��₪�����ꍇ�ɒP��o�^(�����ҏW)���J�n�������ꍇ�́A
-|'tcvime_mazegaki_edit_nocand'|�I�v�V������1�ɐݒ肵�Ă��������B
+候補が無い場合に単語登録(辞書編集)を開始したい場合は、
+|'tcvime_mazegaki_edit_nocand'|オプションを1に設定してください。
 
-���������ϊ������̌`����ҏW�Ɋւ��ẮA|tcvime-file-mazegaki|�Q�ƁB
+交ぜ書き変換辞書の形式や編集に関しては、|tcvime-file-mazegaki|参照。
 
-���񍇐��ϊ�					*tcvime-bushu*
+部首合成変換					*tcvime-bushu*
 ------------
 
-|tcvime-insert-bushu|		Insert mode�ł̕��񍇐��ϊ�
-|tcvime-normal-bushu|		Normal mode�ł̕��񍇐��ϊ�
+|tcvime-insert-bushu|		Insert modeでの部首合成変換
+|tcvime-normal-bushu|		Normal modeでの部首合成変換
 
-���[�U�p���񍇐�����(~/.vim/bushu.help)�t�@�C��������΁A
-�D�悵�ĕ��񍇐��Ɏg�p���܂��B
+ユーザ用部首合成辞書(~/.vim/bushu.help)ファイルがあれば、
+優先して部首合成に使用します。
 
-���񍇐��ϊ������̌`���Ɋւ��ẮA|tcvime-file-bushu|�Q�ƁB
+部首合成変換辞書の形式に関しては、|tcvime-file-bushu|参照。
 
-�J�^�J�i�ϊ�					*tcvime-katakana*
+カタカナ変換					*tcvime-katakana*
 ------------
 
-|'<Plug>TcvimeNKatakana'|  Normal mode�ł̃J�^�J�i�ϊ�
-|'<Plug>TcvimeNKataHira'|  Normal mode�ł̃J�^�J�i�ϊ�(�Ђ炪�Ȃ��w�蕶�����c��)
-|'<Plug>TcvimeVKatakana'|  Visual mode�ł̃J�^�J�i�ϊ�
+|'<Plug>TcvimeNKatakana'|  Normal modeでのカタカナ変換
+|'<Plug>TcvimeNKataHira'|  Normal modeでのカタカナ変換(ひらがなを指定文字数残す)
+|'<Plug>TcvimeVKatakana'|  Visual modeでのカタカナ変換
 
-Insert mode�p�ɂ́Almap�p�̌�u�^�J�^�J�i�ϊ��֐���p�ӂ��Ă��܂��B
+Insert mode用には、lmap用の後置型カタカナ変換関数を用意しています。
 |tcvime-setting|
-��:
-  " ��u�^�J�^�J�i�ϊ�: �w�蕶�������J�^�J�i�ϊ��B0:�Ђ炪�Ȃ�������
+例:
+  " 後置型カタカナ変換: 指定文字数をカタカナ変換。0:ひらがなが続く間
   lmap <silent> k0 <C-R>=tcvime#InputConvertKatakana(0)<CR>
   lmap <silent> k1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
-  " ��u�^�J�^�J�i�ϊ�: �w�蕶�����̂Ђ炪�Ȃ��c���ăJ�^�J�i�ϊ�
+  " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
   lmap <silent> j1 <C-R>=tcvime#InputConvertKatakana(-1)<CR>
-  " ���O�̃J�^�J�i�ϊ����k�߂�
+  " 直前のカタカナ変換を縮める
   lmap <silent> l1 <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
-  " ��u�^�ŃJ�^�J�i�������L�΂�
+  " 後置型でカタカナ文字列を伸ばす
   lmap <silent> h1 <C-R>=tcvime#InputConvertKatakanaExtend(1)<CR>
 
-�J�^�J�i���[�h�؂�ւ��͗Ⴆ��keymap/tutcodek.vim���Q�Ƃ��Ă��������B
-'�łЂ炪��/�J�^�J�i���[�h�؂�ւ����ł���悤�ɂ���tutcode��keymap�ł��B
-�������Ar,f,t���łЂ炪�Ȏg�p�s��(<C-R>=���g���Ă��邽�߁B
-loadkeymap�łȂ��A|:map-<expr>|���g����lmap <expr>�œo�^����`�ɂ����
-�����炭�\)
+カタカナモード切り替えは例えばkeymap/tutcodek.vimを参照してください。
+'でひらがな/カタカナモード切り替えができるようにしたtutcodeのkeymapです。
+ただし、r,f,t等でひらがな使用不可(<C-R>=を使っているため。
+loadkeymapでなく、|:map-<expr>|を使ってlmap <expr>で登録する形にすれば
+おそらく可能)
 
-���̓V�[�P���X�������ϊ�			*tcvime-seq2kanji*
+入力シーケンス→漢字変換			*tcvime-seq2kanji*
 ------------------------
-keymap���L���ɂȂ��Ă��Ȃ����ɓ��͂����V�[�P���X�������ɕϊ�����@�\�ł��B
+keymapが有効になっていない時に入力したシーケンスを漢字に変換する機能です。
 
-|'<Plug>TcvimeVSeq2Kanji'|  Visual mode�ł̓��̓V�[�P���X�������ϊ�
+|'<Plug>TcvimeVSeq2Kanji'|  Visual modeでの入力シーケンス→漢字変換
 
-Insert mode�p�ɂ́Almap�p�̌�u�^���̓V�[�P���X�������ϊ��֐���p�ӂ��Ă��܂��B
+Insert mode用には、lmap用の後置型入力シーケンス→漢字変換関数を用意しています。
 |tcvime-setting|
-��:
+例:
   lmap <silent> z0 <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
 
-���������̓V�[�P���X�ϊ�			*tcvime-kanji2seq*
+漢字→入力シーケンス変換			*tcvime-kanji2seq*
 ------------------------
-keymap�L���̂܂܂ŃA���t�@�x�b�g����͂���ƁA���͂����V�[�P���X�ɑΉ�����
-�����ɂȂ�܂����A���̃A���t�@�x�b�g�ɖ߂������ꍇ�Ɏg�����߂̋@�\�ł��B
+keymap有効のままでアルファベットを入力すると、入力したシーケンスに対応する
+漢字になりますが、元のアルファベットに戻したい場合に使うための機能です。
 
-|'<Plug>TcvimeVKanji2Seq'|  Visual mode�ł̊��������̓V�[�P���X�ϊ�
+|'<Plug>TcvimeVKanji2Seq'|  Visual modeでの漢字→入力シーケンス変換
 
-keymap�L���̂܂܂ŉp�P�����͂��āA��u�^�ŉp���ɕϊ�����g����������܂��B
-(keymap�̃I���I�t��؂�ւ���̂��ʓ|�ȏꍇ����)
+keymap有効のままで英単語を入力して、後置型で英字に変換する使い方もあります。
+(keymapのオンオフを切り替えるのが面倒な場合向け)
 
-���������w�肵�Ȃ��ꍇ�A�p�P����͑O�ɃX�y�[�X����͂��Ă����ƁA
-�X�y�[�X�ȍ~�̕������p���ɕϊ����āA��؂�p�ɓ��͂����X�y�[�X���폜�B
-  ��:" code "�ƑŌ������" ���e "�ƕ\������A�J�n�L�[�ŁA"code"�ɕϊ��B
-���邢�́A�ǂ݂̎n�܂���}�[�N���Ă����ƁA����ȍ~��Ώۂɉp���ɕϊ��B
+文字数を指定しない場合、英単語入力前にスペースを入力しておくと、
+スペース以降の文字を英字に変換して、区切り用に入力したスペースを削除。
+  例:" code "と打鍵すると" 演各 "と表示され、開始キーで、"code"に変換。
+あるいは、読みの始まりをマークしておくと、それ以降を対象に英字に変換。
 
-Insert mode�p�ɂ́Almap�p�̌�u�^���������̓V�[�P���X�ϊ��֐���p�ӂ��Ă��܂��B
+Insert mode用には、lmap用の後置型漢字→入力シーケンス変換関数を用意しています。
 |tcvime-setting|
-��:
-  " ��u�^���������̓V�[�P���X�ϊ�(���ʒu����X�y�[�X�܂�)
+例:
+  " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
   lmap <silent> ;0 <C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
-  " ��u�^���������̓V�[�P���X�ϊ�(���ʒu����Insert mode�J�n�ʒu�܂��͍s���܂�)
+  " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
   lmap <silent> ;9 <C-R>=tcvime#InputConvertKanji2SeqAll()<CR>
 
-�Ȃ��A�V�[�P���X������ĈӖ��s���Ȋ���������ɂȂ������̂��C������ɂ́A
-�ȉ��̃L�[��p�ӂ��Ă��܂��B
+なお、シーケンスがずれて意味不明な漢字文字列になったものを修復するには、
+以下のキーを用意しています。
 
-|'<Plug>TcvimeVShiftSeq'|  Visual mode�ł̊��������̓V�[�P���X�V�t�g�������ϊ�
+|'<Plug>TcvimeVShiftSeq'|  Visual modeでの漢字→入力シーケンスシフト→漢字変換
 
-�g�p��: �u�d�n���������c�V�� �v���u����������܂���B�v
+使用例: 「電地給月分動田新同 」→「うかもしれません。」
 
-�����w���v�\�\��				*tcvime-help*
+文字ヘルプ表表示				*tcvime-help*
 ----------------
 
-|tcvime-normal-help|		�����w���v�\�\��(Normal mode)
-|tcvime-visual-help|		�����w���v�\�\��(Visual mode)
+|tcvime-normal-help|		文字ヘルプ表表示(Normal mode)
+|tcvime-visual-help|		文字ヘルプ表表示(Visual mode)
 
-���[�U�p���񍇐�����(~/.vim/bushu.help)�t�@�C��������΁A
-�D�悵�ĕ��񍇐��w���v�\���Ɏg�p���܂��B
+ユーザ用部首合成辞書(~/.vim/bushu.help)ファイルがあれば、
+優先して部首合成ヘルプ表示に使用します。
 
 ==============================================================================
-2. ����@					*tcvime-usage*
+2. 操作法					*tcvime-usage*
 
-tcvime�̋@�\��'mapleader'�Ŏw�肳�ꂽ�L�[�̌��'q'�Ȃǂ̃L�[����͂��邱�Ƃ�
-���s����܂��Btcvime�ł�'mapleader'�̃f�t�H���g��CTRL-K(CTRL�L�[�������Ȃ���k)
-�ł��B��������<Leader>�Ƃ����������mapleader��\���Ă��܂��B�܂�A
-mapleader��CTRL-K�̏ꍇ�A<Leader>q �� CTRL-K�̌��q����͂���A�Ƃ������Ƃł��B
+tcvimeの機能は'mapleader'で指定されたキーの後に'q'などのキーを入力することで
+実行されます。tcvimeでは'mapleader'のデフォルトはCTRL-K(CTRLキーを押しながらk)
+です。説明中の<Leader>という文字列はmapleaderを表しています。つまり、
+mapleaderがCTRL-Kの場合、<Leader>q は CTRL-Kの後にqを入力する、ということです。
 
-�Ȃ��AInsert mode�̏ꍇ�́Akeymap��set���lmap�ŋ@�\�̊��蓖�Ă��\�ł��B
+なお、Insert modeの場合は、keymapのset後にlmapで機能の割り当てが可能です。
 |tcvime-setting|
-��:
-  " ��u�^���񍇐��ϊ�
+例:
+  " 後置型部首合成変換
   lmap <silent> ala <Plug>TcvimeIBushu
-  " �O�u�^���������ϊ��̓ǂݓ��͊J�n
+  " 前置型交ぜ書き変換の読み入力開始
   lmap <silent> alj <Plug>TcvimeIStart
-  " �O�u�^���������ϊ�
+  " 前置型交ぜ書き変換
   lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
 
-|tcvime-insert-mazegaki|	Insert mode�ł̌��������ϊ�
-|tcvime-insert-mazegaki-katuyo|	Insert mode�ł̌��������ϊ�(���p�����)
-|tcvime-insert-mazegaki-postfix|	Insert mode�ł̌�u�^���������ϊ�
-|tcvime-insert-bushu|		Insert mode�ł̕��񍇐��ϊ�
-|tcvime-normal-mazegaki|	Normal mode�ł̌��������ϊ�
-|tcvime-normal-mazegaki-katuyo|	Normal mode�ł̌��������ϊ�(���p�����)
-|tcvime-normal-bushu|		Normal mode�ł̕��񍇐��ϊ�
-|tcvime-visual-mazegaki|	Visual mode�ł̌��������ϊ�
-|tcvime-visual-mazegaki-katuyo|	Visual mode�ł̌��������ϊ�(���p�����)
-|tcvime-normal-help|		�����w���v�\�\��(Normal mode)
-|tcvime-visual-help|		�����w���v�\�\��(Visual mode)
-|tcvime-normal-kanjitable|	�����e�[�u���t�@�C���\��(Normal mode)
+|tcvime-insert-mazegaki|	Insert modeでの交ぜ書き変換
+|tcvime-insert-mazegaki-katuyo|	Insert modeでの交ぜ書き変換(活用する語)
+|tcvime-insert-mazegaki-postfix|	Insert modeでの後置型交ぜ書き変換
+|tcvime-insert-bushu|		Insert modeでの部首合成変換
+|tcvime-normal-mazegaki|	Normal modeでの交ぜ書き変換
+|tcvime-normal-mazegaki-katuyo|	Normal modeでの交ぜ書き変換(活用する語)
+|tcvime-normal-bushu|		Normal modeでの部首合成変換
+|tcvime-visual-mazegaki|	Visual modeでの交ぜ書き変換
+|tcvime-visual-mazegaki-katuyo|	Visual modeでの交ぜ書き変換(活用する語)
+|tcvime-normal-help|		文字ヘルプ表表示(Normal mode)
+|tcvime-visual-help|		文字ヘルプ表表示(Visual mode)
+|tcvime-normal-kanjitable|	漢字テーブルファイル表示(Normal mode)
 
 
-Insert mode�ł̌��������ϊ�			*tcvime-insert-mazegaki*
+Insert modeでの交ぜ書き変換			*tcvime-insert-mazegaki*
 ---------------------------
-<Leader>q	�ǂ݂̎n�܂���}�[�N���܂��B
-		�m�蒼��ȂǁA�����}�[�N����Ă��Ȃ��ꍇ�́A<Leader><Space>
-		�ł��}�[�N�ł��܂��B
+<Leader>q	読みの始まりをマークします。
+		確定直後など、何もマークされていない場合は、<Leader><Space>
+		でもマークできます。
 
-<Leader><Space>	���������ϊ����s���܂��B
-		<Leader>q �Ń}�[�N�����ʒu���猻�݂̃J�[�\���ʒu�̊Ԃɂ���
-		�������ǂ݂Ƃ��Č��������ϊ��������������܂��B
-	        ��₪������Ȃ��ꍇ�͓ǂ݂�u�������܂��B
-	        ��₪��������ꍇ�́A|complete()|���g����
-		�⊮���Ƃ��ă|�b�v�A�b�v���j�[�ŕ\�����܂��B
-		���ʂ̕⊮�Ɠ��l�ɁACTRL-N��CTRL-P�Ō���I�����āA
-		CTRL-Y�Ŋm��ACTRL-E�ŃL�����Z���ł��܂��B
+<Leader><Space>	交ぜ書き変換を行います。
+		<Leader>q でマークした位置から現在のカーソル位置の間にある
+		文字列を読みとして交ぜ書き変換辞書を検索します。
+	        候補が一つしかない場合は読みを置き換えます。
+	        候補が複数ある場合は、|complete()|を使って
+		補完候補としてポップアップメニーで表示します。
+		普通の補完と同様に、CTRL-NやCTRL-Pで候補を選択して、
+		CTRL-Yで確定、CTRL-Eでキャンセルできます。
 
-��: "<Leader>q����<Leader><Space>"�ƑłƁA
-    ��₪�|�b�v�A�b�v���j���[�ŕ\������܂��B
-    CTRL-N��ł���"��"��I������CTRL-Y��łƁA
-    "����"��"��"�ɒu���������܂��B
+例: "<Leader>qあい<Leader><Space>"と打つと、
+    候補がポップアップメニューで表示されます。
+    CTRL-Nを打って"哀"を選択してCTRL-Yを打つと、
+    "あい"が"哀"に置き換えられます。
 
 
-Insert mode�ł̌��������ϊ�(���p�����)		*tcvime-insert-mazegaki-katuyo*
+Insert modeでの交ぜ書き変換(活用する語)		*tcvime-insert-mazegaki-katuyo*
 ---------------------------------------
-��{�I�ɂ͊��p���Ȃ���̌��������ϊ��Ɠ����ł��B
-���p���Ȃ������܂œ��͂��Ă���A<Leader>o �ŕϊ����܂��B
-���̊m���CTRL-Y�ł��B
+基本的には活用しない語の交ぜ書き変換と同じです。
+活用しない部分まで入力してから、<Leader>o で変換します。
+候補の確定はCTRL-Yです。
 
-<Leader>o  <Leader>q �Ń}�[�N�����ʒu���猻�݂̃J�[�\���ʒu�̊Ԃ̕������
-	   "�\"��t�������������ǂ݂Ƃ��Č��������ϊ��������猟�����܂��B
+<Leader>o  <Leader>q でマークした位置から現在のカーソル位置の間の文字列に
+	   "―"を付加した文字列を読みとして交ぜ書き変換辞書から検索します。
 
-��: "<Leader>q����<Leader>o"�ƑłƁA�|�b�v�A�b�v���j���[��"��"���̌�₪
-    �\������܂��BCTRL-Y��łƁA"����"��"��"�ɒu���������܂��B
+例: "<Leader>qあお<Leader>o"と打つと、ポップアップメニューで"仰"等の候補が
+    表示されます。CTRL-Yを打つと、"あお"が"仰"に置き換えられます。
 
-Insert mode�ł̌�u�^���������ϊ�	*tcvime-insert-mazegaki-postfix*
+Insert modeでの後置型交ぜ書き変換	*tcvime-insert-mazegaki-postfix*
 ---------------------------------
-�ǂ݂̕��������w�肵�Č�u�^�Ō��������ϊ����J�n���邱�Ƃ��ł��܂��B
+読みの文字数を指定して後置型で交ぜ書き変換を開始することもできます。
 
-�Ⴆ�΁Atc2�Ɠ��l�ɁA18,28,38,48�Ƒł����ۂɂ��ꂼ��ǂ݂̕������Ƃ��āA
-1,2,3,4�������w�肵�����������ϊ����J�n�������ꍇ�́A
-keymap��set��Ɉȉ���lmap���s�����Ƃŉ\�ł��B
+例えば、tc2と同様に、18,28,38,48と打った際にそれぞれ読みの文字数として、
+1,2,3,4文字を指定した交ぜ書き変換を開始したい場合は、
+keymapのset後に以下のlmapを行うことで可能です。
 
-  " ���p���Ȃ���
+  " 活用しない語
   lmap <silent> 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
   lmap <silent> 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
   lmap <silent> 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
   lmap <silent> 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
-  " ���p�����(������tc2�ƈ���āA�ǂ݂̕������ɂ͊��p����͊܂܂Ȃ�)
+  " 活用する語(ただしtc2と違って、読みの文字数には活用語尾は含まない)
   lmap <silent> 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
   lmap <silent> 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
   lmap <silent> 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
   lmap <silent> 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
 
-�ǂ݂̕��������w�肵�Ȃ��ŁA��u�^���������ϊ����J�n���邱�Ƃ��ł��܂��B
+読みの文字数を指定しないで、後置型交ぜ書き変換を開始することもできます。
 
-�ݒ��(m0����͂����ۂɌ�u�^���������ϊ����J�n����ꍇ):
+設定例(m0を入力した際に後置型交ぜ書き変換を開始する場合):
 
   lmap <silent> m0 <C-R>=tcvime#InputPostConvertStart(0)<CR>
 
-�ǂ݂��k�߂�ɂ́A���I���|�b�v�A�b�v���j���[�\������>�L�[���������A
-�m���(��␔1�̏ꍇ�͎����m�肳��܂�)�ɁA
-<Plug>TcvimeIShrink�Ƀ}�b�v�����L�[�V�[�P���X����͂��Ă��������B
+読みを縮めるには、候補選択ポップアップメニュー表示中に>キーを押すか、
+確定後(候補数1個の場合は自動確定されます)に、
+<Plug>TcvimeIShrinkにマップしたキーシーケンスを入力してください。
 
-�ݒ��(m>����͂����ۂɒ��O�̌��������ϊ����k�߂�ꍇ):
+設定例(m>を入力した際に直前の交ぜ書き変換を縮める場合):
 
   lmap <silent> m> <Plug>TcvimeIShrink
 
-Insert mode�ł̕��񍇐��ϊ�			*tcvime-insert-bushu*
+Insert modeでの部首合成変換			*tcvime-insert-bushu*
 ---------------------------
-<Leader>b	�J�[�\���ʒu�̒��O��2�����̕��񍇐��ϊ����s���܂��B
+<Leader>b	カーソル位置の直前の2文字の部首合成変換を行います。
 
-��: "�،�<Leader>b"�ƑłƁA"�،�"��"��"�ɒu���������܂��B
+例: "木口<Leader>b"と打つと、"木口"が"杏"に置き換えられます。
 
 
-Normal mode�ł̌��������ϊ�			*tcvime-normal-mazegaki*
+Normal modeでの交ぜ書き変換			*tcvime-normal-mazegaki*
 ---------------------------
-[count]<Leader><Space>	�J�[�\���ʒu�ȑO��[count]�����̌��������ϊ����s���܂��B
+[count]<Leader><Space>	カーソル位置以前の[count]文字の交ぜ書き変換を行います。
 
-��: "����"�ƕ\������Ă���Ƃ��A"��"�̏�ɃJ�[�\����u����
-    "2<Leader><Space>"�ƑłƁA__TcvimeCand__�Ƃ����o�b�t�@���J���āA
-    ��₪�e�s�ɕ\������܂��B�ʏ�̍s�ړ�����Ō���I����A
-    ���^�[���L�[��CTRL-Y��łƁA"����"���I���������ɒu���������܂��B
+例: "あい"と表示されているとき、"い"の上にカーソルを置いて
+    "2<Leader><Space>"と打つと、__TcvimeCand__というバッファが開いて、
+    候補が各行に表示されます。通常の行移動操作で候補を選択後、
+    リターンキーやCTRL-Yを打つと、"あい"が選択した候補に置き換えられます。
 
 
-Normal mode�ł̌��������ϊ�(���p�����)		*tcvime-normal-mazegaki-katuyo*
+Normal modeでの交ぜ書き変換(活用する語)		*tcvime-normal-mazegaki-katuyo*
 -----------------------------------------
-[count]<Leader>o	�J�[�\���ʒu�ȑO��[count]������"�\"��t�������������
-			�ǂ݂Ƃ��Č��������ϊ��������猟�����܂��B
+[count]<Leader>o	カーソル位置以前の[count]文字に"―"を付加した文字列を
+			読みとして交ぜ書き変換辞書から検索します。
 
-��: "����"�ƕ\������Ă���Ƃ��A"��"�̏�ɃJ�[�\����u����
-    "2<Leader>o"�ƑłƁA__TcvimeCand__�Ƃ����o�b�t�@���J���āA
-    ��₪�e�s�ɕ\������܂��B�ʏ�̍s�ړ�����Ō���I����A
-    ���^�[���L�[��CTRL-Y��łƁA"����"���I���������ɒu���������܂��B
+例: "あお"と表示されているとき、"お"の上にカーソルを置いて
+    "2<Leader>o"と打つと、__TcvimeCand__というバッファが開いて、
+    候補が各行に表示されます。通常の行移動操作で候補を選択後、
+    リターンキーやCTRL-Yを打つと、"あお"が選択した候補に置き換えられます。
 
 
-Normal mode�ł̕��񍇐��ϊ�			*tcvime-normal-bushu*
+Normal modeでの部首合成変換			*tcvime-normal-bushu*
 ---------------------------
-<Leader>b	�J�[�\���ʒu�ȑO��2�����̕��񍇐��ϊ����s���܂��B
+<Leader>b	カーソル位置以前の2文字の部首合成変換を行います。
 
-��: "�،�"�ƕ\������Ă���Ƃ��A"��"�̏�ɃJ�[�\����u����
-    "<Leader>b"�ƑłƁA"�،�"��"��"�ɒu���������܂��B
+例: "木口"と表示されているとき、"口"の上にカーソルを置いて
+    "<Leader>b"と打つと、"木口"が"杏"に置き換えられます。
 
 
-Visual mode�ł̌��������ϊ�			*tcvime-visual-mazegaki*
+Visual modeでの交ぜ書き変換			*tcvime-visual-mazegaki*
 ---------------------------
-<Leader><Space>	Visual mode�őI������������̌��������ϊ����s���܂��B
+<Leader><Space>	Visual modeで選択した文字列の交ぜ書き変換を行います。
 
 
-Visual mode�ł̌��������ϊ�(���p�����)		*tcvime-visual-mazegaki-katuyo*
+Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-katuyo*
 -----------------------------------------
-<Leader>o	Visual mode�őI������������"�\"��t�������������
-		�ǂ݂Ƃ��Č��������ϊ��������猟�����܂��B
+<Leader>o	Visual modeで選択した文字列"―"を付加した文字列を
+		読みとして交ぜ書き変換辞書から検索します。
 
 
-�����w���v�\�\��(Normal mode)			*tcvime-normal-help*
+文字ヘルプ表表示(Normal mode)			*tcvime-normal-help*
 -----------------------------
-<Leader>?	�J�[�\���ʒu�̕����̃w���v�\��\�����܂��B�g�p����keymap��
-		���ړ��͂ł��Ȃ������̏ꍇ�́A���񍇐��ϊ��������������āA
-		�w�肳�ꂽ�������܂܂��s��\�����܂��B
+<Leader>?	カーソル位置の文字のヘルプ表を表示します。使用中のkeymapで
+		直接入力できない文字の場合は、部首合成変換辞書を検索して、
+		指定された文字が含まれる行を表示します。
 
-��: "��"�Ƃ��������̏�ɃJ�[�\����u����"<Leader>?"�ƑłƁA
-    "__TcvimeHelp__"�Ƃ����o�b�t�@���J���Ď��̂悤�ɕ\������܂�
-    (keymap��tutcode�̏ꍇ)�B
-        �E�E�E�E    �E�E�E�E    ��
-        �E�E�E�E  3 �E�E�E�E
-        �E�E�E�E    �E�E�E�E
-        �E�E1 2     �E�E�E�E
+例: "鍵"という文字の上にカーソルを置いて"<Leader>?"と打つと、
+    "__TcvimeHelp__"というバッファが開いて次のように表示されます
+    (keymapがtutcodeの場合)。
+        ・・・・    ・・・・    鍵
+        ・・・・  3 ・・・・
+        ・・・・    ・・・・
+        ・・1 2     ・・・・
 
-�����w���v�\�\��(Visual mode)			*tcvime-visual-help*
+文字ヘルプ表表示(Visual mode)			*tcvime-visual-help*
 -----------------------------
-<Leader>?	Visual mode�őI�𒆂�(����)�����̃w���v�\��\�����܂��B
+<Leader>?	Visual modeで選択中の(複数)文字のヘルプ表を表示します。
 
-�����e�[�u���t�@�C���\��(Normal mode)		*tcvime-normal-kanjitable*
+漢字テーブルファイル表示(Normal mode)		*tcvime-normal-kanjitable*
 -------------------------------------
-<Leader>t	�����e�[�u���t�@�C����\�����܂��B
-		�����e�[�u���t�@�C���o�b�t�@�ŁA���͂����������̏�ɃJ�[�\����
-		�ړ�����<CR>�L�[�������ƁA���̃o�b�t�@�ɂ��̕������R�s�[�����
-		���B�����e�[�u���t�@�C���o�b�t�@�͒ʏ�̕��@(:q��)�ȊO��q�L�[
-		�ł����܂��B
+<Leader>t	漢字テーブルファイルを表示します。
+		漢字テーブルファイルバッファで、入力したい文字の上にカーソルを
+		移動して<CR>キーを押すと、元のバッファにその文字がコピーされま
+		す。漢字テーブルファイルバッファは通常の方法(:q等)以外にqキー
+		でも閉じます。
 
-�����e�[�u���t�@�C���̌`���Ɋւ��ẮA|tcvime-file-kanjitable|�Q�ƁB
+漢字テーブルファイルの形式に関しては、|tcvime-file-kanjitable|参照。
 
 ==============================================================================
-3. �I�v�V����					*tcvime-option*
+3. オプション					*tcvime-option*
 
 'tcvime_keyboard'				*'tcvime_keyboard'*
-  �����w���v�\�p�̃L�[�{�[�h�z���\��������B
-  �L�[�̌�ɃX�y�[�X�A��2�񂸂L�q���܂��B
-  ��:
+  文字ヘルプ表用のキーボード配列を表す文字列。
+  キーの後にスペース、を2回ずつ記述します。
+  例:
 	let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 
 'tcvime_keymap_for_help'			*'tcvime_keymap_for_help'*
-  �����w���v�\���Ɏg��keymap�B���݂̃o�b�t�@��&keymap�����ݒ�̏ꍇ�Ɏg�p�B
-  �ݒ��:
+  文字ヘルプ表示に使うkeymap。現在のバッファで&keymapが未設定の場合に使用。
+  設定例:
 	let tcvime_keymap_for_help = 'tutcode'
 
 'tcvime_movecandto'				*'tcvime_movecandto'*
-   ���������ϊ��Ŋm�肵�����́A
-   ��⃊�X�g���̈ړ���ʒu(�擪��0�B�ړ������Ȃ��ꍇ��-1)�B
-   �������A�m�肵����₪�A�w��ʒu�ȑO�ɂ���ꍇ�͈ړ����Ȃ��B
-   �܂�A�w��ʒu���O�ɂ�����̏��Ԃ͌Œ�B
-   �ȗ��l: -1
-   �ݒ��(tc2�Ɠ��l��5�ԖڂɈړ��B�擪4�̏��Ԃ͌Œ�):
+   交ぜ書き変換で確定した候補の、
+   候補リスト内の移動先位置(先頭は0。移動させない場合は-1)。
+   ただし、確定した候補が、指定位置以前にある場合は移動しない。
+   つまり、指定位置より前にある候補の順番は固定。
+   省略値: -1
+   設定例(tc2と同様に5番目に移動。先頭4個の順番は固定):
      let tcvime_movecandto = 4
-   (�Ȃ��A�m��E���ړ��̂��тɌ��������ϊ�������ۑ����邽��(����Vim
-   �g�p���̔r���������Ȃ�����)�A�������傫���ꍇ�͎��Ԃ�������B)
+   (なお、確定・候補移動のたびに交ぜ書き変換辞書を保存するため(複数Vim
+   使用時の排他処理を省くため)、辞書が大きい場合は時間がかかる。)
 
 'tcvime_mazegaki_edit_nocand'			*'tcvime_mazegaki_edit_nocand'*
-  ���������ϊ��Ō�₪�����ꍇ�Ɏ����ҏW���J�n���邩�ǂ����B
-  �ȗ��l: 0
-  �ݒ��:
+  交ぜ書き変換で候補が無い場合に辞書編集を開始するかどうか。
+  省略値: 0
+  設定例:
     let tcvime_mazegaki_edit_nocand = 1
-  ���������ϊ������ҏW�Ɋւ��ẮA|tcvime-file-mazegaki-edit|�Q�ƁB
+  交ぜ書き変換辞書編集に関しては、|tcvime-file-mazegaki-edit|参照。
 
 TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
-  lmap�̃J�X�^�}�C�Y�p�̊֐��Btcvime#SetKeymap()����R�[���o�b�N�����B
-  �ݒ���|tcvime-setting|�Q�ƁB
+  lmapのカスタマイズ用の関数。tcvime#SetKeymap()からコールバックされる。
+  設定例は|tcvime-setting|参照。
 
 g:tcvime#selectkeys				*'g:tcvime#selectkeys'*
-  ���������ϊ����I��p�L�[��List�B
-  ����I�ԍۂɁACTRL-N�����񂩉�������CTRL-Y�Ŋm�肷�邩���ɁA
-  ����List���̃L�[�����������Ō����m��ł���悤�ɂȂ�܂��B
-  �ȗ��l: []
-  �ݒ��:
+  交ぜ書き変換候補選択用キーのList。
+  候補を選ぶ際に、CTRL-Nを何回か押した後CTRL-Yで確定するかわりに、
+  このList内のキーを押すだけで候補を確定できるようになります。
+  省略値: []
+  設定例:
     let g:tcvime#selectkeys = ['1','2','3','4','5','6','7','8','9','0']
-  ��: Insert mode�ł̌��I���̏ꍇ�A
-      ���̃L�[�Ŏn�܂�lmap��imap������ꍇ�́A|'timeoutlen'|�҂��������B
+  注: Insert modeでの候補選択の場合、
+      このキーで始まるlmapやimapがある場合は、|'timeoutlen'|待ちが発生。
 
 'mapleader'
-  �L�[�}�b�s���O�̃v���t�B�b�N�X�B|mapleader|���Q�ƁB�ȗ��l: CTRL-K
-  CTRL-K���w�肷��ꍇ�̗�:
+  キーマッピングのプレフィックス。|mapleader|を参照。省略値: CTRL-K
+  CTRL-Kを指定する場合の例:
 	let mapleader = "\<C-K>"
 
 'plugin_tcvime_disable'
-  ���̃v���O�C����ǂݍ��݂����Ȃ��ꍇ�Ɏ��̂悤�ɐݒ肵�܂��B
+  このプラグインを読み込みたくない場合に次のように設定します。
 	let plugin_tcvime_disable = 1
 
-�L�[�ݒ�I�v�V����(Insert mode)
+キー設定オプション(Insert mode)
 -------------------------------
 
 '<Plug>TcvimeIStart'				*'<Plug>TcvimeIStart'*
-   ���������ϊ�: �ǂ݂̊J�n�ʒu�̈��t����L�[�B�ȗ��l: <Leader>q
-   ��(alj���w�肷��ꍇ):
+   交ぜ書き変換: 読みの開始位置の印を付けるキー。省略値: <Leader>q
+   例(aljを指定する場合):
      lmap <silent> alj <Plug>TcvimeIStart
 
 '<Plug>TcvimeIConvOrStart'			*'<Plug>TcvimeIConvOrStart'*
-   ���������ϊ�: �ϊ����s�L�[�B
-   �ǂ݂̊J�n�ʒu�̈󂪕t�����Ă���΁A
-   �J�n�ʒu�ƌ��݈ʒu�̊Ԃ̕�������A���������ϊ��̓ǂ݂Ƃ��ĕϊ������s�B
-   �󂪕t�����Ă��Ȃ���΁A����ʒu��ǂ݂̊J�n�ʒu�Ƃ��Ĉ��t����B
-   �ȗ��l: <Leader><Space>
-   ��(al<Space>���w�肷��ꍇ):
+   交ぜ書き変換: 変換実行キー。
+   読みの開始位置の印が付けられていれば、
+   開始位置と現在位置の間の文字列を、交ぜ書き変換の読みとして変換を実行。
+   印が付けられていなければ、現状位置を読みの開始位置として印を付ける。
+   省略値: <Leader><Space>
+   例(al<Space>を指定する場合):
      lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
 
 '<Plug>TcvimeIConvOrSpace'			*'<Plug>TcvimeIConvOrSpace'*
-   ���������ϊ�: �ϊ����s�L�[�B
-   �ǂ݂̊J�n�ʒu�̈󂪕t�����Ă���΁A
-   �J�n�ʒu�ƌ��݈ʒu�̊Ԃ̕�������A���������ϊ��̓ǂ݂Ƃ��ĕϊ������s�B
-   �󂪕t�����Ă��Ȃ���΁A' '��}���B
-   �ȗ��l: (����: ��������)
-   ��(<Space>���w�肷��ꍇ):
+   交ぜ書き変換: 変換実行キー。
+   読みの開始位置の印が付けられていれば、
+   開始位置と現在位置の間の文字列を、交ぜ書き変換の読みとして変換を実行。
+   印が付けられていなければ、' 'を挿入。
+   省略値: (無し: 未割当て)
+   例(<Space>を指定する場合):
      imap <silent> <Space> <Plug>TcvimeIConvOrSpace
-   Note: lmap�ɂ���ƁAlmap�L������f��t��r�̌��<Space>���g�p�s��(<C-R>=�Ȃ̂�)
+   Note: lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可(<C-R>=なので)
 
 '<Plug>TcvimeIKatuyo'				*'<Plug>TcvimeIKatuyo'*
-   ���������ϊ�: ���p�����̕ϊ����s�L�[�B�ȗ��l: <Leader>o
-   ��(alo���w�肷��ꍇ):
+   交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
+   例(aloを指定する場合):
      lmap <silent> alo <Plug>TcvimeIKatuyo
 
 '<Plug>TcvimeIShrink'				*'<Plug>TcvimeIShrink'*
-   ���������ϊ�: ���O�̌�u�^���������ϊ����k�߂�L�[�B�ȗ��l: (����: ��������)
-   ��(m>���w�肷��ꍇ):
+   交ぜ書き変換: 直前の後置型交ぜ書き変換を縮めるキー。省略値: (無し: 未割当て)
+   例(m>を指定する場合):
      lmap <silent> m> <Plug>TcvimeIShrink
 
 '<Plug>TcvimeIBushu'				*'<Plug>TcvimeIBushu'*
-   ���񍇐��ϊ�: ���O��2�����̕��񍇐��ϊ����s�L�[�B�ȗ��l: <Leader>b
-   ��(ala���w�肷��ꍇ):
+   部首合成変換: 直前の2文字の部首合成変換実行キー。省略値: <Leader>b
+   例(alaを指定する場合):
      lmap <silent> ala <Plug>TcvimeIBushu
 
-�L�[�ݒ�I�v�V����(Normal mode)
+キー設定オプション(Normal mode)
 -------------------------------
 
 '<Plug>TcvimeNConvert'				*'<Plug>TcvimeNConvert'*
-   ���������ϊ�: �J�[�\���ʒu�ȑO��[count]�����̕ϊ����s���L�[�B
-   �ȗ��l: <Leader><Space>
-   <Leader><Space>���w�肷��ꍇ�̗�:
+   交ぜ書き変換: カーソル位置以前の[count]文字の変換を行うキー。
+   省略値: <Leader><Space>
+   <Leader><Space>を指定する場合の例:
      nmap <silent> <Leader><Space> <Plug>TcvimeNConvert
 
 '<Plug>TcvimeNOpConvert'			*'<Plug>TcvimeNOpConvert'*
-   ���������ϊ�: ���̃L�[�����������{motion}�Ŏw�肳��镶�����ϊ��B
-   ����: �L�[���������ۂ�|'operatorfunc'|���㏑�����܂��B
-   �ȗ��l: (����: ��������)
-   <Leader>n���w�肷��ꍇ�̗�:
+   交ぜ書き変換: このキーを押した後の{motion}で指定される文字列を変換。
+   注意: キーを押した際に|'operatorfunc'|を上書きします。
+   省略値: (無し: 未割当て)
+   <Leader>nを指定する場合の例:
      nmap <silent> <Leader>n <Plug>TcvimeNOpConvert
 
 '<Plug>TcvimeNKatuyo'				*'<Plug>TcvimeNKatuyo'*
-   ���������ϊ�: [count]�����̊��p�����̕ϊ����s���L�[�B
-   �ȗ��l: <Leader>o
+   交ぜ書き変換: [count]文字の活用する語の変換を行うキー。
+   省略値: <Leader>o
 
 '<Plug>TcvimeNOpKatuyo'				*'<Plug>TcvimeNOpKatuyo'*
-   ���������ϊ�: ���̃L�[�����������{motion}�Ŏw�肳��镶�����
-   ���p�����Ƃ��ĕϊ��B
-   ����: �L�[���������ۂ�|'operatorfunc'|���㏑�����܂��B
-   �ȗ��l: (����: ��������)
+   交ぜ書き変換: このキーを押した後の{motion}で指定される文字列を
+   活用する語として変換。
+   注意: キーを押した際に|'operatorfunc'|を上書きします。
+   省略値: (無し: 未割当て)
 
 '<Plug>TcvimeNBushu'				*'<Plug>TcvimeNBushu'*
-   ���񍇐��ϊ�: �J�[�\���ʒu�ȑO��2�����̕��񍇐��ϊ����s���L�[�B
-   �ȗ��l: <Leader>b
+   部首合成変換: カーソル位置以前の2文字の部首合成変換を行うキー。
+   省略値: <Leader>b
 
 '<Plug>TcvimeNKatakana'				*'<Plug>TcvimeNKatakana'*
-   �J�^�J�i�ϊ�: �J�[�\���ʒu�ȑO��[count]�����̃J�^�J�i�ւ̕ϊ����s���L�[�B
-   �ȗ��l: (����: ��������)
+   カタカナ変換: カーソル位置以前の[count]文字のカタカナへの変換を行うキー。
+   省略値: (無し: 未割当て)
 
 '<Plug>TcvimeNKataHira'				*'<Plug>TcvimeNKataHira'*
-   �J�^�J�i�ϊ�: �J�[�\���ʒu�ȑO�łЂ炪�Ȃ�u�[�v�������ԃJ�^�J�i�ɕϊ��B
-   [count]�Ŏw�肵���������͂Ђ炪�ȂƂ��Ďc���B
-   �ȗ��l: (����: ��������)
+   カタカナ変換: カーソル位置以前でひらがなや「ー」が続く間カタカナに変換。
+   [count]で指定した文字数はひらがなとして残す。
+   省略値: (無し: 未割当て)
 
 '<Plug>TcvimeNOpKatakana'			*'<Plug>TcvimeNOpKatakana'*
-   �J�^�J�i�ϊ�: ���̃L�[�����������{motion}�Ŏw�肳��镶������J�^�J�i�ϊ��B
-   ����: �L�[���������ۂ�|'operatorfunc'|���㏑�����܂��B
-   �ȗ��l: (����: ��������)
+   カタカナ変換: このキーを押した後の{motion}で指定される文字列をカタカナ変換。
+   注意: キーを押した際に|'operatorfunc'|を上書きします。
+   省略値: (無し: 未割当て)
 
 '<Plug>TcvimeNHelp'				*'<Plug>TcvimeNHelp'*
-   �Ō��w���v�\��: �J�[�\���ʒu�̕����̃w���v�\��\������L�[�B
-   �ȗ��l: <Leader>?
+   打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示するキー。
+   省略値: <Leader>?
 
 '<Plug>TcvimeNKanjiTable'			*'<Plug>TcvimeNKanjiTable'*
-   �����e�[�u���t�@�C���\�����s���L�[�B�ȗ��l: <Leader>t
+   漢字テーブルファイル表示を行うキー。省略値: <Leader>t
 
-�L�[�ݒ�I�v�V����(Visual mode)
+キー設定オプション(Visual mode)
 -------------------------------
 
 '<Plug>TcvimeVHelp'				*'<Plug>TcvimeVHelp'*
-   �Ō��w���v�\��: �I�𒆂�(����)�����̃w���v�\��\������L�[�B
-   �ȗ��l: <Leader>?
-   <Leader>? ���w�肷��ꍇ�̗�:
+   打鍵ヘルプ表示: 選択中の(複数)文字のヘルプ表を表示するキー。
+   省略値: <Leader>?
+   <Leader>? を指定する場合の例:
      vmap <silent> <Leader>? <Plug>TcvimeVHelp
 
 '<Plug>TcvimeVConvert'				*'<Plug>TcvimeVConvert'*
-   ���������ϊ�: �I�𒆂̕�����̕ϊ����s���L�[�B
-   �ȗ��l: <Leader><Space>
+   交ぜ書き変換: 選択中の文字列の変換を行うキー。
+   省略値: <Leader><Space>
 
 '<Plug>TcvimeVKatuyo'				*'<Plug>TcvimeVKatuyo'*
-   ���������ϊ�: �I�𒆂̕���������p�����Ƃ��ĕϊ����s���L�[�B
-   �ȗ��l: <Leader>o
+   交ぜ書き変換: 選択中の文字列を活用する語として変換を行うキー。
+   省略値: <Leader>o
 
 '<Plug>TcvimeVKatakana'				*'<Plug>TcvimeVKatakana'*
-   �J�^�J�i�ϊ�: �I�𒆂̕�������J�^�J�i�ɕϊ�����L�[�B
-   �ȗ��l: (����: ��������)
+   カタカナ変換: 選択中の文字列をカタカナに変換するキー。
+   省略値: (無し: 未割当て)
 
 '<Plug>TcvimeVKanji2Seq'			*'<Plug>TcvimeVKanji2Seq'*
-   �������V�[�P���X�ϊ�: �I�𒆂̕��������̓V�[�P���X�ɕϊ�����L�[�B
-   �ȗ��l: (����: ��������)
+   漢字→シーケンス変換: 選択中の文字列を入力シーケンスに変換するキー。
+   省略値: (無し: 未割当て)
 
 '<Plug>TcvimeVSeq2Kanji'			*'<Plug>TcvimeVSeq2Kanji'*
-   �V�[�P���X�������ϊ�: �I�𒆂̕��������̓V�[�P���X�Ƃ݂Ȃ��Ċ�����
-   �ϊ�����L�[�B
-   �ȗ��l: (����: ��������)
+   シーケンス→漢字変換: 選択中の文字列を入力シーケンスとみなして漢字に
+   変換するキー。
+   省略値: (無し: 未割当て)
 
 '<Plug>TcvimeVShiftSeq'				*'<Plug>TcvimeVShiftSeq'*
-   �������V�[�P���X�������ϊ�: �I�𒆂̕�����̓��̓V�[�P���X�����炵��
-   �����ɕϊ�����L�[�B
-   �ȗ��l: (����: ��������)
+   漢字→シーケンス→漢字変換: 選択中の文字列の入力シーケンスをずらして
+   漢字に変換するキー。
+   省略値: (無し: 未割当て)
 
 ==============================================================================
-4. �R�}���h					*tcvime-command*
+4. コマンド					*tcvime-command*
 
 :TcvimeOn					*:TcvimeOn*
-  �L�[�}�b�s���O��L��������
+  キーマッピングを有効化する
 
 :TcvimeOff					*:TcvimeOff*
-  �L�[�}�b�s���O�𖳌�������
+  キーマッピングを無効化する
 
 :TcvimeHelp {str}				*:TcvimeHelp*
-  �w�肵����������̊e�����̃w���v�\��\������
+  指定した文字列内の各文字のヘルプ表を表示する
 
 :TcvimeHelpB[ushu] {str}				*:TcvimeHelpBushu*
-  �w�肵����������̊e�������܂ލs�𕔎񍇐��ϊ��������猟�����ĕ\������
+  指定した文字列内の各文字を含む行を部首合成変換辞書から検索して表示する
 
 :TcvimeSetKeymap {keymap}			*:TcvimeSetKeymap*
-  &keymap��{keymap}��set����
+  &keymapに{keymap}をsetする
 
 :TcvimeK[anjiTable]				*:TcvimeKanjiTable*
-  �����e�[�u���t�@�C����\�����āA������I��œ���
+  漢字テーブルファイルを表示して、漢字を選んで入力
 
 :TcvimeC[loseHelp]				*:TcvimeCloseHelp*
-  �w���v�p�o�b�t�@�����
+  ヘルプ用バッファを閉じる
 
 :TcvimeE[ditMazegaki]				*:TcvimeEditMazegaki*
-  ���������ϊ������ւ̒P��o�^�p�R�}���h�B
-  ���������ϊ�������ҏW�p�ɊJ���Ē��O�ɕϊ������ǂ݂���������B
-  �ǂ݂�������Ȃ��ꍇ�́A�V���ȍs��ǉ����āA
-  �ǂ݂ƌ�╶����(�ǂ݂Ɠ���)��}������B
+  交ぜ書き変換辞書への単語登録用コマンド。
+  交ぜ書き変換辞書を編集用に開いて直前に変換した読みを検索する。
+  読みが見つからない場合は、新たな行を追加して、
+  読みと候補文字列(読みと同じ)を挿入する。
 
-  ���������ϊ������ҏW�Ɋւ��ẮA|tcvime-file-mazegaki-edit|�Q�ƁB
+  交ぜ書き変換辞書編集に関しては、|tcvime-file-mazegaki-edit|参照。
 
 ==============================================================================
-5. �����t�@�C��					*tcvime-file*
+5. 辞書ファイル					*tcvime-file*
 
-|tcvime-file-mazegaki|		���������ϊ�����
-|tcvime-file-mazegaki-edit|	���������ϊ������̕ҏW
-|tcvime-file-bushu|		���񍇐��ϊ�����
-|tcvime-file-kanjitable|	�����e�[�u���t�@�C��
+|tcvime-file-mazegaki|		交ぜ書き変換辞書
+|tcvime-file-mazegaki-edit|	交ぜ書き変換辞書の編集
+|tcvime-file-bushu|		部首合成変換辞書
+|tcvime-file-kanjitable|	漢字テーブルファイル
 
-���������ϊ�����				*tcvime-file-mazegaki*
+交ぜ書き変換辞書				*tcvime-file-mazegaki*
 ----------------
 
-���������ϊ�������tc2�Ɠ����`���ł�(SKK�Ɠ��l�̌`��)�B
-���������ϊ������̊e�s�͈ȉ��̌`���ł��B
+交ぜ書き変換辞書はtc2と同じ形式です(SKKと同様の形式)。
+交ぜ書き変換辞書の各行は以下の形式です。
 
-  �ǂ� /���1/���2/.../���N/
+  読み /候補1/候補2/.../候補N/
 
-�ǂ݂Ɋ�����p�������܂܂�Ă��Ă����܂��܂���B
-���p�����́A���p���Ȃ�����(�ꊲ)�̌��"�\"���t�����ǂ݂œo�^����Ă��܂��B
-�ǂ݂Ń\�[�g����Ă���K�v�͂���܂���B
+読みに漢字や英数字が含まれていてもかまいません。
+活用する語は、活用しない部分(語幹)の後に"―"が付いた読みで登録されています。
+読みでソートされている必要はありません。
 
-  ���� /����/���I/��/�H/��/�s/����/���|/���Y/
-  �����\ /�}��/�O��/
-  ���� /����/
-  ���I /���I/
-  ���� /����/���I/
+  あき /亜希/亜紀/明/秋/穐/龝/安岐/安芸/安藝/
+  あき― /厭き/飽き/
+  あ希 /亜希/
+  あ紀 /亜紀/
+  亜き /亜希/亜紀/
   ...
 
-���������ϊ������̕ҏW				*tcvime-file-mazegaki-edit*
+交ぜ書き変換辞書の編集				*tcvime-file-mazegaki-edit*
 ----------------------
 
-|:TcvimeEditMazegaki|�����s����ƁA���������ϊ�������ҏW�p�ɊJ���āA
-���O�̌��������ϊ��̓ǂ݂��������܂��B
+|:TcvimeEditMazegaki|を実行すると、交ぜ書き変換辞書を編集用に開いて、
+直前の交ぜ書き変換の読みを検索します。
 
-�ǂ݂�������Ȃ��ꍇ�́A�V���ȍs��ǉ����āA
-�ǂ݂ƌ�╶����(�ǂ݂Ɠ���)��}�����܂��B
-|'tcvime_mazegaki_edit_nocand'|�I�v�V������1�ɐݒ肵�Ă����ƁA
-��₪�����ꍇ�Ɏ����ҏW���J�n����܂��B
+読みが見つからない場合は、新たな行を追加して、
+読みと候補文字列(読みと同じ)を挿入します。
+|'tcvime_mazegaki_edit_nocand'|オプションを1に設定しておくと、
+候補が無い場合に辞書編集が開始されます。
 
-�Ⴆ�΁A�u���R�v��ϊ����悤�Ƃ��āA��₪�����ꍇ�A�ȉ��̍s���}������܂��B
+例えば、「こつ然」を変換しようとして、候補が無い場合、以下の行が挿入されます。
 
-  ���R /���R/
+  こつ然 /こつ然/
 
-���̂Ƃ�(�����ҏW�J�n����)�A�ǂ݂��Ԉ���Ă����Ȃǂ̗��R�ŁA
-�����ҏW���L�����Z���������ꍇ�ANormal mode��<C-E>�L�[�������Ă��������B
+このとき(辞書編集開始直後)、読みを間違っていたなどの理由で、
+辞書編集をキャンセルしたい場合、Normal modeで<C-E>キーを押してください。
 
-�ȉ��̂悤�ɕҏW������A���̃o�b�t�@��̓ǂ݂��A
-�V���ɓo�^�������Œu������ɂ́A�o�^���������<C-Y>�L�[�������Ă��������B
+以下のように編集した後、元のバッファ上の読みを、
+新たに登録した候補で置換するには、登録した候補上で<C-Y>キーを押してください。
 
-  ���R /���R/
+  こつ然 /忽然/
 
-���񍇐��ϊ�����				*tcvime-file-bushu*
+部首合成変換辞書				*tcvime-file-bushu*
 ----------------
 
-bushu.rev   ���񍇐��ϊ��p����
-bushu.help  ���[�U�p���񍇐�����
+bushu.rev   部首合成変換用辞書
+bushu.help  ユーザ用部首合成辞書
 
-���[�U�p���񍇐�����(bushu.help)�t�@�C��������΁A
-�D�悵�ĕ��񍇐��Ɏg�p���܂��B
+ユーザ用部首合成辞書(bushu.help)ファイルがあれば、
+優先して部首合成に使用します。
 
-bushu.help�̗�:
-"��"��"�c"��A"��"��"��"��"��"�������������ꍇ�A�ȉ��̍s��ǉ����Ă��������B
-�t�̏���("��"��"��")�ł������������ꍇ�́A����"*"��t���Ă��������B
+bushu.helpの例:
+"風"と"皇"や、"王"と"風"で"凰"を合成したい場合、以下の行を追加してください。
+逆の順番("風"と"王")でも合成したい場合は、後ろに"*"を付けてください。
 
-�����c ����*
+凰風皇 王風*
 
-�����e�[�u���t�@�C��				*tcvime-file-kanjitable*
+漢字テーブルファイル				*tcvime-file-kanjitable*
 --------------------
 
-�P�Ȃ�e�L�X�g�t�@�C���Ȃ̂ŁA�`���͎��R�ł��B
+単なるテキストファイルなので、形式は自由です。
 
 ==============================================================================
-6. �ݒ��					*tcvime-setting*
+6. 設定例					*tcvime-setting*
 
-~/.vimrc�ł̐ݒ��ł��B
-<C-J>��tutcode��L���ɂ��A<C-L>��tutcode�𖳌��ɂ���ݒ�̗�ł��B
-(<C-^>�ł̃g�O������ɂ�����A���݂̏�Ԃ��ӎ����镉�S�𖳂��������ꍇ�p)
+~/.vimrcでの設定例です。
+<C-J>でtutcodeを有効にし、<C-L>でtutcodeを無効にする設定の例です。
+(<C-^>でのトグル操作における、現在の状態を意識する負担を無くしたい場合用)
 
 if has('keymap')
   let tcvime_keymap_for_help = 'tutcodep'
@@ -618,19 +618,19 @@ if has('keymap')
 endif
 
 function! s:EnableKeymap()
-  " ���ɃI���̏ꍇ�͉������Ȃ�
+  " 既にオンの場合は何もしない
   if &iminsert
     return ''
   endif
   call tcvime#SetKeymap(g:tcvime_keymap_for_help)
-  " <Space>�őO�u�^���������ϊ����J�n���邩�A�ǂ݂��������' '��}���B
-  " (lmap�ɂ���ƁAlmap�L������f��t��r�̌��<Space>���g�p�s�B(<C-R>=�Ȃ̂�))
+  " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
+  " (lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可。(<C-R>=なので))
   imap <silent> <Space> <C-G>u<Plug>TcvimeIConvOrSpace
   return "\<C-^>"
 endfunction
 
 function! s:DisableKeymap()
-  " ���ɃI�t�̏ꍇ�͉������Ȃ�
+  " 既にオフの場合は何もしない
   if !&iminsert
     return ''
   endif
@@ -640,23 +640,23 @@ function! s:DisableKeymap()
   return "\<C-^>"
 endfunction
 
-" lmap�̃J�X�^�}�C�Y���s���֐��B
-" tcvime#SetKeymap()����R�[���o�b�N�����B
+" lmapのカスタマイズを行う関数。
+" tcvime#SetKeymap()からコールバックされる。
 function! TcvimeCustomKeymap()
-  " (TUT-Code�p�̗�)
-  " ��u�^���񍇐��ϊ�
+  " (TUT-Code用の例)
+  " 後置型部首合成変換
   lmap <silent> ala <C-G>u<Plug>TcvimeIBushu
-  " �O�u�^���������ϊ��̓ǂݓ��͊J�n
+  " 前置型交ぜ書き変換の読み入力開始
   lmap <silent> alj <Plug>TcvimeIStart
-  " �O�u�^���������ϊ�
+  " 前置型交ぜ書き変換
   lmap <silent> al<Space> <C-G>u<Plug>TcvimeIConvOrStart
-  " �O�u�^���������ϊ�(���p�����Ƃ��ĕϊ�)
+  " 前置型交ぜ書き変換(活用する語として変換)
   lmap <silent> alo <C-G>u<Plug>TcvimeIKatuyo
-  " ���O�̃J�^�J�i�ϊ��E���������ϊ��E���񍇐��ϊ��̎�����
+  " 直前のカタカナ変換・交ぜ書き変換・部首合成変換の取り消し
   lmap <silent> alu <C-G>u<C-R>=tcvime#InputConvertUndo()<CR>
-  " ���O�̌��������ϊ����k�߂�
+  " 直前の交ぜ書き変換を縮める
   lmap <silent> m> <C-G>u<Plug>TcvimeIShrink
-  " ��u�^�J�^�J�i�ϊ�: �w�蕶�������J�^�J�i�ϊ��B0:�Ђ炪�Ȃ�������
+  " 後置型カタカナ変換: 指定文字数をカタカナ変換。0:ひらがなが続く間
   lmap <silent> k0 <C-G>u<C-R>=tcvime#InputConvertKatakana(0)<CR>
   lmap <silent> k1 <C-G>u<C-R>=tcvime#InputConvertKatakana(1)<CR>
   lmap <silent> k2 <C-G>u<C-R>=tcvime#InputConvertKatakana(2)<CR>
@@ -667,65 +667,65 @@ function! TcvimeCustomKeymap()
   lmap <silent> k7 <C-G>u<C-R>=tcvime#InputConvertKatakana(7)<CR>
   lmap <silent> k8 <C-G>u<C-R>=tcvime#InputConvertKatakana(8)<CR>
   lmap <silent> k9 <C-G>u<C-R>=tcvime#InputConvertKatakana(9)<CR>
-  " ��u�^�J�^�J�i�ϊ�: �w�蕶�����̂Ђ炪�Ȃ��c���ăJ�^�J�i�ϊ�
+  " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
   lmap <silent> j1 <C-G>u<C-R>=tcvime#InputConvertKatakana(-1)<CR>
   lmap <silent> j2 <C-G>u<C-R>=tcvime#InputConvertKatakana(-2)<CR>
   lmap <silent> j3 <C-G>u<C-R>=tcvime#InputConvertKatakana(-3)<CR>
   lmap <silent> j4 <C-G>u<C-R>=tcvime#InputConvertKatakana(-4)<CR>
   lmap <silent> j5 <C-G>u<C-R>=tcvime#InputConvertKatakana(-5)<CR>
   lmap <silent> j6 <C-G>u<C-R>=tcvime#InputConvertKatakana(-6)<CR>
-  " ���O�̃J�^�J�i�ϊ����k�߂�
+  " 直前のカタカナ変換を縮める
   lmap <silent> l1 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
   lmap <silent> l2 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(2)<CR>
   lmap <silent> l3 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(3)<CR>
   lmap <silent> l4 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(4)<CR>
   lmap <silent> l5 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(5)<CR>
-  " ��u�^�ŃJ�^�J�i�������L�΂�: �J�^�J�i���O�łЂ炪�Ȃ�������
+  " 後置型でカタカナ文字列を伸ばす: カタカナより前でひらがなが続く間
   lmap <silent> h0 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(0)<CR>
-  " ��u�^�ŃJ�^�J�i�������L�΂�: �������w��
+  " 後置型でカタカナ文字列を伸ばす: 文字数指定
   lmap <silent> h1 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(1)<CR>
   lmap <silent> h2 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(2)<CR>
   lmap <silent> h3 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(3)<CR>
   lmap <silent> h4 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(4)<CR>
   lmap <silent> h5 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(5)<CR>
-  " ��u�^���������ϊ�: �ǂ݂̕������w�薳��: ���p���Ȃ���
+  " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用しない語
   lmap <silent> m0 <C-G>u<C-R>=tcvime#InputPostConvertStart(0)<CR>
-  " ��u�^���������ϊ�: �ǂ݂̕������w��L��: ���p���Ȃ���
+  " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用しない語
   lmap <silent> m1 <C-G>u<C-R>=tcvime#InputPostConvert(1, 0)<CR>
   lmap <silent> m2 <C-G>u<C-R>=tcvime#InputPostConvert(2, 0)<CR>
   lmap <silent> m3 <C-G>u<C-R>=tcvime#InputPostConvert(3, 0)<CR>
   lmap <silent> m4 <C-G>u<C-R>=tcvime#InputPostConvert(4, 0)<CR>
   lmap <silent> m5 <C-G>u<C-R>=tcvime#InputPostConvert(5, 0)<CR>
   lmap <silent> m6 <C-G>u<C-R>=tcvime#InputPostConvert(6, 0)<CR>
-  " ��u�^���������ϊ�: �ǂ݂̕������w�薳��: ���p�����
+  " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用する語
   lmap <silent> n0 <C-G>u<C-R>=tcvime#InputPostConvertStart(1)<CR>
-  " ��u�^���������ϊ�: �ǂ݂̕������w��L��: ���p�����
+  " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用する語
   lmap <silent> n1 <C-G>u<C-R>=tcvime#InputPostConvert(1, 1)<CR>
   lmap <silent> n2 <C-G>u<C-R>=tcvime#InputPostConvert(2, 1)<CR>
   lmap <silent> n3 <C-G>u<C-R>=tcvime#InputPostConvert(3, 1)<CR>
   lmap <silent> n4 <C-G>u<C-R>=tcvime#InputPostConvert(4, 1)<CR>
   lmap <silent> n5 <C-G>u<C-R>=tcvime#InputPostConvert(5, 1)<CR>
   lmap <silent> n6 <C-G>u<C-R>=tcvime#InputPostConvert(6, 1)<CR>
-  " ��u�^���̓V�[�P���X�������ϊ�
+  " 後置型入力シーケンス→漢字変換
   lmap <silent> z0 <C-G>u<C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
-  " ��u�^���������̓V�[�P���X�ϊ�(���ʒu����X�y�[�X�܂�)
+  " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
   lmap <silent> ;0 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
-  " ��u�^���������̓V�[�P���X�ϊ�(���ʒu����Insert mode�J�n�ʒu�܂��͍s���܂�)
+  " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
   lmap <silent> ;9 <C-G>u<C-R>=tcvime#InputConvertKanji2SeqAll()<CR><C-R>=<SID>DisableKeymap()<CR>
-  " ��u�^���������̓V�[�P���X�ϊ�(�w�蕶����)
+  " 後置型漢字→入力シーケンス変換(指定文字数)
   lmap <silent> ;1 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(1)<CR>
   lmap <silent> ;2 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(2)<CR>
   lmap <silent> ;3 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(3)<CR>
   lmap <silent> ;4 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(4)<CR>
   lmap <silent> ;5 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(5)<CR>
   lmap <silent> ;6 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(6)<CR>
-  " tc2���l�̌�u�^���������ϊ����s�����߂̐ݒ�:
-  " " ���p���Ȃ���
+  " tc2同様の後置型交ぜ書き変換を行うための設定:
+  " " 活用しない語
   " lmap <silent> 18 <C-G>u<C-R>=tcvime#InputPostConvert(1, 0)<CR>
   " lmap <silent> 28 <C-G>u<C-R>=tcvime#InputPostConvert(2, 0)<CR>
   " lmap <silent> 38 <C-G>u<C-R>=tcvime#InputPostConvert(3, 0)<CR>
   " lmap <silent> 48 <C-G>u<C-R>=tcvime#InputPostConvert(4, 0)<CR>
-  " " ���p�����(������tc2�ƈ���āA�ǂ݂̕������ɂ͊��p����͊܂܂Ȃ�)
+  " " 活用する語(ただしtc2と違って、読みの文字数には活用語尾は含まない)
   " lmap <silent> 29 <C-G>u<C-R>=tcvime#InputPostConvert(2, 1)<CR>
   " lmap <silent> 39 <C-G>u<C-R>=tcvime#InputPostConvert(3, 1)<CR>
   " lmap <silent> 49 <C-G>u<C-R>=tcvime#InputPostConvert(4, 1)<CR>
@@ -733,13 +733,13 @@ function! TcvimeCustomKeymap()
 endfunction
 
 ==============================================================================
-7. ���_					*tcvime-problem*
+7. 問題点					*tcvime-problem*
 
-- Insert mode�̌��������ϊ��̍ہA�|�b�v�A�b�v���j���[�������ŕ\���ł��Ȃ��ꍇ�A
-  �����w���v�̕\���͂ł��܂���B
+- Insert modeの交ぜ書き変換の際、ポップアップメニューが無効で表示できない場合、
+  自動ヘルプの表示はできません。
 
-- |'backspace'|�I�v�V������start�������Ă��Ȃ��ꍇ�AInsert���[�h�ŕ��񍇐�
-  �ϊ������s�����Ƃ��ɁA���̕����������Ȃ��Ŏc���Ă��܂����Ƃ�����܂��B
-  <BS>�Ō��̕����������Ă��邽�߂ł��B
+- |'backspace'|オプションにstartが入っていない場合、Insertモードで部首合成
+  変換等を行ったときに、元の文字が消えないで残ってしまうことがあります。
+  <BS>で元の文字を消しているためです。
 
 ==============================================================================

@@ -1,180 +1,179 @@
 " vi:set ts=8 sts=2 sw=2 tw=0:
+scriptencoding utf-8
 "
-" tcvime.vim - tcode,tutcode���̊������ړ���keymap�ł̓��͕⏕�@�\:
-"              ���������ϊ��A���񍇐��ϊ��A�����w���v�\�\���@�\�B
+" tcvime.vim - tcode,tutcode等の漢字直接入力keymapでの入力補助機能:
+"              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-02-02
+" Last Change: 2013-10-11
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
-scriptencoding cp932
-
 " Description:
-" �R�}���h:
-"   :TcvimeOn         �L�[�}�b�s���O��L��������
-"   :TcvimeOff        �L�[�}�b�s���O�𖳌�������
-"   :TcvimeHelp       �w�肵�������̃w���v�\��\������
-"   :TcvimeHelpBushu  �w�肵���������܂ލs�𕔎񍇐��ϊ��������猟�����ĕ\��
-"   :TcvimeSetKeymap  keymap��set����
-"   :TcvimeKanjiTable �����e�[�u���t�@�C����\�����āA������I��œ���
-"   :TcvimeCloseHelp  �w���v�p�o�b�t�@�����
-"   :TcvimeEditMazegaki ���������ϊ�������ҏW�p�ɊJ���Ē��O�ɕϊ������ǂ݂�����
+" コマンド:
+"   :TcvimeOn         キーマッピングを有効化する
+"   :TcvimeOff        キーマッピングを無効化する
+"   :TcvimeHelp       指定した文字のヘルプ表を表示する
+"   :TcvimeHelpBushu  指定した文字を含む行を部首合成変換辞書から検索して表示
+"   :TcvimeSetKeymap  keymapをsetする
+"   :TcvimeKanjiTable 漢字テーブルファイルを表示して、漢字を選んで入力
+"   :TcvimeCloseHelp  ヘルプ用バッファを閉じる
+"   :TcvimeEditMazegaki 交ぜ書き変換辞書を編集用に開いて直前に変換した読みを検索
 "
 " imap:
-"   <Leader>q       ���������ϊ�: �ǂ݂��J�n
-"   <Leader><Space> ���������ϊ�: �ϊ����s
-"   <Leader>o       ���������ϊ�: ���p�����̕ϊ����s
-"   <Leader>b       ���񍇐��ϊ�: ���O��2�����̕��񍇐��ϊ����s
+"   <Leader>q       交ぜ書き変換: 読みを開始
+"   <Leader><Space> 交ぜ書き変換: 変換実行
+"   <Leader>o       交ぜ書き変換: 活用する語の変換実行
+"   <Leader>b       部首合成変換: 直前の2文字の部首合成変換実行
 "
 " nmap:
-"   [count]<Leader><Space>  ���������ϊ�: �J�[�\���ʒu�ȑO��[count]�����̕ϊ�
-"   [count]<Leader>o        ���������ϊ�: [count]�����̊��p�����̕ϊ�
-"   <Leader>b               ���񍇐��ϊ�: �J�[�\���ʒu�ȑO��2�����̕��񍇐��ϊ�
-"   <Leader>?               �Ō��w���v�\��: �J�[�\���ʒu�̕����̃w���v�\��\��
-"   <Leader>t               �����e�[�u���t�@�C���\��
+"   [count]<Leader><Space>  交ぜ書き変換: カーソル位置以前の[count]文字の変換
+"   [count]<Leader>o        交ぜ書き変換: [count]文字の活用する語の変換
+"   <Leader>b               部首合成変換: カーソル位置以前の2文字の部首合成変換
+"   <Leader>?               打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示
+"   <Leader>t               漢字テーブルファイル表示
 "
 " vmap:
-"   <Leader>?               �Ō��w���v�\��: �I�𒆂�(����)�����̃w���v�\��\��
-"   <Leader><Space>         ���������ϊ�: �I�𒆂̕�����̕ϊ�
-"   <Leader>o               ���������ϊ�: �I�𒆂̕���������p�����Ƃ��ĕϊ�
+"   <Leader>?               打鍵ヘルプ表示: 選択中の(複数)文字のヘルプ表を表示
+"   <Leader><Space>         交ぜ書き変換: 選択中の文字列の変換
+"   <Leader>o               交ぜ書き変換: 選択中の文字列を活用する語として変換
 "
-" �L�[�ݒ�I�v�V����:
+" キー設定オプション:
 "  imap:
 "    '<Plug>TcvimeIStart'
-"       ���������ϊ�: �ǂ݂��J�n����L�[�B�ȗ��l: <Leader>q
-"       ��(alj���w�肷��ꍇ):
+"       交ぜ書き変換: 読みを開始するキー。省略値: <Leader>q
+"       例(aljを指定する場合):
 "         lmap <silent> alj <Plug>TcvimeIStart
 "    '<Plug>TcvimeIConvOrStart'
-"       ���������ϊ�: �ϊ����s�L�[�B�ȗ��l: <Leader><Space>
-"       ��(al<Space>���w�肷��ꍇ):
+"       交ぜ書き変換: 変換実行キー。省略値: <Leader><Space>
+"       例(al<Space>を指定する場合):
 "         lmap <silent> al<Space> <Plug>TcvimeIConvOrStart
 "    '<Plug>TcvimeIConvOrSpace'
-"       ���������ϊ�: �ϊ����s�L�[�B�ǂ݂��������' '��}���B
-"       �ȗ��l: (����: ��������)
-"       ��(<Space>���w�肷��ꍇ):
+"       交ぜ書き変換: 変換実行キー。読みが無ければ' 'を挿入。
+"       省略値: (無し: 未割当て)
+"       例(<Space>を指定する場合):
 "         imap <silent> <Space> <Plug>TcvimeIConvOrSpace
-"       (lmap�ɂ���ƁAlmap�L������f��t�̌��<Space>���g�p�s��(<C-R>=�Ȃ̂�))
+"       (lmapにすると、lmap有効時にfやtの後の<Space>が使用不可(<C-R>=なので))
 "    '<Plug>TcvimeIKatuyo'
-"       ���������ϊ�: ���p�����̕ϊ����s�L�[�B�ȗ��l: <Leader>o
-"       ��(alo���w�肷��ꍇ):
+"       交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
+"       例(aloを指定する場合):
 "         lmap <silent> alo <Plug>TcvimeIKatuyo
 "    '<Plug>TcvimeIShrink'
-"       ���������ϊ�: ���O�̌�u�^���������ϊ����k�߂�L�[�B
-"       �ȗ��l: (����: ��������)
-"       ��(al>���w�肷��ꍇ):
+"       交ぜ書き変換: 直前の後置型交ぜ書き変換を縮めるキー。
+"       省略値: (無し: 未割当て)
+"       例(al>を指定する場合):
 "         lmap <silent> al> <Plug>TcvimeIShrink
 "    '<Plug>TcvimeIBushu'
-"       ���񍇐��ϊ�: ���O��2�����̕��񍇐��ϊ����s�L�[�B�ȗ��l: <Leader>b
-"       ��(ala���w�肷��ꍇ):
+"       部首合成変換: 直前の2文字の部首合成変換実行キー。省略値: <Leader>b
+"       例(alaを指定する場合):
 "         lmap <silent> ala <Plug>TcvimeIBushu
 "
 "  nmap:
 "    '<Plug>TcvimeNConvert'
-"       ���������ϊ�: �J�[�\���ʒu�ȑO��[count]�����̕ϊ����s���L�[�B
-"       �ȗ��l: <Leader><Space>
-"       <Leader><Space>���w�肷��ꍇ�̗�:
+"       交ぜ書き変換: カーソル位置以前の[count]文字の変換を行うキー。
+"       省略値: <Leader><Space>
+"       <Leader><Space>を指定する場合の例:
 "         nmap <silent> <Leader><Space> <Plug>TcvimeNConvert
 "    '<Plug>TcvimeNKatuyo'
-"       ���������ϊ�: [count]�����̊��p�����̕ϊ����s���L�[�B
-"       �ȗ��l: <Leader>o
+"       交ぜ書き変換: [count]文字の活用する語の変換を行うキー。
+"       省略値: <Leader>o
 "    '<Plug>TcvimeNBushu'
-"       ���񍇐��ϊ�: �J�[�\���ʒu�ȑO��2�����̕��񍇐��ϊ����s���L�[�B
-"       �ȗ��l: <Leader>b
+"       部首合成変換: カーソル位置以前の2文字の部首合成変換を行うキー。
+"       省略値: <Leader>b
 "    '<Plug>TcvimeNKatakana'
-"       �J�^�J�i�ϊ�: �J�[�\���ʒu�ȑO��[count]�����̃J�^�J�i�ւ̕ϊ����s���L�[
-"       �ȗ��l: (����:��������)
+"       カタカナ変換: カーソル位置以前の[count]文字のカタカナへの変換を行うキー
+"       省略値: (無し:未割当て)
 "    '<Plug>TcvimeNKataHira'
-"       �J�^�J�i�ϊ�: �J�[�\���ʒu�ȑO�łЂ炪�Ȃ�u�[�v�������ԃJ�^�J�i�ɕϊ��B
-"       [count]�Ŏw�肵���������͂Ђ炪�ȂƂ��Ďc���B
-"       �ȗ��l: (����: ��������)
+"       カタカナ変換: カーソル位置以前でひらがなや「ー」が続く間カタカナに変換。
+"       [count]で指定した文字数はひらがなとして残す。
+"       省略値: (無し: 未割当て)
 "    '<Plug>TcvimeNHelp'
-"       �Ō��w���v�\��: �J�[�\���ʒu�̕����̃w���v�\��\������L�[�B
-"       �ȗ��l: <Leader>?
+"       打鍵ヘルプ表示: カーソル位置の文字のヘルプ表を表示するキー。
+"       省略値: <Leader>?
 "    '<Plug>TcvimeNKanjiTable'
-"       �����e�[�u���t�@�C���\�����s���L�[�B�ȗ��l: <Leader>t
+"       漢字テーブルファイル表示を行うキー。省略値: <Leader>t
 "     '<Plug>TcvimeNOpConvert'
-"       ���������ϊ�: ���̃L�[�����������{motion}�Ŏw�肳��镶�����ϊ��B
-"       ����: �L�[���������ۂ�|'operatorfunc'|���㏑�����܂��B
-"       �ȗ��l: (����: ��������)
+"       交ぜ書き変換: このキーを押した後の{motion}で指定される文字列を変換。
+"       注意: キーを押した際に|'operatorfunc'|を上書きします。
+"       省略値: (無し: 未割当て)
 "     '<Plug>TcvimeNOpKatuyo'
-"       ���������ϊ�: ���̃L�[�����������{motion}�Ŏw�肳��镶�����
-"       ���p�����Ƃ��ĕϊ��B
-"       ����: �L�[���������ۂ�|'operatorfunc'|���㏑�����܂��B
-"       �ȗ��l: (����: ��������)
+"       交ぜ書き変換: このキーを押した後の{motion}で指定される文字列を
+"       活用する語として変換。
+"       注意: キーを押した際に|'operatorfunc'|を上書きします。
+"       省略値: (無し: 未割当て)
 "     '<Plug>TcvimeNOpKatakana'
-"       �J�^�J�i�ϊ�: ���̃L�[�����������{motion}�Ŏw�肳��镶�����
-"       �J�^�J�i�ϊ��B
-"       ����: �L�[���������ۂ�|'operatorfunc'|���㏑�����܂��B
-"       �ȗ��l: (����: ��������)
+"       カタカナ変換: このキーを押した後の{motion}で指定される文字列を
+"       カタカナ変換。
+"       注意: キーを押した際に|'operatorfunc'|を上書きします。
+"       省略値: (無し: 未割当て)
 "
 "  vmap:
 "    '<Plug>TcvimeVHelp'
-"       �Ō��w���v�\��: �I�𒆂�(����)�����̃w���v�\��\������L�[�B
-"       �ȗ��l: <Leader>?
-"       <Leader>? ���w�肷��ꍇ�̗�:
+"       打鍵ヘルプ表示: 選択中の(複数)文字のヘルプ表を表示するキー。
+"       省略値: <Leader>?
+"       <Leader>? を指定する場合の例:
 "         vmap <silent> <Leader>? <Plug>TcvimeVHelp
 "    '<Plug>TcvimeVConvert'
-"       ���������ϊ�: �I�𒆂̕�����̕ϊ����s���L�[�B
-"       �ȗ��l: <Leader><Space>
+"       交ぜ書き変換: 選択中の文字列の変換を行うキー。
+"       省略値: <Leader><Space>
 "    '<Plug>TcvimeVKatuyo'
-"       ���������ϊ�: �I�𒆂̕���������p�����Ƃ��ĕϊ����s���L�[�B
-"       �ȗ��l: <Leader>o
+"       交ぜ書き変換: 選択中の文字列を活用する語として変換を行うキー。
+"       省略値: <Leader>o
 "    '<Plug>TcvimeVKatakana'
-"       �J�^�J�i�ϊ�: �I�𒆂̕�������J�^�J�i�ɕϊ�����L�[�B
-"       �ȗ��l: (����: ��������)
+"       カタカナ変換: 選択中の文字列をカタカナに変換するキー。
+"       省略値: (無し: 未割当て)
 "    '<Plug>TcvimeVKanji2Seq'
-"       �������V�[�P���X�ϊ�: �I�𒆂̕��������̓V�[�P���X�ɕϊ�����L�[�B
-"       �ȗ��l: (����: ��������)
+"       漢字→シーケンス変換: 選択中の文字列を入力シーケンスに変換するキー。
+"       省略値: (無し: 未割当て)
 "    '<Plug>TcvimeVSeq2Kanji'
-"       �V�[�P���X�������ϊ�: �I�𒆂̕��������̓V�[�P���X�Ƃ݂Ȃ��Ċ�����
-"       �ϊ�����L�[�B
-"       �ȗ��l: (����: ��������)
+"       シーケンス→漢字変換: 選択中の文字列を入力シーケンスとみなして漢字に
+"       変換するキー。
+"       省略値: (無し: 未割当て)
 "    '<Plug>TcvimeVShiftSeq'
-"       �������V�[�P���X�������ϊ�: �I�𒆂̕�����̓��̓V�[�P���X�����炵��
-"       �����ɕϊ�����L�[�B
-"       �ȗ��l: (����: ��������)
+"       漢字→シーケンス→漢字変換: 選択中の文字列の入力シーケンスをずらして
+"       漢字に変換するキー。
+"       省略値: (無し: 未割当て)
 "
-" �I�v�V����:
+" オプション:
 "    'tcvime_keyboard'
-"       �����w���v�\�p�̃L�[�{�[�h�z���\��������B
-"       �L�[�̌�ɃX�y�[�X�A��2�񂸂L�q����B
-"       ��:
+"       文字ヘルプ表用のキーボード配列を表す文字列。
+"       キーの後にスペース、を2回ずつ記述する。
+"       例:
 "         let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 "
 "    'tcvime_keymap_for_help'
-"       �����w���v�\���Ɏg��keymap�B���݂̃o�b�t�@��&keymap�����ݒ�̏ꍇ�Ɏg�p
+"       文字ヘルプ表示に使うkeymap。現在のバッファで&keymapが未設定の場合に使用
 "
 "    'tcvime_movecandto'
-"       ���������ϊ��Ŋm�肵�����́A
-"       ��⃊�X�g���̈ړ���ʒu(�擪��0�B�ړ������Ȃ��ꍇ��-1)�B
-"       �������A�m�肵����₪�A�w��ʒu�ȑO�ɂ���ꍇ�͈ړ����Ȃ��B
-"       �܂�A�w��ʒu���O�ɂ�����̏��Ԃ͌Œ�B
-"       �ȗ��l: -1
-"       �ݒ��(tc2�Ɠ��l��5�ԖڂɈړ��B�擪4�̏��Ԃ͌Œ�):
+"       交ぜ書き変換で確定した候補の、
+"       候補リスト内の移動先位置(先頭は0。移動させない場合は-1)。
+"       ただし、確定した候補が、指定位置以前にある場合は移動しない。
+"       つまり、指定位置より前にある候補の順番は固定。
+"       省略値: -1
+"       設定例(tc2と同様に5番目に移動。先頭4個の順番は固定):
 "         let tcvime_movecandto = 4
-"       (�Ȃ��A�m��E���ړ��̂��тɌ��������ϊ�������ۑ����邽��(����Vim
-"       �g�p���̔r���������Ȃ�����)�A�������傫���ꍇ�͎��Ԃ�������B)
+"       (なお、確定・候補移動のたびに交ぜ書き変換辞書を保存するため(複数Vim
+"       使用時の排他処理を省くため)、辞書が大きい場合は時間がかかる。)
 "
 "    'tcvime_mazegaki_edit_nocand'
-"       Normal mode�̌��������ϊ��Ō�₪�����ꍇ�Ɏ����ҏW���J�n���邩�ǂ����B
-"       �ȗ��l: 0
-"       �ݒ��:
+"       Normal modeの交ぜ書き変換で候補が無い場合に辞書編集を開始するかどうか。
+"       省略値: 0
+"       設定例:
 "         let tcvime_mazegaki_edit_nocand = 1
-"       (�Ȃ��A�ċA�I�Ȍ��������ϊ��ɂ͖��Ή��̂��߁A
-"       �����ҏW���ɂ���Ɍ��������ϊ�����ƁA���̌��������ϊ��͒��f�����B
-"       �܂�A�V���ɓo�^��������Ŋm�葀������Ă��A
-"       ���̌��������ϊ��ւ̊m��͕s�B��ŃR�s�[����K�v����)
+"       (なお、再帰的な交ぜ書き変換には未対応のため、
+"       辞書編集中にさらに交ぜ書き変換すると、元の交ぜ書き変換は中断される。
+"       つまり、新たに登録した候補上で確定操作をしても、
+"       元の交ぜ書き変換への確定は不可。手でコピーする必要あり)
 "
 "    TcvimeCustomKeymap()
-"       lmap�̃J�X�^�}�C�Y�p�̊֐��Btcvime#SetKeymap()����R�[���o�b�N�����B
+"       lmapのカスタマイズ用の関数。tcvime#SetKeymap()からコールバックされる。
 "
 "    'mapleader'
-"       �L�[�}�b�s���O�̃v���t�B�b�N�X�B|mapleader|���Q�ƁB�ȗ��l: CTRL-K
-"       CTRL-K���w�肷��ꍇ�̗�:
+"       キーマッピングのプレフィックス。|mapleader|を参照。省略値: CTRL-K
+"       CTRL-Kを指定する場合の例:
 "         let mapleader = "\<C-K>"
 "
 "    'plugin_tcvime_disable'
-"       ���̃v���O�C����ǂݍ��݂����Ȃ��ꍇ�Ɏ��̂悤�ɐݒ肷��B
+"       このプラグインを読み込みたくない場合に次のように設定する。
 "         let plugin_tcvime_disable = 1
 
 if exists('plugin_tcvime_disable')
@@ -188,30 +187,30 @@ endif
 if !exists(":TcvimeOff")
   command TcvimeOff :call tcvime#MappingOff()
 endif
-" keymap��ݒ肷��
-" ����: keymap��
+" keymapを設定する
+" 引数: keymap名
 if !exists(":TcvimeSetKeymap")
   command -nargs=1 TcvimeSetKeymap :call tcvime#SetKeymap(<args>)
 endif
-" �w�肳�ꂽ�����̃w���v�\��\������
-" ����: �Ώۂ̕���
+" 指定された文字のヘルプ表を表示する
+" 引数: 対象の文字
 if !exists(":TcvimeHelp")
   command! -nargs=1 TcvimeHelp call tcvime#ShowHelpForStr(<q-args>, 0)
 endif
-" �w�肳�ꂽ�������܂ލs�𕔎񍇐��ϊ��������猟�����ĕ\������
-" ����: �Ώۂ̕���
+" 指定された文字を含む行を部首合成変換辞書から検索して表示する
+" 引数: 対象の文字
 if !exists(":TcvimeHelpBushu")
   command! -nargs=1 TcvimeHelpBushu call tcvime#ShowHelpForStr(<q-args>, 1)
 endif
-" �����e�[�u����\������
+" 漢字テーブルを表示する
 if !exists(":TcvimeKanjiTable")
   command! TcvimeKanjiTable call tcvime#KanjiTable_FileOpen()
 endif
-" �w���v�p�o�b�t�@�����
+" ヘルプ用バッファを閉じる
 if !exists(":TcvimeCloseHelp")
   command! TcvimeCloseHelp call tcvime#CloseHelpBuffer()
 endif
-" ���������ϊ������t�@�C����ҏW�p�ɊJ��
+" 交ぜ書き変換辞書ファイルを編集用に開く
 if !exists(":TcvimeEditMazegaki")
   command! TcvimeEditMazegaki call tcvime#MazegakiDic_Edit(1)
 endif

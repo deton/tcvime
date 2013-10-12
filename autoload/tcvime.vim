@@ -1,10 +1,10 @@
 " vi:set ts=8 sts=2 sw=2 tw=0:
-scriptencoding cp932
+scriptencoding utf-8
 
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-06-09
+" Last Change: 2013-10-11
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -18,67 +18,67 @@ endif
 
 if !exists("tcvime_keyboard")
   let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
-  " ”šƒL[‚Ì’i‚ğ•\¦‚µ‚È‚¢ê‡‚ÍŸ‚Ì•¶š—ñ‚ğg‚¤‚æ‚¤‚É‚·‚é(qwerty)
+  " æ•°å­—ã‚­ãƒ¼ã®æ®µã‚’è¡¨ç¤ºã—ãªã„å ´åˆã¯æ¬¡ã®æ–‡å­—åˆ—ã‚’ä½¿ã†ã‚ˆã†ã«ã™ã‚‹(qwerty)
 "  let tcvime_keyboard = "q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 endif
 
-" Œğ‚º‘‚«•ÏŠ·‚ÅŠm’è‚µ‚½Œó•â‚ÌAŒó•âƒŠƒXƒg“à‚ÌˆÚ“®æˆÊ’u(0‚ªæ“ªB-1‚ÍˆÚ“®–³‚µ)
+" äº¤ãœæ›¸ãå¤‰æ›ã§ç¢ºå®šã—ãŸå€™è£œã®ã€å€™è£œãƒªã‚¹ãƒˆå†…ã®ç§»å‹•å…ˆä½ç½®(0ãŒå…ˆé ­ã€‚-1ã¯ç§»å‹•ç„¡ã—)
 if !exists("tcvime_movecandto")
   let tcvime_movecandto = -1
 endif
 
-" Œğ‚º‘‚«•ÏŠ·Œó•â‘I‘ğ—pƒL[B
+" äº¤ãœæ›¸ãå¤‰æ›å€™è£œé¸æŠç”¨ã‚­ãƒ¼ã€‚
 "   let g:tcvime#selectkeys = ['1','2','3','4','5','6','7','8','9','0']
-" ’: Insert mode‚Å‚ÌŒó•â‘I‘ğ‚Ìê‡A
-"     ‚±‚ÌƒL[‚Ån‚Ü‚élmap‚âimap‚ª‚ ‚éê‡‚ÍA|'timeoutlen'|‘Ò‚¿‚ª”­¶B
+" æ³¨: Insert modeã§ã®å€™è£œé¸æŠã®å ´åˆã€
+"     ã“ã®ã‚­ãƒ¼ã§å§‹ã¾ã‚‹lmapã‚„imapãŒã‚ã‚‹å ´åˆã¯ã€|'timeoutlen'|å¾…ã¡ãŒç™ºç”Ÿã€‚
 if !exists('g:tcvime#selectkeys')
   let g:tcvime#selectkeys = []
 endif
 
-" Œã’uŒ^ƒV[ƒPƒ“ƒX¨Š¿š•ÏŠ·‚ÅA•¶š”‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢Û‚ÉA
-" ‚±‚Ìƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚é•¶š‚ª‘±‚­ŠÔ‚ÍŠ¿š‚É•ÏŠ·‚·‚éB
+" å¾Œç½®å‹ã‚·ãƒ¼ã‚±ãƒ³ã‚¹â†’æ¼¢å­—å¤‰æ›ã§ã€æ–‡å­—æ•°ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„éš›ã«ã€
+" ã“ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹æ–‡å­—ãŒç¶šãé–“ã¯æ¼¢å­—ã«å¤‰æ›ã™ã‚‹ã€‚
 if !exists("g:tcvime#seq2kanji_pat")
   let g:tcvime#seq2kanji_pat = "[0-9a-z ;,\\./']*"
 endif
 
-" Œã’uŒ^ƒJƒ^ƒJƒi•ÏŠ·‚ÅA•¶š”‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢Û‚ÉA
-" ‚±‚Ìƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚é•¶š‚ª‘±‚­ŠÔ‚ÍƒJƒ^ƒJƒi‚É•ÏŠ·‚·‚éB
-let g:tcvime#hira2kata_pat = '[‚Ÿ-‚ñ][‚Ÿ-‚ñ[]*'
-" “Ç‚İŠJnˆÊ’uƒ}[ƒN‚ğ' '“ü—Í‚Å‘ã‘Ö‚·‚éê‡‚Ìİ’è—á:
+" å¾Œç½®å‹ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›ã§ã€æ–‡å­—æ•°ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„éš›ã«ã€
+" ã“ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹æ–‡å­—ãŒç¶šãé–“ã¯ã‚«ã‚¿ã‚«ãƒŠã«å¤‰æ›ã™ã‚‹ã€‚
+let g:tcvime#hira2kata_pat = '[ã-ã‚“][ã-ã‚“ãƒ¼]*'
+" èª­ã¿é–‹å§‹ä½ç½®ãƒãƒ¼ã‚¯ã‚’' 'å…¥åŠ›ã§ä»£æ›¿ã™ã‚‹å ´åˆã®è¨­å®šä¾‹:
 "   let g:tcvime#yomimarkchar = ' '
-" '* ƒAƒCƒeƒ€'‚Ì‚æ‚¤‚ÉA*“™‚ÌŒã‚Ì' '‚Íc‚µ‚½‚¢ê‡‚Ìİ’è—á:
+" '* ã‚¢ã‚¤ãƒ†ãƒ 'ã®ã‚ˆã†ã«ã€*ç­‰ã®å¾Œã®' 'ã¯æ®‹ã—ãŸã„å ´åˆã®è¨­å®šä¾‹:
 "   let g:tcvime#yomimarkchar = '\%([[:graph:]] \zs\| \)'
 if exists('g:tcvime#yomimarkchar')
   let g:tcvime#hira2kata_pat = g:tcvime#yomimarkchar . '\=' . tcvime#hira2kata_pat
 endif
 
-let g:tcvime#hiragana = '‚Ÿ‚ ‚¡‚¢‚£‚¤‚¥‚¦‚§‚¨‚©‚ª‚«‚¬‚­‚®‚¯‚°‚±‚²‚³‚´‚µ‚¶‚·‚¸‚¹‚º‚»‚¼‚½‚¾‚¿‚À‚Á‚Â‚Ã‚Ä‚Å‚Æ‚Ç‚È‚É‚Ê‚Ë‚Ì‚Í‚Î‚Ï‚Ğ‚Ñ‚Ò‚Ó‚Ô‚Õ‚Ö‚×‚Ø‚Ù‚Ú‚Û‚Ü‚İ‚Ş‚ß‚à‚á‚â‚ã‚ä‚å‚æ‚ç‚è‚é‚ê‚ë‚ì‚í‚î‚ï‚ğ‚ñ'
-let g:tcvime#katakana = 'ƒ@ƒAƒBƒCƒDƒEƒFƒGƒHƒIƒJƒKƒLƒMƒNƒOƒPƒQƒRƒSƒTƒUƒVƒWƒXƒYƒZƒ[ƒ\ƒ]ƒ^ƒ_ƒ`ƒaƒbƒcƒdƒeƒfƒgƒhƒiƒjƒkƒlƒmƒnƒoƒpƒqƒrƒsƒtƒuƒvƒwƒxƒyƒzƒ{ƒ|ƒ}ƒ~ƒ€ƒƒ‚ƒƒƒ„ƒ…ƒ†ƒ‡ƒˆƒ‰ƒŠƒ‹ƒŒƒƒƒƒƒ‘ƒ’ƒ“'
+let g:tcvime#hiragana = 'ãã‚ãƒã„ã…ã†ã‡ãˆã‰ãŠã‹ãŒããããã‘ã’ã“ã”ã•ã–ã—ã˜ã™ãšã›ãœãããŸã ã¡ã¢ã£ã¤ã¥ã¦ã§ã¨ã©ãªã«ã¬ã­ã®ã¯ã°ã±ã²ã³ã´ãµã¶ã·ã¸ã¹ãºã»ã¼ã½ã¾ã¿ã‚€ã‚ã‚‚ã‚ƒã‚„ã‚…ã‚†ã‚‡ã‚ˆã‚‰ã‚Šã‚‹ã‚Œã‚ã‚ã‚ã‚ã‚‘ã‚’ã‚“'
+let g:tcvime#katakana = 'ã‚¡ã‚¢ã‚£ã‚¤ã‚¥ã‚¦ã‚§ã‚¨ã‚©ã‚ªã‚«ã‚¬ã‚­ã‚®ã‚¯ã‚°ã‚±ã‚²ã‚³ã‚´ã‚µã‚¶ã‚·ã‚¸ã‚¹ã‚ºã‚»ã‚¼ã‚½ã‚¾ã‚¿ãƒ€ãƒãƒ‚ãƒƒãƒ„ãƒ…ãƒ†ãƒ‡ãƒˆãƒ‰ãƒŠãƒ‹ãƒŒãƒãƒãƒãƒãƒ‘ãƒ’ãƒ“ãƒ”ãƒ•ãƒ–ãƒ—ãƒ˜ãƒ™ãƒšãƒ›ãƒœãƒãƒãƒŸãƒ ãƒ¡ãƒ¢ãƒ£ãƒ¤ãƒ¥ãƒ¦ãƒ§ãƒ¨ãƒ©ãƒªãƒ«ãƒ¬ãƒ­ãƒ®ãƒ¯ãƒ°ãƒ±ãƒ²ãƒ³'
 
-" insert mode‚ÉA’¼‘O‚Ìw’è‚³‚ê‚½•¶š”‚Ì‚Ğ‚ç‚ª‚È¨ƒJƒ^ƒJƒi•ÏŠ·‚ğs‚¤
-" ‚½‚ß‚Ì•¶š—ñ‚ğ•Ô‚·B
+" insert modeæ™‚ã«ã€ç›´å‰ã®æŒ‡å®šã•ã‚ŒãŸæ–‡å­—æ•°ã®ã²ã‚‰ãŒãªâ†’ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›ã‚’è¡Œã†
+" ãŸã‚ã®æ–‡å­—åˆ—ã‚’è¿”ã™ã€‚
 "
-" •¶š”‚Æ‚µ‚Ä0‚ğw’è‚·‚é‚ÆA
-" g:tcvime#hira2kata_pat‚Éƒ}ƒbƒ`‚·‚é•¶š‚ª‘±‚­ŠÔ‚ÍƒJƒ^ƒJƒi•ÏŠ·‚ğs‚¤B
-" (tutcode keymap‚Ìê‡AˆÈ‰º‚Ì‚æ‚¤‚ÉƒJƒ^ƒJƒi“ü—Í‚ª‰Â”\B
-"  uRKtltugiehe siqljflallvƒA‚Õ‚è‚¯[‚µ‚å‚ñ¨ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
-" Å‰‚Ì•¶š‚¾‚¯ƒVƒtƒgƒL[‚ğ‰Ÿ‚µ‚È‚ª‚ç‘ÅŒ®‚µ‚ÄƒJƒ^ƒJƒi‚Å“ü—Í‚µ‚ÄA
-" Œã‚ÍƒVƒtƒgƒL[–³‚µ‚Å‚Ğ‚ç‚ª‚È‚Å“ü—Í‚µ‚ÄAÅŒã‚ÉŒã’uŒ^ƒJƒ^ƒJƒi•ÏŠ·‚ÅA
-" Å‰‚ÉƒJƒ^ƒJƒi‚Å“ü—Í‚µ‚½•¶š‚Ü‚Å‚ğ‚Ü‚Æ‚ß‚ÄƒJƒ^ƒJƒi•ÏŠ·)
-" (ƒJƒ^ƒJƒiƒ‚[ƒh‚ÉØ‚è‘Ö‚¦‚½‚èu'rktltugiehe siqljfl'vA
-" ‘S‚ÄƒVƒtƒgƒL[‚ğ‰Ÿ‚µ‚È‚ª‚ç‘ÅŒ®‚µ‚½‚èuRKTLTUGIEHe SIQLJFLv‚æ‚è‚àŠy‚©‚à)
+" æ–‡å­—æ•°ã¨ã—ã¦0ã‚’æŒ‡å®šã™ã‚‹ã¨ã€
+" g:tcvime#hira2kata_patã«ãƒãƒƒãƒã™ã‚‹æ–‡å­—ãŒç¶šãé–“ã¯ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›ã‚’è¡Œã†ã€‚
+" (tutcode keymapã®å ´åˆã€ä»¥ä¸‹ã®ã‚ˆã†ã«ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãŒå¯èƒ½ã€‚
+"  ã€ŒRKtltugiehe siqljflallã€ã‚¢ã·ã‚Šã‘ãƒ¼ã—ã‚‡ã‚“â†’ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³
+" æœ€åˆã®æ–‡å­—ã ã‘ã‚·ãƒ•ãƒˆã‚­ãƒ¼ã‚’æŠ¼ã—ãªãŒã‚‰æ‰“éµã—ã¦ã‚«ã‚¿ã‚«ãƒŠã§å…¥åŠ›ã—ã¦ã€
+" å¾Œã¯ã‚·ãƒ•ãƒˆã‚­ãƒ¼ç„¡ã—ã§ã²ã‚‰ãŒãªã§å…¥åŠ›ã—ã¦ã€æœ€å¾Œã«å¾Œç½®å‹ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›ã§ã€
+" æœ€åˆã«ã‚«ã‚¿ã‚«ãƒŠã§å…¥åŠ›ã—ãŸæ–‡å­—ã¾ã§ã‚’ã¾ã¨ã‚ã¦ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›)
+" (ã‚«ã‚¿ã‚«ãƒŠãƒ¢ãƒ¼ãƒ‰ã«åˆ‡ã‚Šæ›¿ãˆãŸã‚Šã€Œ'rktltugiehe siqljfl'ã€ã€
+" å…¨ã¦ã‚·ãƒ•ãƒˆã‚­ãƒ¼ã‚’æŠ¼ã—ãªãŒã‚‰æ‰“éµã—ãŸã‚Šã€ŒRKTLTUGIEHe SIQLJFLã€ã‚ˆã‚Šã‚‚æ¥½ã‹ã‚‚)
 "
-" •¶š”‚Æ‚µ‚Ä•‰‚Ì’l‚ğw’è‚·‚é‚ÆA‚Ğ‚ç‚ª‚È‚Æ‚µ‚Äc‚·•¶š”‚Ìw’è‚Æ‚İ‚È‚·B
-" (ƒJƒ^ƒJƒi‚É•ÏŠ·‚·‚é•¶š—ñ‚ª’·‚­‚Ä•¶š”‚ğ”‚¦‚é‚Ì‚ª–Ê“|‚Èê‡Œü‚¯)
-" u—á‚¦‚Î‚ ‚Õ‚è‚¯[‚µ‚å‚ñvel2¨u—á‚¦‚ÎƒAƒvƒŠƒP[ƒVƒ‡ƒ“v
+" æ–‡å­—æ•°ã¨ã—ã¦è² ã®å€¤ã‚’æŒ‡å®šã™ã‚‹ã¨ã€ã²ã‚‰ãŒãªã¨ã—ã¦æ®‹ã™æ–‡å­—æ•°ã®æŒ‡å®šã¨ã¿ãªã™ã€‚
+" (ã‚«ã‚¿ã‚«ãƒŠã«å¤‰æ›ã™ã‚‹æ–‡å­—åˆ—ãŒé•·ãã¦æ–‡å­—æ•°ã‚’æ•°ãˆã‚‹ã®ãŒé¢å€’ãªå ´åˆå‘ã‘)
+" ã€Œä¾‹ãˆã°ã‚ã·ã‚Šã‘ãƒ¼ã—ã‚‡ã‚“ã€el2â†’ã€Œä¾‹ãˆã°ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã€
 "
-" tutcode keymap‚ÅŒã’uŒ^ƒJƒ^ƒJƒi•ÏŠ·‚ğs‚¤‚½‚ß‚Ìİ’è—á:
+" tutcode keymapã§å¾Œç½®å‹ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›ã‚’è¡Œã†ãŸã‚ã®è¨­å®šä¾‹:
 "     lmap <silent> e0 <C-R>=tcvime#InputConvertKatakana(0)<CR>
 "     lmap <silent> e1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
 "     lmap <silent> e2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
 "     ...
 "     lmap <silent> e9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
-" w’è‚µ‚½•¶š”‚Ì‚Ğ‚ç‚ª‚È‚ğc‚µ‚ÄƒJƒ^ƒJƒi•ÏŠ·‚·‚éê‡‚Ìİ’è—á:
+" æŒ‡å®šã—ãŸæ–‡å­—æ•°ã®ã²ã‚‰ãŒãªã‚’æ®‹ã—ã¦ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›ã™ã‚‹å ´åˆã®è¨­å®šä¾‹:
 "     lmap <silent> el1 <C-R>=tcvime#InputConvertKatakana(-1)<CR>
 "     lmap <silent> el2 <C-R>=tcvime#InputConvertKatakana(-2)<CR>
 "     lmap <silent> el3 <C-R>=tcvime#InputConvertKatakana(-3)<CR>
@@ -89,17 +89,17 @@ function! tcvime#InputConvertKatakana(n)
   return tcvime#InputConvertKatakanaPos(col('.'), a:n)
 endfunction
 
-" Œã’uŒ^‚ÅƒJƒ^ƒJƒi•¶š—ñ‚ğL‚Î‚·
+" å¾Œç½®å‹ã§ã‚«ã‚¿ã‚«ãƒŠæ–‡å­—åˆ—ã‚’ä¼¸ã°ã™
 function! tcvime#InputConvertKatakanaExtend(n)
   let line = getline('.')
   let col = col('.')
-  let pat = '\([ƒ@-ƒ–[]*\)\%' . col . 'c' " Œ»ˆÊ’uˆÈ‘O‚Ì˜A‘±‚·‚éƒJƒ^ƒJƒi
+  let pat = '\([ã‚¡-ãƒ¶ãƒ¼]*\)\%' . col . 'c' " ç¾ä½ç½®ä»¥å‰ã®é€£ç¶šã™ã‚‹ã‚«ã‚¿ã‚«ãƒŠ
   if a:n == 0
-    " ˜A‘±‚·‚éƒJƒ^ƒJƒiˆÈ‘O‚Ì˜A‘±‚·‚é‚Ğ‚ç‚ª‚È‚ğƒJƒ^ƒJƒi‚É
-    let pat = '\([‚Ÿ-‚ñ][‚Ÿ-‚ñ[]*\)' . pat
+    " é€£ç¶šã™ã‚‹ã‚«ã‚¿ã‚«ãƒŠä»¥å‰ã®é€£ç¶šã™ã‚‹ã²ã‚‰ãŒãªã‚’ã‚«ã‚¿ã‚«ãƒŠã«
+    let pat = '\([ã-ã‚“][ã-ã‚“ãƒ¼]*\)' . pat
   else
-    " Œ»ˆÊ’uˆÈ‘O‚ÉˆÊ’u‚·‚éA˜A‘±‚·‚éƒJƒ^ƒJƒi‚Æw’è•¶š”ˆÈ‰º‚Ì‚Ğ‚ç‚ª‚È‚ğæ“¾
-    let pat = '\([‚Ÿ-‚ñ[]\{,' . a:n . '}\)' . pat
+    " ç¾ä½ç½®ä»¥å‰ã«ä½ç½®ã™ã‚‹ã€é€£ç¶šã™ã‚‹ã‚«ã‚¿ã‚«ãƒŠã¨æŒ‡å®šæ–‡å­—æ•°ä»¥ä¸‹ã®ã²ã‚‰ãŒãªã‚’å–å¾—
+    let pat = '\([ã-ã‚“ãƒ¼]\{,' . a:n . '}\)' . pat
   endif
   if exists('g:tcvime#yomimarkchar')
     let pat = g:tcvime#yomimarkchar . '\=' . pat
@@ -117,14 +117,14 @@ endfunction
 let s:prev_str = ''
 let s:commit_str = ''
 
-" ’¼‘O‚ÌŒã’uŒ^ƒJƒ^ƒJƒi•ÏŠ·‚ğk‚ß‚é
+" ç›´å‰ã®å¾Œç½®å‹ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›ã‚’ç¸®ã‚ã‚‹
 function! tcvime#InputConvertKatakanaShrink(n)
   if s:prev_str == ''
     return ''
   endif
-  " ƒJ[ƒ\ƒ‹ˆÊ’u‘O‚ªA’¼‘O‚É•ÏŠ·‚µ‚½ƒJƒ^ƒJƒi•¶š—ñ‚Å‚È‚¢ê‡‚ÍA‰½‚à‚µ‚È‚¢B
-  " ƒJƒ^ƒJƒi•ÏŠ·Œã‚É•Ê‚Ì•¶š‚ğ“ü—Í‚µ‚½Œã‚ÅŠÔˆá‚Á‚Ä‚±‚ÌŠÖ”‚ªŒÄ‚Î‚ê‚ÄA
-  " ŒÃ‚¢ƒJƒ^ƒJƒi•ÏŠ·‚Ì“à—e‚ğ‚à‚Æ‚Éã‘‚«‚·‚é‚Æ¢‚é‚Ì‚ÅB
+  " ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®å‰ãŒã€ç›´å‰ã«å¤‰æ›ã—ãŸã‚«ã‚¿ã‚«ãƒŠæ–‡å­—åˆ—ã§ãªã„å ´åˆã¯ã€ä½•ã‚‚ã—ãªã„ã€‚
+  " ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›å¾Œã«åˆ¥ã®æ–‡å­—ã‚’å…¥åŠ›ã—ãŸå¾Œã§é–“é•ã£ã¦ã“ã®é–¢æ•°ãŒå‘¼ã°ã‚Œã¦ã€
+  " å¤ã„ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›ã®å†…å®¹ã‚’ã‚‚ã¨ã«ä¸Šæ›¸ãã™ã‚‹ã¨å›°ã‚‹ã®ã§ã€‚
   let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
   let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
   if chars != s:commit_str
@@ -139,21 +139,21 @@ function! tcvime#InputConvertKatakanaShrink(n)
   let strlist = matchlist(str, '\(.\{,' . cnt . '}\)\(.*\)')
   let kata = tcvime#hira2kata(strlist[2])
   let newstr = tcvime#kata2hira(strlist[1]) . kata
-  " Shrink‚ğŒJ‚è•Ô‚µŒÄ‚ñ‚¾Û‚É1•¶š‚¸‚ÂƒJƒ^ƒJƒi‚ğk‚ß‚é‚½‚ßAprev_str‚ğk‚ß‚é
+  " Shrinkã‚’ç¹°ã‚Šè¿”ã—å‘¼ã‚“ã éš›ã«1æ–‡å­—ãšã¤ã‚«ã‚¿ã‚«ãƒŠã‚’ç¸®ã‚ã‚‹ãŸã‚ã€prev_strã‚’ç¸®ã‚ã‚‹
   let s:prev_str = strlist[2]
-  " undo—p‚Éprev_str‚É‘Î‰‚·‚écommit_str‚ğƒZƒbƒg
+  " undoç”¨ã«prev_strã«å¯¾å¿œã™ã‚‹commit_strã‚’ã‚»ãƒƒãƒˆ
   let s:commit_str = kata
   return substitute(str, '.', "\<BS>", 'g') . newstr
 endfunction
 
-" ’¼‘O‚Ì•ÏŠ·‚ğæ‚èÁ‚·
+" ç›´å‰ã®å¤‰æ›ã‚’å–ã‚Šæ¶ˆã™
 function! tcvime#InputConvertUndo()
   if s:prev_str == ''
     return ''
   endif
-  " ƒJ[ƒ\ƒ‹ˆÊ’u‘O‚ªA’¼‘O‚É•ÏŠ·Šm’è‚µ‚½•¶š—ñ‚Å‚È‚¢ê‡‚ÍA‰½‚à‚µ‚È‚¢B
-  " •ÏŠ·Šm’èŒã‚É•Ê‚Ì•¶š‚ğ“ü—Í‚µ‚½Œã‚ÅŠÔˆá‚Á‚Ä‚±‚ÌŠÖ”‚ªŒÄ‚Î‚ê‚ÄA
-  " ŒÃ‚¢•ÏŠ·‚Ì“à—e‚ğ‚à‚Æ‚Éã‘‚«‚·‚é‚Æ¢‚é‚Ì‚ÅB
+  " ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®å‰ãŒã€ç›´å‰ã«å¤‰æ›ç¢ºå®šã—ãŸæ–‡å­—åˆ—ã§ãªã„å ´åˆã¯ã€ä½•ã‚‚ã—ãªã„ã€‚
+  " å¤‰æ›ç¢ºå®šå¾Œã«åˆ¥ã®æ–‡å­—ã‚’å…¥åŠ›ã—ãŸå¾Œã§é–“é•ã£ã¦ã“ã®é–¢æ•°ãŒå‘¼ã°ã‚Œã¦ã€
+  " å¤ã„å¤‰æ›ã®å†…å®¹ã‚’ã‚‚ã¨ã«ä¸Šæ›¸ãã™ã‚‹ã¨å›°ã‚‹ã®ã§ã€‚
   let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
   let chars = matchstr(getline('.'), '.\{' . cnt . '}\%' . col('.') . 'c')
   if chars != s:commit_str
@@ -162,14 +162,14 @@ function! tcvime#InputConvertUndo()
   endif
   let str = s:commit_str
   let prev = s:prev_str
-  " XXX: ‘½’iundo‚Í–¢‘Î‰
+  " XXX: å¤šæ®µundoã¯æœªå¯¾å¿œ
   let s:prev_str = ''
   let s:commit_str = prev
   return substitute(str, '.', "\<BS>", 'g') . prev
 endfunction
 
-" insert mode‚ÉAw’èˆÊ’u‚©‚çw’è‚³‚ê‚½•¶š”‚Ì•¶š—ñ‚ğæ“¾‚µ‚ÄA
-" ‚Ğ‚ç‚ª‚È¨ƒJƒ^ƒJƒi•ÏŠ·‚ğs‚¤‚½‚ß‚Ì•¶š—ñ‚ğ•Ô‚·B
+" insert modeæ™‚ã«ã€æŒ‡å®šä½ç½®ã‹ã‚‰æŒ‡å®šã•ã‚ŒãŸæ–‡å­—æ•°ã®æ–‡å­—åˆ—ã‚’å–å¾—ã—ã¦ã€
+" ã²ã‚‰ãŒãªâ†’ã‚«ã‚¿ã‚«ãƒŠå¤‰æ›ã‚’è¡Œã†ãŸã‚ã®æ–‡å­—åˆ—ã‚’è¿”ã™ã€‚
 function! tcvime#InputConvertKatakanaPos(col, n)
   let chars = s:AcquireYomi(g:tcvime#hira2kata_pat, a:col, a:n)
   if strlen(chars) == 0
@@ -184,14 +184,14 @@ function! tcvime#InputConvertKatakanaPos(col, n)
   return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
-" insert mode‚ÉAw’èˆÊ’u‚©‚çw’è‚³‚ê‚½•¶š”‚Ì•¶š—ñ‚ğæ“¾‚·‚é
+" insert modeæ™‚ã«ã€æŒ‡å®šä½ç½®ã‹ã‚‰æŒ‡å®šã•ã‚ŒãŸæ–‡å­—æ•°ã®æ–‡å­—åˆ—ã‚’å–å¾—ã™ã‚‹
 function! s:AcquireYomi(pat, col, n)
   if a:n > 0
     return matchstr(getline('.'), '.\{,' . a:n . '}\%' . a:col . 'c')
   endif
   let col = a:col
   if a:n == 0
-    " ‘O’uŒ^Œğ‚º‘‚«•ÏŠ·‚Ì“Ç‚İ‚Æ‚µ‚Äw’è‚³‚ê‚½•¶š—ñ‚ª‚ ‚ê‚ÎA•ÏŠ·‘ÎÛ‚Æ‚·‚é
+    " å‰ç½®å‹äº¤ãœæ›¸ãå¤‰æ›ã®èª­ã¿ã¨ã—ã¦æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ãŒã‚ã‚Œã°ã€å¤‰æ›å¯¾è±¡ã¨ã™ã‚‹
     let yomi = s:StatusGet('.', col)
     if yomi != ''
       return yomi
@@ -199,34 +199,34 @@ function! s:AcquireYomi(pat, col, n)
   endif
   let line = getline('.')
   if s:insert_line == line('.') && s:insert_col < a:col
-    " Insert modeŠJnˆÊ’uˆÈ~‚ğ•ÏŠ·‘ÎÛ‚Æ‚·‚é
-    " XXX: CTRL-D‚ÅƒCƒ“ƒfƒ“ƒg‚ğŒ¸‚ç‚µ‚½ê‡‚É‚Í–¢‘Î‰
+    " Insert modeé–‹å§‹ä½ç½®ä»¥é™ã‚’å¤‰æ›å¯¾è±¡ã¨ã™ã‚‹
+    " XXX: CTRL-Dã§ã‚¤ãƒ³ãƒ‡ãƒ³ãƒˆã‚’æ¸›ã‚‰ã—ãŸå ´åˆã«ã¯æœªå¯¾å¿œ
     let line = strpart(line, s:insert_col - 1)
     let col = a:col - s:insert_col + 1
   endif
-  " pat‚Éƒ}ƒbƒ`‚·‚é•¶š‚ğæ“¾
+  " patã«ãƒãƒƒãƒã™ã‚‹æ–‡å­—ã‚’å–å¾—
   let chars = matchstr(line, a:pat . '\%' . col . 'c')
-  if a:n < 0 " œŠO‚·‚é•¶š”
+  if a:n < 0 " é™¤å¤–ã™ã‚‹æ–‡å­—æ•°
     let excnt = -a:n
     let chars = matchstr(chars, '.\{' . excnt . '}\zs.*$')
   endif
   return chars
 endfunction
 
-" •¶š—ñ‚ğƒJƒ^ƒJƒi‚É•ÏŠ·‚·‚é
+" æ–‡å­—åˆ—ã‚’ã‚«ã‚¿ã‚«ãƒŠã«å¤‰æ›ã™ã‚‹
 function! tcvime#hira2kata(str)
   return tr(a:str, g:tcvime#hiragana, g:tcvime#katakana)
 endfunction
 
-" •¶š—ñ‚ğ‚Ğ‚ç‚ª‚È‚É•ÏŠ·‚·‚é
+" æ–‡å­—åˆ—ã‚’ã²ã‚‰ãŒãªã«å¤‰æ›ã™ã‚‹
 function! tcvime#kata2hira(str)
   return tr(a:str, g:tcvime#katakana, g:tcvime#hiragana)
 endfunction
 
-" “ü—ÍƒV[ƒPƒ“ƒX‚ğŠ¿š‚É•ÏŠ·‚·‚éB
-" lmap–³Œø‚Ì‚Ü‚Ü“ü—Í‚µ‚½•¶š—ñ‚ğAlmap—LŒø‚É‚µ‚½’¼Œã‚ÉŠ¿š‚É•ÏŠ·‚·‚é‚½‚ßB
+" å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’æ¼¢å­—ã«å¤‰æ›ã™ã‚‹ã€‚
+" lmapç„¡åŠ¹ã®ã¾ã¾å…¥åŠ›ã—ãŸæ–‡å­—åˆ—ã‚’ã€lmapæœ‰åŠ¹ã«ã—ãŸç›´å¾Œã«æ¼¢å­—ã«å¤‰æ›ã™ã‚‹ãŸã‚ã€‚
 "   lmap t0 <C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
-" “ü—ÍƒV[ƒPƒ“ƒX’†‚ÉŒã’uŒ^•”ñ‡¬•ÏŠ·“™‚ª‚ ‚Á‚Ä‚àOKB
+" å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ä¸­ã«å¾Œç½®å‹éƒ¨é¦–åˆæˆå¤‰æ›ç­‰ãŒã‚ã£ã¦ã‚‚OKã€‚
 function! tcvime#InputConvertSeq2Kanji(n)
   let chars = s:AcquireYomi(g:tcvime#seq2kanji_pat, col('.'), a:n)
   if chars == ''
@@ -236,9 +236,9 @@ function! tcvime#InputConvertSeq2Kanji(n)
   return substitute(chars, '.', "\<BS>", 'g')
 endfunction
 
-" “ü—ÍƒV[ƒPƒ“ƒX‚ğŠ¿š‚É•ÏŠ·‚·‚éB
-" “ü—ÍƒV[ƒPƒ“ƒX’†‚ÌŒã’uŒ^•”ñ‡¬•ÏŠ·“™‚É‚Í–¢‘Î‰B
-" tcvime#InputConvertSeq2KanjiShrink()‚É‚æ‚èAŒã‚©‚ç•ÏŠ·‚ğk‚ß‚é‘€ì‚É‘Î‰B
+" å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’æ¼¢å­—ã«å¤‰æ›ã™ã‚‹ã€‚
+" å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ä¸­ã®å¾Œç½®å‹éƒ¨é¦–åˆæˆå¤‰æ›ç­‰ã«ã¯æœªå¯¾å¿œã€‚
+" tcvime#InputConvertSeq2KanjiShrink()ã«ã‚ˆã‚Šã€å¾Œã‹ã‚‰å¤‰æ›ã‚’ç¸®ã‚ã‚‹æ“ä½œã«å¯¾å¿œã€‚
 function! tcvime#InputConvertSeq2KanjiWithShrink(n)
   let chars = s:AcquireYomi(g:tcvime#seq2kanji_pat, col('.'), a:n)
   if chars == ''
@@ -250,13 +250,13 @@ function! tcvime#InputConvertSeq2KanjiWithShrink(n)
   return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
-" ’¼‘O‚Ì“ü—ÍƒV[ƒPƒ“ƒX¨Š¿š•ÏŠ·‚ğk‚ß‚é
-" @param drop k‚ß‚½•¶š‚ğíœ‚·‚é‚©‚Ç‚¤‚©
+" ç›´å‰ã®å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹â†’æ¼¢å­—å¤‰æ›ã‚’ç¸®ã‚ã‚‹
+" @param drop ç¸®ã‚ãŸæ–‡å­—ã‚’å‰Šé™¤ã™ã‚‹ã‹ã©ã†ã‹
 function! tcvime#InputConvertSeq2KanjiShrink(drop)
   if s:prev_str == ''
     return ''
   endif
-  " ƒJ[ƒ\ƒ‹ˆÊ’u‘O‚ªA’¼‘O‚É•ÏŠ·‚µ‚½•¶š—ñ‚Å‚È‚¢ê‡‚ÍA‰½‚à‚µ‚È‚¢
+  " ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®å‰ãŒã€ç›´å‰ã«å¤‰æ›ã—ãŸæ–‡å­—åˆ—ã§ãªã„å ´åˆã¯ã€ä½•ã‚‚ã—ãªã„
   let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
   let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
   if chars != s:commit_str
@@ -265,21 +265,21 @@ function! tcvime#InputConvertSeq2KanjiShrink(drop)
   endif
   let str = s:prev_str
   let strlist = matchlist(str, '\(.\)\(.*\)')
-  " k‚ß‚½1•¶š‚ÍíœBCTRL-J‚ÅƒIƒ“‚É‚µ‚»‚±‚Ë‚Äj‚¾‚¯“ü‚Á‚½ê‡‚Éíœ‚µ‚½‚¢B
+  " ç¸®ã‚ãŸ1æ–‡å­—ã¯å‰Šé™¤ã€‚CTRL-Jã§ã‚ªãƒ³ã«ã—ãã“ã­ã¦jã ã‘å…¥ã£ãŸå ´åˆã«å‰Šé™¤ã—ãŸã„ã€‚
   let kanji = s:Seq2Kanji(strlist[2])
   let newstr = kanji
   if !a:drop
     let newstr = strlist[1] . kanji
   endif
-  " Shrink‚ğŒJ‚è•Ô‚µŒÄ‚ñ‚¾Û‚É1•¶š‚¸‚Âk‚ß‚é‚½‚ßAprev_str‚ğk‚ß‚é
+  " Shrinkã‚’ç¹°ã‚Šè¿”ã—å‘¼ã‚“ã éš›ã«1æ–‡å­—ãšã¤ç¸®ã‚ã‚‹ãŸã‚ã€prev_strã‚’ç¸®ã‚ã‚‹
   let s:prev_str = strlist[2]
-  " undo—p‚Éprev_str‚É‘Î‰‚·‚écommit_str‚ğƒZƒbƒg
+  " undoç”¨ã«prev_strã«å¯¾å¿œã™ã‚‹commit_strã‚’ã‚»ãƒƒãƒˆ
   let commitprev = s:commit_str
   let s:commit_str = kanji
   return substitute(commitprev, '.', "\<BS>", 'g') . newstr
 endfunction
 
-" “ü—ÍƒV[ƒPƒ“ƒX‚ğŠ¿š•¶š—ñ‚É’uŠ·‚·‚é‚½‚ß‚Ì•¶š—ñ‚ğ•Ô‚·B
+" å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’æ¼¢å­—æ–‡å­—åˆ—ã«ç½®æ›ã™ã‚‹ãŸã‚ã®æ–‡å­—åˆ—ã‚’è¿”ã™ã€‚
 function! s:Seq2Kanji(str)
   if a:str == ''
     return ''
@@ -289,7 +289,7 @@ function! s:Seq2Kanji(str)
   if empty(keymap)
     let keymap = g:tcvime_keymap_for_help
     if empty(keymap)
-      echo 'tcvime“ü—ÍƒV[ƒPƒ“ƒX¨Š¿š•ÏŠ·‚É‚ÍAkeymapƒIƒvƒVƒ‡ƒ“‚©g:tcvime_keymap_for_help‚Ìİ’è—v'
+      echo 'tcvimeå…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹â†’æ¼¢å­—å¤‰æ›ã«ã¯ã€keymapã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‹g:tcvime_keymap_for_helpã®è¨­å®šè¦'
       return ''
     endif
     call tcvime#SetKeymap(keymap)
@@ -314,7 +314,7 @@ function! s:Seq2Kanji(str)
     if empty(kanji)
       let kstr .= seq
     else
-      " XXX: <Plug>‚â<C-R>=“™‚É‚Í–¢‘Î‰
+      " XXX: <Plug>ã‚„<C-R>=ç­‰ã«ã¯æœªå¯¾å¿œ
       let kstr .= kanji
     endif
     let s = strpart(s, i)
@@ -325,27 +325,27 @@ function! s:Seq2Kanji(str)
   return kstr
 endfunction
 
-" Š¿š•¶š—ñ‚ğ“ü—ÍƒV[ƒPƒ“ƒX‚É•ÏŠ·‚·‚éB
-" •¶š”‚ğw’è‚µ‚È‚¢ê‡A‰p’PŒê“ü—Í‘O‚ÉƒXƒy[ƒX‚ğ“ü—Í‚µ‚Ä‚¨‚­‚ÆA
-" ƒXƒy[ƒXˆÈ~‚Ì•¶š‚ğ‰pš‚É•ÏŠ·‚µ‚ÄA‹æØ‚è—p‚É“ü—Í‚µ‚½ƒXƒy[ƒX‚ğíœB
-" —á:" code "‚Æ‘ÅŒ®‚·‚é‚Æ" ‰‰Še "‚Æ•\¦‚³‚êAŠJnƒL[‚ÅA"code"‚É•ÏŠ·B
+" æ¼¢å­—æ–‡å­—åˆ—ã‚’å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«å¤‰æ›ã™ã‚‹ã€‚
+" æ–‡å­—æ•°ã‚’æŒ‡å®šã—ãªã„å ´åˆã€è‹±å˜èªå…¥åŠ›å‰ã«ã‚¹ãƒšãƒ¼ã‚¹ã‚’å…¥åŠ›ã—ã¦ãŠãã¨ã€
+" ã‚¹ãƒšãƒ¼ã‚¹ä»¥é™ã®æ–‡å­—ã‚’è‹±å­—ã«å¤‰æ›ã—ã¦ã€åŒºåˆ‡ã‚Šç”¨ã«å…¥åŠ›ã—ãŸã‚¹ãƒšãƒ¼ã‚¹ã‚’å‰Šé™¤ã€‚
+" ä¾‹:" code "ã¨æ‰“éµã™ã‚‹ã¨" æ¼”å„ "ã¨è¡¨ç¤ºã•ã‚Œã€é–‹å§‹ã‚­ãƒ¼ã§ã€"code"ã«å¤‰æ›ã€‚
 function! tcvime#InputConvertKanji2Seq(n)
-  " "undo "¨"ïE"A"code "¨"‰‰Še "
+  " "undo "â†’"è¶£ãƒ»"ã€"code "â†’"æ¼”å„ "
   let chars = s:AcquireYomi(' \=[^ ]\+ \=', col('.'), a:n)
   let seq = s:Kanji2Seq(chars, 1)
   let s:commit_str = seq
   return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
-" Š¿š•¶š—ñ‚ğ“ü—ÍƒV[ƒPƒ“ƒX‚É•ÏŠ·‚·‚éB
-" ‘ÎÛ•¶š—ñ‚ÍAInsert modeŠJnˆÊ’uˆÈ~‚à‚µ‚­‚ÍŒ»İs‘S‚ÄB
-" lmap—LŒø‚É‚È‚Á‚Ä‚¢‚é‚Ì‚ÉAURL“™‚ğƒy[ƒXƒg‚µ‚½ê‡‚ÉAŒ³‚É–ß‚·‚½‚ßB
+" æ¼¢å­—æ–‡å­—åˆ—ã‚’å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«å¤‰æ›ã™ã‚‹ã€‚
+" å¯¾è±¡æ–‡å­—åˆ—ã¯ã€Insert modeé–‹å§‹ä½ç½®ä»¥é™ã‚‚ã—ãã¯ç¾åœ¨è¡Œå…¨ã¦ã€‚
+" lmapæœ‰åŠ¹ã«ãªã£ã¦ã„ã‚‹ã®ã«ã€URLç­‰ã‚’ãƒšãƒ¼ã‚¹ãƒˆã—ãŸå ´åˆã«ã€å…ƒã«æˆ»ã™ãŸã‚ã€‚
 function! tcvime#InputConvertKanji2SeqAll()
   let line = getline('.')
   let col = col('.')
   if s:insert_line == line('.') && s:insert_col < col
-    " Insert modeŠJnˆÊ’uˆÈ~‚ğ•ÏŠ·‘ÎÛ‚Æ‚·‚é
-    " XXX: CTRL-D‚ÅƒCƒ“ƒfƒ“ƒg‚ğŒ¸‚ç‚µ‚½ê‡‚É‚Í–¢‘Î‰
+    " Insert modeé–‹å§‹ä½ç½®ä»¥é™ã‚’å¤‰æ›å¯¾è±¡ã¨ã™ã‚‹
+    " XXX: CTRL-Dã§ã‚¤ãƒ³ãƒ‡ãƒ³ãƒˆã‚’æ¸›ã‚‰ã—ãŸå ´åˆã«ã¯æœªå¯¾å¿œ
     let line = strpart(line, s:insert_col - 1)
     let col = col - s:insert_col + 1
   endif
@@ -355,7 +355,7 @@ function! tcvime#InputConvertKanji2SeqAll()
   return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
 endfunction
 
-" Š¿š•¶š—ñ‚ğ“ü—ÍƒV[ƒPƒ“ƒX‚É’uŠ·‚·‚é‚½‚ß‚Ì•¶š—ñ‚ğ•Ô‚·B
+" æ¼¢å­—æ–‡å­—åˆ—ã‚’å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«ç½®æ›ã™ã‚‹ãŸã‚ã®æ–‡å­—åˆ—ã‚’è¿”ã™ã€‚
 function! s:Kanji2Seq(str, trim)
   if a:str == ''
     return ''
@@ -371,7 +371,7 @@ function! s:Kanji2Seq(str, trim)
   return seq
 endfunction
 
-" Š¿š1•¶š‚ğ“ü—ÍƒV[ƒPƒ“ƒX‚É•ÏŠ·‚·‚éB
+" æ¼¢å­—1æ–‡å­—ã‚’å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«å¤‰æ›ã™ã‚‹ã€‚
 function! s:Kanji2SeqChar(ch)
   if char2nr(a:ch) < 0x80
     return a:ch
@@ -383,7 +383,7 @@ function! s:Kanji2SeqChar(ch)
   return seq
 endfunction
 
-" İ’è
+" è¨­å®š
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
 let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 let s:bushuhelp_file = globpath($VIM.','.&runtimepath, 'bushu.help')
@@ -393,7 +393,7 @@ let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
 let s:candbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeCand__'
 let s:candbufname = substitute(s:candbufname, '\\', '/', 'g')
 
-" keymap‚ğİ’è‚·‚é
+" keymapã‚’è¨­å®šã™ã‚‹
 function! tcvime#SetKeymap(keymapname)
   if &l:keymap !=# a:keymapname
     execute 'set keymap=' . a:keymapname
@@ -405,7 +405,7 @@ function! tcvime#SetKeymap(keymapname)
   endif
 endfunction
 
-"   ƒ}ƒbƒsƒ“ƒO‚ğ—LŒø‰»
+"   ãƒãƒƒãƒ”ãƒ³ã‚°ã‚’æœ‰åŠ¹åŒ–
 function! tcvime#MappingOn()
   let set_mapleader = 0
   if !exists('g:mapleader')
@@ -485,7 +485,7 @@ function! tcvime#MappingOn()
   augroup END
 endfunction
 
-"   ƒ}ƒbƒsƒ“ƒO‚ğ–³Œø‰»
+"   ãƒãƒƒãƒ”ãƒ³ã‚°ã‚’ç„¡åŠ¹åŒ–
 function! tcvime#MappingOff()
   let set_mapleader = 0
   if !exists('g:mapleader')
@@ -495,7 +495,7 @@ function! tcvime#MappingOff()
     let save_mapleader = g:mapleader
   endif
   let g:mapleader = s:mapleader
-  " TODO: tcvimeˆÈŠO‚Åmap‚³‚ê‚½‚à‚Ì‚ğunmap‚µ‚È‚¢‚æ‚¤‚É‚·‚é
+  " TODO: tcvimeä»¥å¤–ã§mapã•ã‚ŒãŸã‚‚ã®ã‚’unmapã—ãªã„ã‚ˆã†ã«ã™ã‚‹
   silent! iunmap <Leader>q
   silent! iunmap <Leader><Space>
   silent! iunmap <Leader>o
@@ -522,16 +522,16 @@ endfunction
 let s:insert_line = 0
 let s:insert_col = 1
 
-" Œã’uŒ^•ÏŠ·—p‚ÉA‘}“üŠJnˆÊ’u‚ğ‹L˜^
+" å¾Œç½®å‹å¤‰æ›ç”¨ã«ã€æŒ¿å…¥é–‹å§‹ä½ç½®ã‚’è¨˜éŒ²
 function! s:OnInsertEnter()
   let s:insert_line = line('.')
   let s:insert_col = col('.')
 endfunction
 
 "==============================================================================
-"				    “ü—Í§Œä
+"				    å…¥åŠ›åˆ¶å¾¡
 
-" “Ç‚İ‚Ì“ü—Í‚ğŠJn
+" èª­ã¿ã®å…¥åŠ›ã‚’é–‹å§‹
 function! s:InputStart()
   call s:StatusSet()
   return ''
@@ -540,23 +540,23 @@ endfunction
 let s:completeyomi = ''
 let s:completeop = 0
 
-" Insert mode‚ÅŒã’uŒ^Œğ‚º‘‚«•ÏŠ·‚ğs‚¤B
-" Šˆ—p‚·‚éŒê‚Ì•ÏŠ·‚Ìê‡‚ÍA
-" •ÏŠ·‘ÎÛ•¶š—ñ‚Ì––”ö‚Éu\v‚ğ’Ç‰Á‚µ‚ÄŒğ‚º‘‚««‘‚ğŒŸõ‚·‚éB
+" Insert modeã§å¾Œç½®å‹äº¤ãœæ›¸ãå¤‰æ›ã‚’è¡Œã†ã€‚
+" æ´»ç”¨ã™ã‚‹èªã®å¤‰æ›ã®å ´åˆã¯ã€
+" å¤‰æ›å¯¾è±¡æ–‡å­—åˆ—ã®æœ«å°¾ã«ã€Œâ€•ã€ã‚’è¿½åŠ ã—ã¦äº¤ãœæ›¸ãè¾æ›¸ã‚’æ¤œç´¢ã™ã‚‹ã€‚
 "
-" tc2“¯—l‚ÌŒã’uŒ^Œğ‚º‘‚«•ÏŠ·‚ğs‚¤‚½‚ß‚Ìİ’è—á:
-"     " Šˆ—p‚µ‚È‚¢Œê
+" tc2åŒæ§˜ã®å¾Œç½®å‹äº¤ãœæ›¸ãå¤‰æ›ã‚’è¡Œã†ãŸã‚ã®è¨­å®šä¾‹:
+"     " æ´»ç”¨ã—ãªã„èª
 "     lmap <silent> 18 <C-R>=tcvime#InputPostConvert(1, 0)<CR>
 "     lmap <silent> 28 <C-R>=tcvime#InputPostConvert(2, 0)<CR>
 "     lmap <silent> 38 <C-R>=tcvime#InputPostConvert(3, 0)<CR>
 "     lmap <silent> 48 <C-R>=tcvime#InputPostConvert(4, 0)<CR>
-"     " Šˆ—p‚·‚éŒê(‚½‚¾‚µtc2‚Æˆá‚Á‚ÄA“Ç‚İ‚Ì•¶š”‚É‚ÍŠˆ—pŒê”ö‚ÍŠÜ‚Ü‚È‚¢)
+"     " æ´»ç”¨ã™ã‚‹èª(ãŸã ã—tc2ã¨é•ã£ã¦ã€èª­ã¿ã®æ–‡å­—æ•°ã«ã¯æ´»ç”¨èªå°¾ã¯å«ã¾ãªã„)
 "     lmap <silent> 29 <C-R>=tcvime#InputPostConvert(2, 1)<CR>
 "     lmap <silent> 39 <C-R>=tcvime#InputPostConvert(3, 1)<CR>
 "     lmap <silent> 49 <C-R>=tcvime#InputPostConvert(4, 1)<CR>
 "     lmap <silent> 59 <C-R>=tcvime#InputPostConvert(5, 1)<CR>
-" @param count Œğ‚º‘‚«•ÏŠ·‚Ì‘ÎÛ‚É‚·‚é“Ç‚İ‚Ì•¶š”
-" @param katuyo Šˆ—p‚·‚éŒê‚Ì•ÏŠ·‚©‚Ç‚¤‚©B0:Šˆ—p‚µ‚È‚¢, 1:Šˆ—p‚·‚é
+" @param count äº¤ãœæ›¸ãå¤‰æ›ã®å¯¾è±¡ã«ã™ã‚‹èª­ã¿ã®æ–‡å­—æ•°
+" @param katuyo æ´»ç”¨ã™ã‚‹èªã®å¤‰æ›ã‹ã©ã†ã‹ã€‚0:æ´»ç”¨ã—ãªã„, 1:æ´»ç”¨ã™ã‚‹
 function! tcvime#InputPostConvert(count, katuyo)
   let s:status_line = line(".")
   let yomi = matchstr(getline('.'), '.\{' . a:count . '}\%' . col('.') . 'c')
@@ -571,22 +571,22 @@ function! tcvime#InputPostConvert(count, katuyo)
   return s:InputConvertSub(yomi, a:katuyo, 1)
 endfunction
 
-" Œã’uŒ^Œğ‚º‘‚«•ÏŠ·‚ÅA•¶š”‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢Û‚ÉA
-" ‚±‚Ìƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚é•¶š‚ğ“Ç‚İ‚Æ‚µ‚Äæ“¾‚·‚éB
-let g:tcvime#yomi_pat = '[^	-~ABCDEuvij]'
+" å¾Œç½®å‹äº¤ãœæ›¸ãå¤‰æ›ã§ã€æ–‡å­—æ•°ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„éš›ã«ã€
+" ã“ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹æ–‡å­—ã‚’èª­ã¿ã¨ã—ã¦å–å¾—ã™ã‚‹ã€‚
+let g:tcvime#yomi_pat = '[^	-~ã€ã€‚ï¼Œï¼ãƒ»ã€Œã€ï¼ˆï¼‰]'
 let s:mazegaki_yomi_max = 10
 
-" Insert mode‚ÅŒã’uŒ^Œğ‚º‘‚«•ÏŠ·‚ğŠJn‚·‚éB“Ç‚İ•¶š”w’è–³‚µB
+" Insert modeã§å¾Œç½®å‹äº¤ãœæ›¸ãå¤‰æ›ã‚’é–‹å§‹ã™ã‚‹ã€‚èª­ã¿æ–‡å­—æ•°æŒ‡å®šç„¡ã—ã€‚
 function! tcvime#InputPostConvertStart(katuyo)
   let col = col('.')
-  " ‘O’uŒ^Œğ‚º‘‚«•ÏŠ·‚Ì“Ç‚İ‚Æ‚µ‚Äw’è‚³‚ê‚½•¶š—ñ‚ª‚ ‚ê‚ÎA•ÏŠ·‘ÎÛ‚Æ‚·‚é
+  " å‰ç½®å‹äº¤ãœæ›¸ãå¤‰æ›ã®èª­ã¿ã¨ã—ã¦æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ãŒã‚ã‚Œã°ã€å¤‰æ›å¯¾è±¡ã¨ã™ã‚‹
   let yomi = s:StatusGet('.', col)
   if yomi == ''
     let line = getline('.')
     let c = col
     if s:insert_line == line('.') && s:insert_col < col
-      " Insert modeŠJnˆÊ’uˆÈ~‚ğ•ÏŠ·‘ÎÛ‚Æ‚·‚é
-      " XXX: CTRL-D‚ÅƒCƒ“ƒfƒ“ƒg‚ğŒ¸‚ç‚µ‚½ê‡‚É‚Í–¢‘Î‰
+      " Insert modeé–‹å§‹ä½ç½®ä»¥é™ã‚’å¤‰æ›å¯¾è±¡ã¨ã™ã‚‹
+      " XXX: CTRL-Dã§ã‚¤ãƒ³ãƒ‡ãƒ³ãƒˆã‚’æ¸›ã‚‰ã—ãŸå ´åˆã«ã¯æœªå¯¾å¿œ
       let line = strpart(line, s:insert_col - 1)
       let c = col - s:insert_col + 1
     endif
@@ -597,11 +597,11 @@ function! tcvime#InputPostConvertStart(katuyo)
     let len = strlen(yomi)
     let s:status_column = col - len
     let ret = s:InputConvertSub(yomi, a:katuyo, 0)
-    " Œó•â‚ªŒ©‚Â‚©‚Á‚½ê‡‚ÍI—¹
+    " å€™è£œãŒè¦‹ã¤ã‹ã£ãŸå ´åˆã¯çµ‚äº†
     if ret != '' || s:completeyomi != ''
       return ret
     endif
-    " Œó•â‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚çA“Ç‚İ‚ğ1•¶šŒ¸‚ç‚µ‚ÄŒŸõ
+    " å€™è£œãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰ã€èª­ã¿ã‚’1æ–‡å­—æ¸›ã‚‰ã—ã¦æ¤œç´¢
     let strlist = matchlist(yomi, '.\(.*\)')
     let yomi = strlist[1]
   endwhile
@@ -611,7 +611,7 @@ function! tcvime#InputPostConvertStart(katuyo)
   return ''
 endfunction
 
-" Œğ‚º‘‚«•ÏŠ·‚Ì“Ç‚İ‚ğk‚ß‚é
+" äº¤ãœæ›¸ãå¤‰æ›ã®èª­ã¿ã‚’ç¸®ã‚ã‚‹
 function! tcvime#InputConvertShrink()
   if !pumvisible()
     return '>'
@@ -619,32 +619,32 @@ function! tcvime#InputConvertShrink()
   return s:InputConvertShrinkPum()
 endfunction
 
-" Œğ‚º‘‚«•ÏŠ·‚Ì“Ç‚İ‚ğk‚ß‚éBpopup menu‚ª•\¦‚³‚ê‚Ä‚¢‚éê‡‚Ìˆ—B
+" äº¤ãœæ›¸ãå¤‰æ›ã®èª­ã¿ã‚’ç¸®ã‚ã‚‹ã€‚popup menuãŒè¡¨ç¤ºã•ã‚Œã¦ã„ã‚‹å ´åˆã®å‡¦ç†ã€‚
 function! s:InputConvertShrinkPum()
   let ret = s:InputConvertShrink()
-  " Œó•â•¡”‚Ìê‡A<C-E>‚ğreturn‚µ‚Äpopup‚ğ•Â‚¶‚½ŒãOnCursorMovedI()‚©‚çÄpopup
+  " å€™è£œè¤‡æ•°ã®å ´åˆã€<C-E>ã‚’returnã—ã¦popupã‚’é–‰ã˜ãŸå¾ŒOnCursorMovedI()ã‹ã‚‰å†popup
   if ret == ''
     let s:completeop = 1
   endif
   return "\<C-E>" . ret
 endfunction
 
-" Œğ‚º‘‚«•ÏŠ·‚Ì“Ç‚İ‚ğk‚ß‚éB
+" äº¤ãœæ›¸ãå¤‰æ›ã®èª­ã¿ã‚’ç¸®ã‚ã‚‹ã€‚
 function! s:InputConvertShrink()
   let yomi = s:completeyomi
   let oldlen = strlen(yomi)
-  " “Ç‚İ‚ğ1•¶šŒ¸‚ç‚µ‚ÄŒŸõ
+  " èª­ã¿ã‚’1æ–‡å­—æ¸›ã‚‰ã—ã¦æ¤œç´¢
   let strlist = matchlist(yomi, '.\(.*\)')
   let yomi = strlist[1]
   while yomi != ''
     let len = strlen(yomi)
     let s:status_column += oldlen - len
     let ret = s:InputConvertSub(yomi, s:is_katuyo, 0)
-    " Œó•â‚ªŒ©‚Â‚©‚Á‚½ê‡‚ÍI—¹
+    " å€™è£œãŒè¦‹ã¤ã‹ã£ãŸå ´åˆã¯çµ‚äº†
     if s:last_candidate != ''
       return ret
     endif
-    " Œó•â‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚çA“Ç‚İ‚ğ1•¶šŒ¸‚ç‚µ‚ÄŒŸõ
+    " å€™è£œãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰ã€èª­ã¿ã‚’1æ–‡å­—æ¸›ã‚‰ã—ã¦æ¤œç´¢
     let oldlen = strlen(yomi)
     let strlist = matchlist(yomi, '.\(.*\)')
     let yomi = strlist[1]
@@ -655,15 +655,15 @@ function! s:InputConvertShrink()
   return ''
 endfunction
 
-" ’¼‘O‚ÌŒã’uŒ^Œğ‚º‘‚«•ÏŠ·‚ğk‚ß‚éB
-" Œó•â1ŒÂ‚Ì‚½‚ß©“®Šm’è‚³‚ê‚½ê‡—pB
+" ç›´å‰ã®å¾Œç½®å‹äº¤ãœæ›¸ãå¤‰æ›ã‚’ç¸®ã‚ã‚‹ã€‚
+" å€™è£œ1å€‹ã®ãŸã‚è‡ªå‹•ç¢ºå®šã•ã‚ŒãŸå ´åˆç”¨ã€‚
 function! s:InputConvertShrinkLatest()
   if pumvisible()
     return s:InputConvertShrinkPum()
   endif
-  " ƒJ[ƒ\ƒ‹ˆÊ’u‘O‚ªA’¼‘O‚É•ÏŠ·‚µ‚½•¶š—ñ‚Å‚È‚¢ê‡‚ÍA‰½‚à‚µ‚È‚¢B
-  " •ÏŠ·Œã‚É•Ê‚Ì•¶š‚ğ“ü—Í‚µ‚½Œã‚ÅŠÔˆá‚Á‚Ä‚±‚ÌŠÖ”‚ªŒÄ‚Î‚ê‚ÄA
-  " ŒÃ‚¢•ÏŠ·‚Ì“à—e‚ğ‚à‚Æ‚Éã‘‚«‚·‚é‚Æ¢‚é‚Ì‚ÅB
+  " ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®å‰ãŒã€ç›´å‰ã«å¤‰æ›ã—ãŸæ–‡å­—åˆ—ã§ãªã„å ´åˆã¯ã€ä½•ã‚‚ã—ãªã„ã€‚
+  " å¤‰æ›å¾Œã«åˆ¥ã®æ–‡å­—ã‚’å…¥åŠ›ã—ãŸå¾Œã§é–“é•ã£ã¦ã“ã®é–¢æ•°ãŒå‘¼ã°ã‚Œã¦ã€
+  " å¤ã„å¤‰æ›ã®å†…å®¹ã‚’ã‚‚ã¨ã«ä¸Šæ›¸ãã™ã‚‹ã¨å›°ã‚‹ã®ã§ã€‚
   let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
   let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
   if chars != s:commit_str
@@ -679,11 +679,11 @@ function! s:InputConvertShrinkLatest()
     let len = strlen(yomi)
     let s:status_column = col('.') - len
     let ret = s:InputConvertSub(yomi, s:is_katuyo, 0)
-    " Œó•â‚ªŒ©‚Â‚©‚Á‚½ê‡‚ÍI—¹
+    " å€™è£œãŒè¦‹ã¤ã‹ã£ãŸå ´åˆã¯çµ‚äº†
     if ret != '' || s:completeyomi != ''
       return ret
     endif
-    " Œó•â‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚çA“Ç‚İ‚ğ1•¶šŒ¸‚ç‚µ‚ÄŒŸõ
+    " å€™è£œãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰ã€èª­ã¿ã‚’1æ–‡å­—æ¸›ã‚‰ã—ã¦æ¤œç´¢
     let strlist = matchlist(yomi, '.\(.*\)')
     let yomi = strlist[1]
   endwhile
@@ -693,7 +693,7 @@ function! s:InputConvertShrinkLatest()
   return ''
 endfunction
 
-" Insert mode‚ÅA“Ç‚İ‚ª‚ ‚ê‚ÎŒğ‚º‘‚«•ÏŠ·‚ğŠJn‚µA–³‚¯‚ê‚Î' '‚ğ•Ô‚·B
+" Insert modeã§ã€èª­ã¿ãŒã‚ã‚Œã°äº¤ãœæ›¸ãå¤‰æ›ã‚’é–‹å§‹ã—ã€ç„¡ã‘ã‚Œã°' 'ã‚’è¿”ã™ã€‚
 function! s:InputConvertOrSpace()
   let status = s:StatusGet('.', col('.'))
   if status == ''
@@ -702,10 +702,10 @@ function! s:InputConvertOrSpace()
   endif
   let lastyomi = s:last_keyword
   let ret = s:InputConvertSub(status, 0, 1)
-  " Œó•â–³‚µ && ‘O‰ñ‚Æ“¯‚¶“Ç‚İ¨‘O‰ñ‚à•ÏŠ·•s‰ÂBÄ“x<Space>‚È‚Ì‚Å' '‚ğ•Ô‚·B
-  " ‚Å‚È‚¢‚ÆA' '‚ğ‘}“ü‚Å‚«‚È‚­‚È‚Á‚½‚æ‚¤‚ÉŒ©‚¦‚é‚Ì‚ÅB
-  " <Plug>TcvimeIStartƒL[‚ğ‰Ÿ‚µ‚Ä“Ç‚İŠJnˆÊ’uƒŠƒZƒbƒg‚·‚ê‚Î‘}“ü‚Å‚«‚é‚¯‚ÇB
-  " XXX: ÄŒŸõ–³‚µ‚ÉA‘O‰ñ‚Æ“¯‚¶“Ç‚İ‚ÆˆÊ’us:status_column‚©‚ğŠm”F‚µ‚½•û‚ª—Ç‚¢?
+  " å€™è£œç„¡ã— && å‰å›ã¨åŒã˜èª­ã¿â†’å‰å›ã‚‚å¤‰æ›ä¸å¯ã€‚å†åº¦<Space>ãªã®ã§' 'ã‚’è¿”ã™ã€‚
+  " ã§ãªã„ã¨ã€' 'ã‚’æŒ¿å…¥ã§ããªããªã£ãŸã‚ˆã†ã«è¦‹ãˆã‚‹ã®ã§ã€‚
+  " <Plug>TcvimeIStartã‚­ãƒ¼ã‚’æŠ¼ã—ã¦èª­ã¿é–‹å§‹ä½ç½®ãƒªã‚»ãƒƒãƒˆã™ã‚Œã°æŒ¿å…¥ã§ãã‚‹ã‘ã©ã€‚
+  " XXX: å†æ¤œç´¢ç„¡ã—ã«ã€å‰å›ã¨åŒã˜èª­ã¿ã¨ä½ç½®s:status_columnã‹ã‚’ç¢ºèªã—ãŸæ–¹ãŒè‰¯ã„?
   if ret == '' && s:completeyomi == '' && lastyomi == status
     call s:StatusReset()
     return ' '
@@ -713,8 +713,8 @@ function! s:InputConvertOrSpace()
   return ret
 endfunction
 
-" Insert mode‚ÅŒğ‚º‘‚«•ÏŠ·‚ğs‚¤B“Ç‚İ‚ª–³‚¢ê‡‚Í“Ç‚İŠJnƒ}[ƒN‚ğ•t‚¯‚éB
-" @param katuyo Šˆ—p‚·‚éŒê‚Ì•ÏŠ·‚©‚Ç‚¤‚©B0:Šˆ—p‚µ‚È‚¢, 1:Šˆ—p‚·‚é
+" Insert modeã§äº¤ãœæ›¸ãå¤‰æ›ã‚’è¡Œã†ã€‚èª­ã¿ãŒç„¡ã„å ´åˆã¯èª­ã¿é–‹å§‹ãƒãƒ¼ã‚¯ã‚’ä»˜ã‘ã‚‹ã€‚
+" @param katuyo æ´»ç”¨ã™ã‚‹èªã®å¤‰æ›ã‹ã©ã†ã‹ã€‚0:æ´»ç”¨ã—ãªã„, 1:æ´»ç”¨ã™ã‚‹
 function! s:InputConvertOrStart(katuyo)
   let status = s:StatusGet('.', col('.'))
   if status == ''
@@ -724,17 +724,17 @@ function! s:InputConvertOrStart(katuyo)
   return s:InputConvertSub(status, a:katuyo, 1)
 endfunction
 
-" Insert mode‚ÅŒğ‚º‘‚«•ÏŠ·‚ğs‚¤B
-" Šˆ—p‚·‚éŒê‚Ì•ÏŠ·‚Ìê‡‚ÍA
-" •ÏŠ·‘ÎÛ•¶š—ñ‚Ì––”ö‚Éu\v‚ğ’Ç‰Á‚µ‚ÄŒğ‚º‘‚««‘‚ğŒŸõ‚·‚éB
-" @param katuyo Šˆ—p‚·‚éŒê‚Ì•ÏŠ·‚©‚Ç‚¤‚©B0:Šˆ—p‚µ‚È‚¢, 1:Šˆ—p‚·‚é
-" @param finish Œó•â‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚Éecho‚·‚é‚©‚Ç‚¤‚©B
+" Insert modeã§äº¤ãœæ›¸ãå¤‰æ›ã‚’è¡Œã†ã€‚
+" æ´»ç”¨ã™ã‚‹èªã®å¤‰æ›ã®å ´åˆã¯ã€
+" å¤‰æ›å¯¾è±¡æ–‡å­—åˆ—ã®æœ«å°¾ã«ã€Œâ€•ã€ã‚’è¿½åŠ ã—ã¦äº¤ãœæ›¸ãè¾æ›¸ã‚’æ¤œç´¢ã™ã‚‹ã€‚
+" @param katuyo æ´»ç”¨ã™ã‚‹èªã®å¤‰æ›ã‹ã©ã†ã‹ã€‚0:æ´»ç”¨ã—ãªã„, 1:æ´»ç”¨ã™ã‚‹
+" @param finish å€™è£œãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸæ™‚ã«echoã™ã‚‹ã‹ã©ã†ã‹ã€‚
 function! s:InputConvertSub(yomi, katuyo, finish)
   let s:completeyomi = ''
   let inschars = ''
   let s:is_katuyo = a:katuyo
   if s:is_katuyo
-    let key = a:yomi . '\'
+    let key = a:yomi . 'â€•'
   else
     let key = a:yomi
   endif
@@ -743,9 +743,9 @@ function! s:InputConvertSub(yomi, katuyo, finish)
     if !pumvisible()
       let inschars = s:InputFix(col('.'))
     else
-      " InputConvertShrink()‚©‚çŒÄ‚Ño‚³‚ê‚½ê‡B
-      " ‚³‚ç‚ÉShrink‚·‚é‚½‚ß‚Ìs:commit_strXV‚â©“®ƒwƒ‹ƒv•\¦‚ğ
-      " OnCursorMovedI()“à‚Å‚â‚é‚½‚ßAs:completeyomi‚ğXV
+      " InputConvertShrink()ã‹ã‚‰å‘¼ã³å‡ºã•ã‚ŒãŸå ´åˆã€‚
+      " ã•ã‚‰ã«Shrinkã™ã‚‹ãŸã‚ã®s:commit_stræ›´æ–°ã‚„è‡ªå‹•ãƒ˜ãƒ«ãƒ—è¡¨ç¤ºã‚’
+      " OnCursorMovedI()å†…ã§ã‚„ã‚‹ãŸã‚ã€s:completeyomiã‚’æ›´æ–°
       let s:completeyomi = a:yomi
       let inschars = substitute(a:yomi, '.', "\<BS>", 'g') . s:last_candidate
     endif
@@ -755,20 +755,20 @@ function! s:InputConvertSub(yomi, katuyo, finish)
     endif
   elseif ncands == 0
     if a:finish
-      echo 'Œğ‚º‘‚««‘’†‚É‚ÍŒ©‚Â‚©‚è‚Ü‚¹‚ñ: <' . a:yomi . '>'
+      echo 'äº¤ãœæ›¸ãè¾æ›¸ä¸­ã«ã¯è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: <' . a:yomi . '>'
     endif
   else
-    echo 'Œğ‚º‘‚«•ÏŠ·«‘ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½: ' . s:candidate_file
+    echo 'äº¤ãœæ›¸ãå¤‰æ›è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ: ' . s:candidate_file
   endif
   return inschars
 endfunction
 
-" Œó•â‘I‘ğ—pƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ğ•\¦‚·‚é
+" å€™è£œé¸æŠç”¨ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹
 function! s:InputConvertShowPopup(yomi)
   let s:completeyomi = a:yomi
   inoremap > <C-R>=tcvime#InputConvertShrink()<CR>
   autocmd Tcvime CursorMovedI * call <SID>OnCursorMovedI()
-  " Œó•â‘I‘ğ—pmenuƒL[’Ç‰Á
+  " å€™è£œé¸æŠç”¨menuã‚­ãƒ¼è¿½åŠ 
   let items = []
   let i = 0
   let len = len(s:last_candidate_list)
@@ -784,14 +784,14 @@ function! s:InputConvertShowPopup(yomi)
   call complete(s:status_column, items)
 endfunction
 
-" complete()‚Å‘I‘ğ‚³‚ê‚½Œó•â‚ğæ“¾‚µ‚ÄA©“®ƒwƒ‹ƒv‚ğ•\¦‚·‚é
+" complete()ã§é¸æŠã•ã‚ŒãŸå€™è£œã‚’å–å¾—ã—ã¦ã€è‡ªå‹•ãƒ˜ãƒ«ãƒ—ã‚’è¡¨ç¤ºã™ã‚‹
 function! s:OnCursorMovedI()
   if s:completeyomi == ''
     return
   endif
   autocmd! Tcvime CursorMovedI *
 
-  " ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‘€ì—p‚Ìˆêmap‚ğíœ
+  " ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ“ä½œç”¨ã®ä¸€æ™‚mapã‚’å‰Šé™¤
   silent! iunmap >
   let i = 0
   let len = len(s:last_candidate_list)
@@ -802,7 +802,7 @@ function! s:OnCursorMovedI()
     let i += 1
   endwhile
 
-  " “Ç‚İ‚ÌLk‘€ì‚É‚æ‚éÄŒŸõ‚Å•¡”Œó•â‚ªŒ©‚Â‚©‚Á‚½ê‡AÄ“xpopup menu‚ğ•\¦
+  " èª­ã¿ã®ä¼¸ç¸®æ“ä½œã«ã‚ˆã‚‹å†æ¤œç´¢ã§è¤‡æ•°å€™è£œãŒè¦‹ã¤ã‹ã£ãŸå ´åˆã€å†åº¦popup menuã‚’è¡¨ç¤º
   if s:completeop == 1
     let s:completeop = 0
     call s:InputConvertShowPopup(s:StatusGet('.', col('.')))
@@ -811,7 +811,7 @@ function! s:OnCursorMovedI()
 
   let col = col('.')
   if col == 1
-    " <CR>‚ÅŠm’è‚µ‚Ä‰üs‚ª‘}“ü‚³‚ê‚Äs“ª‚É‚È‚Á‚½ê‡BTODO: autoindent‘Î‰
+    " <CR>ã§ç¢ºå®šã—ã¦æ”¹è¡ŒãŒæŒ¿å…¥ã•ã‚Œã¦è¡Œé ­ã«ãªã£ãŸå ´åˆã€‚TODO: autoindentå¯¾å¿œ
     let lnum = line('.') - 1
     let col = col([lnum, '$'])
     let status = s:StatusGet(lnum, col)
@@ -822,14 +822,14 @@ function! s:OnCursorMovedI()
     if g:tcvime_movecandto >= 0
       call s:LearnCand(status)
     endif
-    " XXX: ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[–³Œø‚Ìê‡A©“®ƒwƒ‹ƒv•\¦‚Å‚«‚È‚¢
+    " XXX: ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç„¡åŠ¹ã®å ´åˆã€è‡ªå‹•ãƒ˜ãƒ«ãƒ—è¡¨ç¤ºã§ããªã„
     call s:ShowAutoHelp(s:completeyomi, status)
   endif
   let s:completeyomi = ''
   call s:StatusReset()
 endfunction
 
-" ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[•\¦‚ÉAw’è‚³‚ê‚½”Ô†‚ÌŒó•â‚ğŠm’è‚·‚é
+" ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤ºæ™‚ã«ã€æŒ‡å®šã•ã‚ŒãŸç•ªå·ã®å€™è£œã‚’ç¢ºå®šã™ã‚‹
 function! tcvime#InputConvertSelectCand(idx)
   if !pumvisible()
     return g:tcvime#selectkeys[a:idx]
@@ -839,17 +839,17 @@ function! tcvime#InputConvertSelectCand(idx)
   return "\<C-E>" . bs . s:last_candidate
 endfunction
 
-" Šm’è‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚éŒó•â‚ª–â‘è‚È‚¢‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
+" ç¢ºå®šã—ã‚ˆã†ã¨ã—ã¦ã„ã‚‹å€™è£œãŒå•é¡Œãªã„ã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯
 function! s:IsCandidateOK(str)
   if strlen(a:str) > 0 && strlen(s:last_candidate) > 0
-    if s:is_katuyo && s:last_keyword ==# (a:str . '\') || s:last_keyword ==# a:str
+    if s:is_katuyo && s:last_keyword ==# (a:str . 'â€•') || s:last_keyword ==# a:str
       return 1
     endif
   endif
   return 0
 endfunction
 
-" Œó•â‚ğŠm’è‚µ‚ÄAŠm’è‚µ‚½•¶š—ñ‚ğ•Ô‚·
+" å€™è£œã‚’ç¢ºå®šã—ã¦ã€ç¢ºå®šã—ãŸæ–‡å­—åˆ—ã‚’è¿”ã™
 function! s:InputFix(col)
   let inschars = ''
   let str = s:StatusGet('.', a:col)
@@ -870,7 +870,7 @@ function! s:InputFix(col)
   return inschars
 endfunction
 
-" ’¼‘O‚Ì2•¶š‚Ì•”ñ‡¬•ÏŠ·‚ğs‚¤
+" ç›´å‰ã®2æ–‡å­—ã®éƒ¨é¦–åˆæˆå¤‰æ›ã‚’è¡Œã†
 function! s:InputConvertBushu(col)
   if a:col <= 2
     return ''
@@ -883,7 +883,7 @@ function! s:InputConvertBushu(col)
   let char2 = chars[2]
   let retchar = s:BushuConvert(char1, char2)
   if retchar == ''
-    echo '•”ñ‡¬•ÏŠ·‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½: <' . char1 . '>, <' . char2 . '>'
+    echo 'éƒ¨é¦–åˆæˆå¤‰æ›ãŒã§ãã¾ã›ã‚“ã§ã—ãŸ: <' . char1 . '>, <' . char2 . '>'
     return ''
   endif
   call s:ShowAutoHelp(chars[0], retchar)
@@ -891,7 +891,7 @@ function! s:InputConvertBushu(col)
   return inschars
 endfunction
 
-" operatorfunc‚Æ‚µ‚ÄA‘I‘ğ‚³‚ê‚½•¶š—ñ‚ğŒğ‚º‘‚«•ÏŠ·‚·‚é
+" operatorfuncã¨ã—ã¦ã€é¸æŠã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’äº¤ãœæ›¸ãå¤‰æ›ã™ã‚‹
 function! tcvime#ConvertOp(type, ...)
   let visual = 0
   if a:0  " Invoked from Visual mode
@@ -900,7 +900,7 @@ function! tcvime#ConvertOp(type, ...)
   call s:ConvertOpSub(a:type, visual, 0)
 endfunction
 
-" operatorfunc‚Æ‚µ‚ÄA‘I‘ğ‚³‚ê‚½•¶š—ñ‚ğŠˆ—p‚·‚éŒê‚Æ‚µ‚ÄŒğ‚º‘‚«•ÏŠ·‚·‚é
+" operatorfuncã¨ã—ã¦ã€é¸æŠã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’æ´»ç”¨ã™ã‚‹èªã¨ã—ã¦äº¤ãœæ›¸ãå¤‰æ›ã™ã‚‹
 function! tcvime#ConvertOpKatuyo(type, ...)
   let visual = 0
   if a:0  " Invoked from Visual mode
@@ -942,7 +942,7 @@ function! s:ConvertOpSub(type, visual, katuyo)
   let @@ = reg_save
 endfunction
 
-" operatorfunc‚Æ‚µ‚ÄA‘I‘ğ‚³‚ê‚½•¶š—ñ‚ğƒJƒ^ƒJƒi‚É•ÏŠ·‚·‚é
+" operatorfuncã¨ã—ã¦ã€é¸æŠã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’ã‚«ã‚¿ã‚«ãƒŠã«å¤‰æ›ã™ã‚‹
 function! tcvime#ConvertOpKatakana(type, ...)
   let sel_save = &selection
   let &selection = "inclusive"
@@ -963,14 +963,14 @@ function! s:ConvertOpKatakanaSub(beg, end)
   let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
   let inschars = substitute(chars, '.', "\<BS>", 'g') . tcvime#hira2kata(chars)
   call s:InsertString(inschars)
-  " XXX: undo‚·‚é‚Æs“ª‚ÉˆÚ“®‚·‚é‚Ì‚Å‚¢‚Ü‚¢‚¿
+  " XXX: undoã™ã‚‹ã¨è¡Œé ­ã«ç§»å‹•ã™ã‚‹ã®ã§ã„ã¾ã„ã¡
   "execute 's/\%' . a:beg . 'c.*\%' . col("'^") . 'c/\=tcvime#hira2kata(submatch(0))/'
-  " XXX: ÅŒã‚Ì•¶š‚ª•ÏŠ·‚ÉŠÜ‚Ü‚ê‚È‚¢B\%>'>‚É‚·‚é‚Æs––‚Ü‚Å•ÏŠ·‚³‚ê‚é
+  " XXX: æœ€å¾Œã®æ–‡å­—ãŒå¤‰æ›ã«å«ã¾ã‚Œãªã„ã€‚\%>'>ã«ã™ã‚‹ã¨è¡Œæœ«ã¾ã§å¤‰æ›ã•ã‚Œã‚‹
   "s/\%'<.*\%'>/\=tcvime#hira2kata(submatch(0))/
   call cursor(0, col)
 endfunction
 
-" operatorfunc‚Æ‚µ‚ÄA‘I‘ğ‚³‚ê‚½•¶š—ñ‚ğ“ü—ÍƒV[ƒPƒ“ƒX‚É•ÏŠ·‚·‚é
+" operatorfuncã¨ã—ã¦ã€é¸æŠã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«å¤‰æ›ã™ã‚‹
 function! tcvime#ConvertOpKanji2Seq(type, ...)
   let sel_save = &selection
   let &selection = "inclusive"
@@ -995,7 +995,7 @@ function! s:ConvertOpKanji2SeqSub(beg, end)
   call cursor(0, col)
 endfunction
 
-" operatorfunc‚Æ‚µ‚ÄA‘I‘ğ‚³‚ê‚½•¶š—ñ‚ğ“ü—ÍƒV[ƒPƒ“ƒX‚Æ‚İ‚È‚µ‚ÄŠ¿š‚É•ÏŠ·‚·‚é
+" operatorfuncã¨ã—ã¦ã€é¸æŠã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã¨ã¿ãªã—ã¦æ¼¢å­—ã«å¤‰æ›ã™ã‚‹
 function! tcvime#ConvertOpSeq2Kanji(type, ...)
   let sel_save = &selection
   let &selection = "inclusive"
@@ -1020,9 +1020,9 @@ function! s:ConvertOpSeq2KanjiSub(beg, end)
   call cursor(0, col)
 endfunction
 
-" operatorfunc‚Æ‚µ‚ÄA‘I‘ğ‚³‚ê‚½•¶š—ñ‚Ì“ü—ÍƒV[ƒPƒ“ƒX‚ğ‚¸‚ç‚µ‚ÄŠ¿š‚É•ÏŠ·B
-" ƒV[ƒPƒ“ƒX‚ª‚¸‚ê‚ÄˆÓ–¡•s–¾‚ÈŠ¿š•¶š—ñ‚É‚È‚Á‚½‚à‚Ì‚ğC•œ‚·‚é‚½‚ßB
-" —á: u“d’n‹‹Œ•ª“®“cV“¯ v¨u‚¤‚©‚à‚µ‚ê‚Ü‚¹‚ñBv
+" operatorfuncã¨ã—ã¦ã€é¸æŠã•ã‚ŒãŸæ–‡å­—åˆ—ã®å…¥åŠ›ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’ãšã‚‰ã—ã¦æ¼¢å­—ã«å¤‰æ›ã€‚
+" ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãŒãšã‚Œã¦æ„å‘³ä¸æ˜ãªæ¼¢å­—æ–‡å­—åˆ—ã«ãªã£ãŸã‚‚ã®ã‚’ä¿®å¾©ã™ã‚‹ãŸã‚ã€‚
+" ä¾‹: ã€Œé›»åœ°çµ¦æœˆåˆ†å‹•ç”°æ–°åŒ ã€â†’ã€Œã†ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“ã€‚ã€
 function! tcvime#ConvertOpShiftSeq(type, ...)
   let sel_save = &selection
   let &selection = "inclusive"
@@ -1051,13 +1051,13 @@ function! s:ConvertOpShiftSeqSub(beg, end)
   call cursor(0, col)
 endfunction
 
-" ˆÈ‘O‚ÌConvertCount()‚É“n‚³‚ê‚½countˆø”‚Ì’lB
-" count‚ª0‚ÅÀs‚³‚ê‚½ê‡‚ÉˆÈ‘O‚Ìcount’l‚ğg‚¤‚æ‚¤‚É‚·‚é‚½‚ßB
+" ä»¥å‰ã®ConvertCount()ã«æ¸¡ã•ã‚ŒãŸcountå¼•æ•°ã®å€¤ã€‚
+" countãŒ0ã§å®Ÿè¡Œã•ã‚ŒãŸå ´åˆã«ä»¥å‰ã®countå€¤ã‚’ä½¿ã†ã‚ˆã†ã«ã™ã‚‹ãŸã‚ã€‚
 let s:last_count = 0
 
-" ¡‚ÌˆÊ’uˆÈ‘O‚Ìcount•¶š‚ğ•ÏŠ·‚·‚é
-" @param count •ÏŠ·‚·‚é•¶š—ñ‚Ì’·‚³
-" @param katuyo Šˆ—p‚·‚éŒê‚Ì•ÏŠ·‚©‚Ç‚¤‚©B0:Šˆ—p‚µ‚È‚¢, 1:Šˆ—p‚·‚é
+" ä»Šã®ä½ç½®ä»¥å‰ã®countæ–‡å­—ã‚’å¤‰æ›ã™ã‚‹
+" @param count å¤‰æ›ã™ã‚‹æ–‡å­—åˆ—ã®é•·ã•
+" @param katuyo æ´»ç”¨ã™ã‚‹èªã®å¤‰æ›ã‹ã©ã†ã‹ã€‚0:æ´»ç”¨ã—ãªã„, 1:æ´»ç”¨ã™ã‚‹
 function! s:ConvertCount(count, katuyo)
   let cnt = a:count
   if cnt == 0
@@ -1082,7 +1082,7 @@ function! s:ConvertSub(yomi, katuyo)
   if chars != ''
     let s:is_katuyo = a:katuyo
     if s:is_katuyo
-      let chars = chars . '\'
+      let chars = chars . 'â€•'
     endif
     let ncands = s:CandidateSearch(chars, 1)
     if ncands > 1
@@ -1091,9 +1091,9 @@ function! s:ConvertSub(yomi, katuyo)
     elseif ncands == 1
       call s:FixCandidate()
     elseif ncands == 0
-      echo 'Œğ‚º‘‚««‘’†‚É‚ÍŒ©‚Â‚©‚è‚Ü‚¹‚ñ: <' . chars . '>'
+      echo 'äº¤ãœæ›¸ãè¾æ›¸ä¸­ã«ã¯è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: <' . chars . '>'
     else
-      echo 'Œğ‚º‘‚«•ÏŠ·«‘ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½: ' . s:candidate_file
+      echo 'äº¤ãœæ›¸ãå¤‰æ›è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ: ' . s:candidate_file
     endif
   else
     let s:last_keyword = ''
@@ -1102,7 +1102,7 @@ function! s:ConvertSub(yomi, katuyo)
   endif
 endfunction
 
-" ConvertCount()‚Å•ÏŠ·‚ğŠJn‚µ‚½Œó•â‚ğŠm’è‚·‚é
+" ConvertCount()ã§å¤‰æ›ã‚’é–‹å§‹ã—ãŸå€™è£œã‚’ç¢ºå®šã™ã‚‹
 function! s:FixCandidate()
   call cursor(s:status_line, s:status_colend)
   execute "normal! a\<ESC>"
@@ -1111,22 +1111,22 @@ function! s:FixCandidate()
   call s:InsertString(inschars)
 endfunction
 
-" ¡‚ÌˆÊ’uˆÈ‘O‚Ìcount•¶š‚ğƒJƒ^ƒJƒi‚É•ÏŠ·‚·‚é
-" @param count •ÏŠ·‚·‚é•¶š—ñ‚Ì’·‚³
+" ä»Šã®ä½ç½®ä»¥å‰ã®countæ–‡å­—ã‚’ã‚«ã‚¿ã‚«ãƒŠã«å¤‰æ›ã™ã‚‹
+" @param count å¤‰æ›ã™ã‚‹æ–‡å­—åˆ—ã®é•·ã•
 function! s:ConvertKatakana(count)
   execute "normal! a\<ESC>"
   let inschars = tcvime#InputConvertKatakanaPos(col("'^"), a:count)
   call s:InsertString(inschars)
 endfunction
 
-" ¡‚ÌˆÊ’uˆÈ‘O‚Ì2•¶š‚ğ•”ñ‡¬•ÏŠ·‚·‚é
+" ä»Šã®ä½ç½®ä»¥å‰ã®2æ–‡å­—ã‚’éƒ¨é¦–åˆæˆå¤‰æ›ã™ã‚‹
 function! s:ConvertBushu()
   execute "normal! a\<ESC>"
   let inschars = s:InputConvertBushu(col("'^"))
   call s:InsertString(inschars)
 endfunction
 
-" w’è‚³‚ê‚½•¶š—ñ‚ğƒoƒbƒtƒ@‚Éappend‚·‚é
+" æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’ãƒãƒƒãƒ•ã‚¡ã«appendã™ã‚‹
 function! s:InsertString(inschars)
   if strlen(a:inschars) > 0
     let save_bs = &backspace
@@ -1137,9 +1137,9 @@ function! s:InsertString(inschars)
 endfunction
 
 "==============================================================================
-"			     –¢Šm’è•¶šŠÇ——pŠÖ”ŒQ
+"			     æœªç¢ºå®šæ–‡å­—ç®¡ç†ç”¨é–¢æ•°ç¾¤
 
-"   –¢Šm’è•¶š—ñ‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é
+"   æœªç¢ºå®šæ–‡å­—åˆ—ãŒå­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 function! s:StatusIsEnable(lnum, col)
   let ln = a:lnum
   if ln == '.'
@@ -1151,27 +1151,27 @@ function! s:StatusIsEnable(lnum, col)
   return 1
 endfunction
 
-"   –¢Šm’è•¶š—ñ‚ğŠJn‚·‚é
+"   æœªç¢ºå®šæ–‡å­—åˆ—ã‚’é–‹å§‹ã™ã‚‹
 function! s:StatusSet()
   let s:status_line = line('.')
   let s:status_column = col('.')
   call s:StatusEcho()
 endfunction
 
-"   –¢Šm’è•¶š—ñ‚ğƒŠƒZƒbƒg‚·‚é
+"   æœªç¢ºå®šæ–‡å­—åˆ—ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
 function! s:StatusReset()
   let s:status_line = 0
   let s:status_column = 0
   let s:status_colend = 0
 endfunction
 
-"   –¢Šm’è•¶š—ñ‚ğuó‘Ôv‚Æ‚µ‚Äæ“¾‚·‚é
+"   æœªç¢ºå®šæ–‡å­—åˆ—ã‚’ã€ŒçŠ¶æ…‹ã€ã¨ã—ã¦å–å¾—ã™ã‚‹
 function! s:StatusGet(lnum, col)
   if !s:StatusIsEnable(a:lnum, a:col)
     return ''
   endif
 
-  " •K—v‚Èƒpƒ‰ƒ[ƒ^‚ğûW
+  " å¿…è¦ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’åé›†
   let stpos = s:status_column - 1
   let len = a:col - s:status_column
   let str = getline(a:lnum)
@@ -1179,19 +1179,19 @@ function! s:StatusGet(lnum, col)
   return strpart(str, stpos, len)
 endfunction
 
-"   –¢Šm’è•¶š—ñ‚ÌŠJnˆÊ’u‚ÆI—¹ˆÊ’u‚ğ•\¦(ƒfƒoƒbƒO—p)
+"   æœªç¢ºå®šæ–‡å­—åˆ—ã®é–‹å§‹ä½ç½®ã¨çµ‚äº†ä½ç½®ã‚’è¡¨ç¤º(ãƒ‡ãƒãƒƒã‚°ç”¨)
 function! s:StatusEcho(...)
-  echo '“Ç‚İ“ü—ÍŠJn;<Leader><Space>:•ÏŠ·,<Leader>o:Šˆ—p‚·‚éŒê‚Ì•ÏŠ·'
+  echo 'èª­ã¿å…¥åŠ›é–‹å§‹;<Leader><Space>:å¤‰æ›,<Leader>o:æ´»ç”¨ã™ã‚‹èªã®å¤‰æ›'
   "echo "New conversion (line=".s:status_line." column=".s:status_column.")"
 endfunction
 
-" ó‘ÔƒŠƒZƒbƒg
+" çŠ¶æ…‹ãƒªã‚»ãƒƒãƒˆ
 call s:StatusReset()
 
 "==============================================================================
-" ƒwƒ‹ƒv•\¦
+" ãƒ˜ãƒ«ãƒ—è¡¨ç¤º
 
-" ƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğŠJ‚­
+" ãƒ˜ãƒ«ãƒ—ç”¨ãƒãƒƒãƒ•ã‚¡ã‚’é–‹ã
 function! s:OpenHelpBuffer()
   if s:SelectWindowByName(s:helpbufname) < 0
     silent execute 'sp ' . s:helpbufname
@@ -1206,20 +1206,20 @@ function! s:OpenHelpBuffer()
   5wincmd _
 endfunction
 
-" ƒwƒ‹ƒv—pƒoƒbƒtƒ@‚ğ•Â‚¶‚é
+" ãƒ˜ãƒ«ãƒ—ç”¨ãƒãƒƒãƒ•ã‚¡ã‚’é–‰ã˜ã‚‹
 function! tcvime#CloseHelpBuffer()
   if s:SelectWindowByName(s:helpbufname) > 0
     bwipeout!
   endif
 endfunction
 
-" ƒJ[ƒ\ƒ‹ˆÊ’u‚Ì•¶š‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+" ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã®æ–‡å­—ã®ãƒ˜ãƒ«ãƒ—è¡¨ã‚’è¡¨ç¤ºã™ã‚‹
 function! s:ShowStrokeHelp()
   let ch = matchstr(getline('.'), '\%' . col('.') . 'c.')
   call s:ShowHelp([ch], 0)
 endfunction
 
-" Visual mode‚Å‘I‘ğ‚³‚ê‚Ä‚¢‚é•¶š—ñ‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+" Visual modeã§é¸æŠã•ã‚Œã¦ã„ã‚‹æ–‡å­—åˆ—ã®ãƒ˜ãƒ«ãƒ—è¡¨ã‚’è¡¨ç¤ºã™ã‚‹
 function! s:ShowHelpVisual()
   let save_reg = @@
   silent execute 'normal! `<' . visualmode() . '`>y'
@@ -1227,24 +1227,24 @@ function! s:ShowHelpVisual()
   let @@ = save_reg
 endfunction
 
-" •ÏŠ·‚ÅŠm’è‚µ‚½•¶š—ñ‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+" å¤‰æ›ã§ç¢ºå®šã—ãŸæ–‡å­—åˆ—ã®ãƒ˜ãƒ«ãƒ—è¡¨ã‚’è¡¨ç¤ºã™ã‚‹
 function! s:ShowAutoHelp(yomi, str)
   let s:prev_str = a:yomi
   let s:commit_str = a:str
   let yomichars = split(a:yomi, '\zs')
   let chars = split(a:str, '\zs')
-  " “Ç‚İ‚Å“ü—Í‚µ‚½Š¿š‚Íƒwƒ‹ƒv•\¦•s—v‚È‚Ì‚Åæ‚èœ‚­
+  " èª­ã¿ã§å…¥åŠ›ã—ãŸæ¼¢å­—ã¯ãƒ˜ãƒ«ãƒ—è¡¨ç¤ºä¸è¦ãªã®ã§å–ã‚Šé™¤ã
   call filter(chars, 'index(yomichars, v:val) == -1')
   call s:ShowHelp(chars, 0)
 endfunction
 
-" w’è‚³‚ê‚½•¶š—ñ‚ÌŠe•¶š‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+" æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ã®å„æ–‡å­—ã®ãƒ˜ãƒ«ãƒ—è¡¨ã‚’è¡¨ç¤ºã™ã‚‹
 function! tcvime#ShowHelpForStr(str, forcebushu)
   let ar = split(a:str, '\zs')
   call s:ShowHelp(ar, a:forcebushu)
 endfunction
 
-" w’è‚³‚ê‚½•¶š”z—ñ‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+" æŒ‡å®šã•ã‚ŒãŸæ–‡å­—é…åˆ—ã®ãƒ˜ãƒ«ãƒ—è¡¨ã‚’è¡¨ç¤ºã™ã‚‹
 function! s:ShowHelp(ar, forcebushu)
   let curbuf = bufnr('')
   call s:OpenHelpBuffer()
@@ -1256,7 +1256,7 @@ function! s:ShowHelp(ar, forcebushu)
   let skipchars = []
   for ch in a:ar
     if strlen(ch) == 0 || ch == "\<CR>"
-      " echo '•¶šƒwƒ‹ƒv•\•\¦‚Éw’è‚³‚ê‚½•¶š‚ª‹ó‚Å‚·B–³‹‚µ‚Ü‚·'
+      " echo 'æ–‡å­—ãƒ˜ãƒ«ãƒ—è¡¨è¡¨ç¤ºã«æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ãŒç©ºã§ã™ã€‚ç„¡è¦–ã—ã¾ã™'
       continue
     endif
     call cursor(line('$'), 1)
@@ -1265,7 +1265,7 @@ function! s:ShowHelp(ar, forcebushu)
     else
       let ret = s:ShowHelpChar(ch)
     endif
-    if ret == -1 " ƒXƒgƒ[ƒN•\‚à•”ñ‡¬«‘‚à•\¦‚Å‚«‚È‚©‚Á‚½ê‡
+    if ret == -1 " ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯è¡¨ã‚‚éƒ¨é¦–åˆæˆè¾æ›¸ã‚‚è¡¨ç¤ºã§ããªã‹ã£ãŸå ´åˆ
       call add(skipchars, ch)
       continue
     endif
@@ -1273,14 +1273,14 @@ function! s:ShowHelp(ar, forcebushu)
     if ret == 0 " ShowHelpBushuDic
       continue
     endif
-    " •\‚ğ‰¡‚É•À‚×‚é
-    if lastcol == 0 " Å‰‚Ì•\‚Ìê‡‚Í•Ï”‰Šú‰»‚¾‚¯
+    " è¡¨ã‚’æ¨ªã«ä¸¦ã¹ã‚‹
+    if lastcol == 0 " æœ€åˆã®è¡¨ã®å ´åˆã¯å¤‰æ•°åˆæœŸåŒ–ã ã‘
       let lastcol = col('$')
       let lastfrom = line('.')
       let width = lastcol + 2
       continue
     endif
-    if lastcol + width >= winwidth " ‚³‚ç‚É•À‚×‚é‚Æ‚Í‚İo‚·ê‡‚Í‚»‚Ì‚Ü‚Ü‚É
+    if lastcol + width >= winwidth " ã•ã‚‰ã«ä¸¦ã¹ã‚‹ã¨ã¯ã¿å‡ºã™å ´åˆã¯ãã®ã¾ã¾ã«
       let lastcol = col('$')
       let lastfrom = line('.')
       continue
@@ -1297,18 +1297,18 @@ function! s:ShowHelp(ar, forcebushu)
   if numch == 0
     call tcvime#CloseHelpBuffer()
   else
-    silent! $g/^$/d _ " ––”ö‚Ì—]•ª‚È‹ós‚ğíœ
+    silent! $g/^$/d _ " æœ«å°¾ã®ä½™åˆ†ãªç©ºè¡Œã‚’å‰Šé™¤
     normal 1G
     " wincmd p
     execute bufwinnr(curbuf) . 'wincmd w'
   endif
   if len(skipchars) > 0
     redraw
-    echo '•¶šƒwƒ‹ƒv‚Å•\¦‚Å‚«‚éî•ñ‚ª‚ ‚è‚Ü‚¹‚ñ: <' . join(skipchars, ',') . '>'
+    echo 'æ–‡å­—ãƒ˜ãƒ«ãƒ—ã§è¡¨ç¤ºã§ãã‚‹æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“: <' . join(skipchars, ',') . '>'
   endif
 endfunction
 
-" w’è‚³‚ê‚½•¶š‚Ìƒwƒ‹ƒv•\‚ğ•\¦‚·‚é
+" æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ã®ãƒ˜ãƒ«ãƒ—è¡¨ã‚’è¡¨ç¤ºã™ã‚‹
 function! s:ShowHelpChar(ch)
   let keyseq = s:SearchKeymap(a:ch)
   if strlen(keyseq) > 0
@@ -1319,7 +1319,7 @@ function! s:ShowHelpChar(ch)
   endif
 endfunction
 
-" w’è‚³‚ê‚½•¶š‚Æ‚»‚ÌƒXƒgƒ[ƒN‚ğ•\‚É‚µ‚Ä•\¦‚·‚é
+" æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ã¨ãã®ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯ã‚’è¡¨ã«ã—ã¦è¡¨ç¤ºã™ã‚‹
 function! s:ShowHelpSequence(ch, keyseq)
   let from = line('$')
   call append(line('.') - 1, split(g:tcvime_keyboard, "\<CR>"))
@@ -1335,14 +1335,14 @@ function! s:ShowHelpSequence(ch, keyseq)
   silent! execute range . 's@^\(................\). . @\1@e'
   silent! execute range . 's@\(.\)\(.\)@\1\2@ge'
   silent! execute range . 's@\(.\). @\1@ge'
-  silent! execute range . 's@. . @E@g'
+  silent! execute range . 's@. . @ãƒ»@g'
   silent! execute range . 's@@ @ge'
   call append(to - 1, '    ' . a:ch)
   call cursor(from, 1)
   return 1
 endfunction
 
-" •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚µ‚Ä•\¦‚·‚é
+" éƒ¨é¦–åˆæˆè¾æ›¸ã‹ã‚‰ã€æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ã‚’å«ã‚€è¡Œã‚’æ¤œç´¢ã—ã¦è¡¨ç¤ºã™ã‚‹
 function! s:ShowHelpBushuDic(ch)
   let lines = s:ListBushuHelp(a:ch)
   call s:SelectWindowByName(s:helpbufname)
@@ -1353,7 +1353,7 @@ function! s:ShowHelpBushuDic(ch)
   if lnum == 1
     let lnum = 0
   else
-    " ƒoƒbƒtƒ@“ª‚Å‚È‚¯‚ê‚Î‹æØ‚è‚Ì‹ós‘}“üB’¼‘O‚ª•¡”s‚Ì•”ñ«‘“à—e‚Ì•K—v
+    " ãƒãƒƒãƒ•ã‚¡é ­ã§ãªã‘ã‚Œã°åŒºåˆ‡ã‚Šã®ç©ºè¡ŒæŒ¿å…¥ã€‚ç›´å‰ãŒè¤‡æ•°è¡Œã®éƒ¨é¦–è¾æ›¸å†…å®¹ã®æ™‚å¿…è¦
     call add(lines, '')
   endif
   let failed = append(lnum, lines)
@@ -1363,7 +1363,7 @@ function! s:ShowHelpBushuDic(ch)
   return 0
 endfunction
 
-" •”ñ‡¬•ÏŠ·ƒwƒ‹ƒv‚É•\¦‚·‚és‚Ì”z—ñ‚ğ•Ô‚·
+" éƒ¨é¦–åˆæˆå¤‰æ›ãƒ˜ãƒ«ãƒ—ã«è¡¨ç¤ºã™ã‚‹è¡Œã®é…åˆ—ã‚’è¿”ã™
 function! s:ListBushuHelp(ch)
   let lines = s:SearchBushuHelp(a:ch)
   if !empty(lines)
@@ -1372,7 +1372,7 @@ function! s:ListBushuHelp(ch)
   return s:SearchBushuDic(a:ch)
 endfunction
 
-" bushu.helpƒtƒ@ƒCƒ‹‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚·‚é
+" bushu.helpãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã€æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ã‚’å«ã‚€è¡Œã‚’æ¤œç´¢ã™ã‚‹
 function! s:SearchBushuHelp(ch)
   let lines = []
   if !s:BushuHelp_FileOpen()
@@ -1390,7 +1390,7 @@ function! s:SearchBushuHelp(ch)
   return lines
 endfunction
 
-" •”ñ‡¬«‘‚©‚çAw’è‚³‚ê‚½•¶š‚ğŠÜ‚Şs‚ğŒŸõ‚·‚é
+" éƒ¨é¦–åˆæˆè¾æ›¸ã‹ã‚‰ã€æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ã‚’å«ã‚€è¡Œã‚’æ¤œç´¢ã™ã‚‹
 function! s:SearchBushuDic(ch)
   let lines = []
   if !s:Bushu_FileOpen()
@@ -1413,7 +1413,7 @@ function! s:KeymapFile_GetName()
   if strlen(keymap) == 0
     let keymap = g:tcvime_keymap_for_help
     if strlen(keymap) == 0
-      echo 'tcvime•¶šƒwƒ‹ƒv•\¦‚É‚ÍAkeymapƒIƒvƒVƒ‡ƒ“‚©g:tcvime_keymap_for_help‚Ìİ’è—v'
+      echo 'tcvimeæ–‡å­—ãƒ˜ãƒ«ãƒ—è¡¨ç¤ºã«ã¯ã€keymapã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‹g:tcvime_keymap_for_helpã®è¨­å®šè¦'
       return ''
     endif
   endif
@@ -1428,7 +1428,7 @@ function! s:KeymapFile_GetName()
   return kmfile
 endfunction
 
-" w’è‚³‚ê‚½•¶š‚ğ“ü—Í‚·‚é‚½‚ß‚ÌƒXƒgƒ[ƒN‚ğkeymapƒtƒ@ƒCƒ‹‚©‚çŒŸõ‚·‚é
+" æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ã‚’å…¥åŠ›ã™ã‚‹ãŸã‚ã®ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯ã‚’keymapãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æ¤œç´¢ã™ã‚‹
 function! s:SearchKeymap(ch)
   if exists('s:kanji2seqdict')
     return get(s:kanji2seqdict, a:ch, '')
@@ -1459,7 +1459,7 @@ function! s:SearchKeymap(ch)
 endfunction
 
 "==============================================================================
-"				    «‘ŒŸõ
+"				    è¾æ›¸æ¤œç´¢
 
 " SelectWindowByName(name)
 "   Acitvate selected window by a:name.
@@ -1471,7 +1471,7 @@ function! s:SelectWindowByName(name)
   return num
 endfunction
 
-" Œğ‚º‘‚«•ÏŠ·«‘ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+" äº¤ãœæ›¸ãå¤‰æ›è¾æ›¸ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
 function! s:Candidate_FileOpen(foredit)
   if s:SelectWindowByName(s:candidate_file) > 0
     if a:foredit
@@ -1489,7 +1489,7 @@ function! s:Candidate_FileOpen(foredit)
   endif
   silent execute cmd . s:candidate_file
   nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>MazegakiDic_CandSelect()<CR>
-  " Œó•â–³‚µA©“®ŠJn‚³‚ê‚½«‘•ÒW‚ğƒLƒƒƒ“ƒZƒ‹‚µ‚½‚¢ê‡—pB
+  " å€™è£œç„¡ã—æ™‚ã€è‡ªå‹•é–‹å§‹ã•ã‚ŒãŸè¾æ›¸ç·¨é›†ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ãŸã„å ´åˆç”¨ã€‚
   nnoremap <buffer> <silent> <C-E> :<C-U>call <SID>MazegakiDic_Cancel()<CR>
   if !a:foredit
     set nobuflisted
@@ -1497,15 +1497,15 @@ function! s:Candidate_FileOpen(foredit)
   return 1
 endfunction
 
-" ŒŸõ‚Ég—p‚·‚éó‘Ô•Ï”
+" æ¤œç´¢ã«ä½¿ç”¨ã™ã‚‹çŠ¶æ…‹å¤‰æ•°
 let s:last_keyword = ''
 let s:last_candidate = ''
 let s:last_candidate_list = []
 let s:is_katuyo = 0
 
-" «‘‚©‚ç–¢Šm’è•¶š—ñ‚ğŒŸõ
-" @return -1:«‘‚ªŠJ‚¯‚È‚¢ê‡, 0:•¶š—ñ‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡,
-"   1:Œó•â‚ª1‚Â‚¾‚¯Œ©‚Â‚©‚Á‚½ê‡, 2:Œó•â‚ª2‚ÂˆÈãŒ©‚Â‚©‚Á‚½ê‡
+" è¾æ›¸ã‹ã‚‰æœªç¢ºå®šæ–‡å­—åˆ—ã‚’æ¤œç´¢
+" @return -1:è¾æ›¸ãŒé–‹ã‘ãªã„å ´åˆ, 0:æ–‡å­—åˆ—ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆ,
+"   1:å€™è£œãŒ1ã¤ã ã‘è¦‹ã¤ã‹ã£ãŸå ´åˆ, 2:å€™è£œãŒ2ã¤ä»¥ä¸Šè¦‹ã¤ã‹ã£ãŸå ´åˆ
 function! s:CandidateSearch(keyword, finish)
   let s:last_keyword = a:keyword
   let s:last_candidate = ''
@@ -1527,7 +1527,7 @@ function! s:CandidateSearch(keyword, finish)
       let s:last_candidate = s:last_candidate_list[0]
     endif
   endif
-  " Œó•â–³‚µ¨Œğ‚º‘‚««‘•ÒW¨Œğ‚º‘‚«•ÏŠ·‚Ìê‡‚ÉA•ÒW’†‚ÌˆÊ’u‚É–ß‚·‚½‚ß
+  " å€™è£œç„¡ã—â†’äº¤ãœæ›¸ãè¾æ›¸ç·¨é›†â†’äº¤ãœæ›¸ãå¤‰æ›ã®å ´åˆã«ã€ç·¨é›†ä¸­ã®ä½ç½®ã«æˆ»ã™ãŸã‚
   call setpos('.', origpos)
   if ret > 0
     if !&modified
@@ -1535,13 +1535,13 @@ function! s:CandidateSearch(keyword, finish)
     endif
     return ret
   endif
-  " Œó•â–³‚µ
-  " Œğ‚º‘‚«•ÏŠ·«‘•ÒW‚ğ©“®ŠJn
+  " å€™è£œç„¡ã—
+  " äº¤ãœæ›¸ãå¤‰æ›è¾æ›¸ç·¨é›†ã‚’è‡ªå‹•é–‹å§‹
   if a:finish && g:tcvime_mazegaki_edit_nocand
     if bufnr('') != altbufnr
-      " Šm’è‘€ì‚ÅŒ³‚Ìƒoƒbƒtƒ@‚É–ß‚ê‚é‚æ‚¤‚ÉA’¼‘O‚É‚¢‚½ƒoƒbƒtƒ@”Ô†‚ğæ‚Á‚Ä‚¨‚­
+      " ç¢ºå®šæ“ä½œã§å…ƒã®ãƒãƒƒãƒ•ã‚¡ã«æˆ»ã‚Œã‚‹ã‚ˆã†ã«ã€ç›´å‰ã«ã„ãŸãƒãƒƒãƒ•ã‚¡ç•ªå·ã‚’å–ã£ã¦ãŠã
       let b:altbufnr = altbufnr
-    " else Œğ‚º‘‚««‘•ÒW’†‚É‚³‚ç‚ÉŒğ‚º‘‚«•ÏŠ·‚µ‚½ê‡‚Í‚»‚Ì‚Ü‚Ü
+    " else äº¤ãœæ›¸ãè¾æ›¸ç·¨é›†ä¸­ã«ã•ã‚‰ã«äº¤ãœæ›¸ãå¤‰æ›ã—ãŸå ´åˆã¯ãã®ã¾ã¾
     endif
     call tcvime#MazegakiDic_Edit(1)
   elseif !&modified
@@ -1550,7 +1550,7 @@ function! s:CandidateSearch(keyword, finish)
   return ret
 endfunction
 
-" Œğ‚º‘‚««‘‚Ì•ÒW‚ğŠ®—¹‚µAŒğ‚º‘‚««‘ã‚ÌƒJ[ƒ\ƒ‹ˆÊ’u‚ÌŒó•â‚ğŠm’è‚·‚é
+" äº¤ãœæ›¸ãè¾æ›¸ã®ç·¨é›†ã‚’å®Œäº†ã—ã€äº¤ãœæ›¸ãè¾æ›¸ä¸Šã®ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã®å€™è£œã‚’ç¢ºå®šã™ã‚‹
 function! s:MazegakiDic_CandSelect()
   let [lnum, beg] = searchpos('/\zs', 'bc', line('.'))
   if beg == 0
@@ -1573,17 +1573,17 @@ function! s:MazegakiDic_CandSelect()
   call s:InsertString(inschars)
 endfunction
 
-" Œğ‚º‘‚««‘‚ğ•ÒW—p‚ÉŠJ‚¢‚ÄA’¼‘O‚É•ÏŠ·‚µ‚½“Ç‚İ‚ğŒŸõ‚·‚é
+" äº¤ãœæ›¸ãè¾æ›¸ã‚’ç·¨é›†ç”¨ã«é–‹ã„ã¦ã€ç›´å‰ã«å¤‰æ›ã—ãŸèª­ã¿ã‚’æ¤œç´¢ã™ã‚‹
 function! tcvime#MazegakiDic_Edit(addnew)
   let altbufnr = bufnr('')
   if !s:Candidate_FileOpen(1)
     return -2
   endif
-  " :TcvimeEditMazegakiƒRƒ}ƒ“ƒhÀs—p
+  " :TcvimeEditMazegakiã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œæ™‚ç”¨
   if !exists('b:altbufnr')
     let b:altbufnr = altbufnr
   endif
-  " ’¼‘O‚ªŒğ‚º‘‚«•ÏŠ·‚Å‚È‚¢ê‡‚àA«‘ƒtƒ@ƒCƒ‹‚ÍŠJ‚­
+  " ç›´å‰ãŒäº¤ãœæ›¸ãå¤‰æ›ã§ãªã„å ´åˆã‚‚ã€è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã¯é–‹ã
   if s:last_keyword == ''
     return -1
   endif
@@ -1593,24 +1593,24 @@ function! tcvime#MazegakiDic_Edit(addnew)
     call search(' /', 'e')
     return ret
   endif
-  " “Ç‚İ‚ª–³‚¯‚ê‚ÎV‚½‚É‘}“ü
+  " èª­ã¿ãŒç„¡ã‘ã‚Œã°æ–°ãŸã«æŒ¿å…¥
   if a:addnew
     execute 'normal! ggO' . s:last_keyword . ' /' . s:last_keyword . "/\<ESC>"
   endif
   return 0
 endfunction
 
-" Œó•â–³‚µA©“®ŠJn‚³‚ê‚½«‘•ÒW‚ğƒLƒƒƒ“ƒZƒ‹‚µ‚½‚¢ê‡—pB
+" å€™è£œç„¡ã—æ™‚ã€è‡ªå‹•é–‹å§‹ã•ã‚ŒãŸè¾æ›¸ç·¨é›†ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ãŸã„å ´åˆç”¨ã€‚
 function! s:MazegakiDic_Cancel()
-  " (VƒGƒ“ƒgƒŠ—p‚Ìs‘}“ü‚ğundo‚µ‚ÄquitB
-  " :quit!‚¾‚ÆA«‘‚ğ–{“–‚É•ÒW’†‚Ìê‡‚ÉAŒë‚Á‚Ä<C-E>‚ğ‰Ÿ‚·‚Æì‹Æ‚ª¸‚í‚ê‚é)
+  " (æ–°ã‚¨ãƒ³ãƒˆãƒªç”¨ã®è¡ŒæŒ¿å…¥ã‚’undoã—ã¦quitã€‚
+  " :quit!ã ã¨ã€è¾æ›¸ã‚’æœ¬å½“ã«ç·¨é›†ä¸­ã®å ´åˆã«ã€èª¤ã£ã¦<C-E>ã‚’æŠ¼ã™ã¨ä½œæ¥­ãŒå¤±ã‚ã‚Œã‚‹)
   if &modified
     undo
   endif
   quit
 endfunction
 
-" Œğ‚º‘‚«•ÏŠ·‚ÅŠm’è‚µ‚½Œó•â‚ğŠwK‚µ‚ÄAŒó•âƒŠƒXƒg“àˆÊ’u‚ğˆÚ“®‚µ‚ÄA«‘•Û‘¶
+" äº¤ãœæ›¸ãå¤‰æ›ã§ç¢ºå®šã—ãŸå€™è£œã‚’å­¦ç¿’ã—ã¦ã€å€™è£œãƒªã‚¹ãƒˆå†…ä½ç½®ã‚’ç§»å‹•ã—ã¦ã€è¾æ›¸ä¿å­˜
 function! s:LearnCand(str)
   let origpos = getpos('.')
   let ret = tcvime#MazegakiDic_Edit(0)
@@ -1620,13 +1620,13 @@ function! s:LearnCand(str)
     quit
     return
   endif
-  let editing = &modified " «‘•ÒW’†‚ÌŒğ‚º‘‚«•ÏŠ·‚ÌŠm’è‚©‚Ç‚¤‚©
+  let editing = &modified " è¾æ›¸ç·¨é›†ä¸­ã®äº¤ãœæ›¸ãå¤‰æ›ã®ç¢ºå®šã‹ã©ã†ã‹
   let candstr = strpart(getline('.'), col('.') - 1)
   let candlist = split(candstr, '/', 1)
-  " ['', 'Œó•â1', 'Œó•â2', 'Œó•â3', ...., '']
+  " ['', 'å€™è£œ1', 'å€™è£œ2', 'å€™è£œ3', ...., '']
   let i = index(candlist, a:str)
   let moveto = g:tcvime_movecandto + 1
-  if i <= moveto " ŠwK‘ÎÛŠO‚ÌˆÊ’u‚É‚ ‚é‚©AŠù‚ÉŠwKÏ‚İ‚ÌˆÊ’u‚Ìê‡‚Í•ÏX•s—v
+  if i <= moveto " å­¦ç¿’å¯¾è±¡å¤–ã®ä½ç½®ã«ã‚ã‚‹ã‹ã€æ—¢ã«å­¦ç¿’æ¸ˆã¿ã®ä½ç½®ã®å ´åˆã¯å¤‰æ›´ä¸è¦
     if !editing
       quit
     else
@@ -1644,7 +1644,7 @@ function! s:LearnCand(str)
   endif
 endfunction
 
-" •”ñƒwƒ‹ƒvƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+" éƒ¨é¦–ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
 function! s:BushuHelp_FileOpen()
   if filereadable(s:bushuhelp_file) != 1
     return 0
@@ -1656,7 +1656,7 @@ function! s:BushuHelp_FileOpen()
   return 1
 endfunction
 
-" •”ñ‡¬«‘ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+" éƒ¨é¦–åˆæˆè¾æ›¸ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
 function! s:Bushu_FileOpen()
   if filereadable(s:bushu_file) != 1
     return 0
@@ -1668,7 +1668,7 @@ function! s:Bushu_FileOpen()
   return 1
 endfunction
 
-" •”ñ‡¬•ÏŠ·
+" éƒ¨é¦–åˆæˆå¤‰æ›
 function! s:BushuConvert(char1, char2)
   let retchar = s:BushuHelpSearch(a:char1, a:char2)
   if s:BushuCharOK(retchar, a:char1, a:char2)
@@ -1677,12 +1677,12 @@ function! s:BushuConvert(char1, char2)
   return s:BushuSearch(a:char1, a:char2)
 endfunction
 
-" •”ñƒwƒ‹ƒvƒtƒ@ƒCƒ‹‚ğŒŸõ‚µ‚Ä•”ñ‡¬•ÏŠ·
+" éƒ¨é¦–ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¤œç´¢ã—ã¦éƒ¨é¦–åˆæˆå¤‰æ›
 function! s:BushuHelpSearch(char1, char2)
   if !s:BushuHelp_FileOpen()
     return ''
   endif
-  " —á: "™BƒCê* “`E" (*‚ªŒã’u‚³‚ê‚Ä‚¢‚ê‚Î‹t‡‚Å‚àOK)
+  " ä¾‹: "å‚³ã‚¤å°‚* ä¼ãƒ»" (*ãŒå¾Œç½®ã•ã‚Œã¦ã„ã‚Œã°é€†é †ã§ã‚‚OK)
   let e1 = escape(a:char1, '\')
   let e2 = escape(a:char2, '\')
   if search('\%(^.\| \)\%(\V' . e1 . e2 . '*\?\|' . e2 . e1 . '*\)\%( \|\$\)', 'cw') != 0
@@ -1694,7 +1694,7 @@ function! s:BushuHelpSearch(char1, char2)
   return retchar
 endfunction
 
-" “™‰¿•¶š‚ğŒŸõ‚µ‚Ä•Ô‚·B“™‰¿•¶š‚ª‚È‚¢ê‡‚Í‚à‚Æ‚Ì•¶š‚»‚Ì‚à‚Ì‚ğ•Ô‚·
+" ç­‰ä¾¡æ–‡å­—ã‚’æ¤œç´¢ã—ã¦è¿”ã™ã€‚ç­‰ä¾¡æ–‡å­—ãŒãªã„å ´åˆã¯ã‚‚ã¨ã®æ–‡å­—ãã®ã‚‚ã®ã‚’è¿”ã™
 function! s:BushuAlternative(ch)
   if !s:Bushu_FileOpen()
     return a:ch
@@ -1708,8 +1708,8 @@ function! s:BushuAlternative(ch)
   return retchar
 endfunction
 
-" char1‚Æchar2‚ğ‚±‚Ì‡”Ô‚Å‡¬‚µ‚Ä‚Å‚«‚é•¶š‚ğŒŸõ‚µ‚Ä•Ô‚·B
-" Œ©‚Â‚©‚ç‚È‚¢ê‡‚Í''‚ğ•Ô‚·
+" char1ã¨char2ã‚’ã“ã®é †ç•ªã§åˆæˆã—ã¦ã§ãã‚‹æ–‡å­—ã‚’æ¤œç´¢ã—ã¦è¿”ã™ã€‚
+" è¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯''ã‚’è¿”ã™
 function! s:BushuSearchCompose(char1, char2)
   if !s:Bushu_FileOpen()
     return ''
@@ -1723,9 +1723,9 @@ function! s:BushuSearchCompose(char1, char2)
   return retchar
 endfunction
 
-" w’è‚³‚ê‚½•¶š‚ğ2‚Â‚Ì•”ñ‚É•ª‰ğ‚·‚éB
-" •ª‰ğ‚µ‚½•”ñ‚ğs:decomp1, s:decomp2‚ÉƒZƒbƒg‚·‚éB
-" @return 1: •ª‰ğ‚É¬Œ÷‚µ‚½ê‡A0: •ª‰ğ‚Å‚«‚È‚©‚Á‚½ê‡
+" æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ã‚’2ã¤ã®éƒ¨é¦–ã«åˆ†è§£ã™ã‚‹ã€‚
+" åˆ†è§£ã—ãŸéƒ¨é¦–ã‚’s:decomp1, s:decomp2ã«ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
+" @return 1: åˆ†è§£ã«æˆåŠŸã—ãŸå ´åˆã€0: åˆ†è§£ã§ããªã‹ã£ãŸå ´åˆ
 function! s:BushuDecompose(ch)
   if !s:Bushu_FileOpen()
     return 0
@@ -1742,11 +1742,11 @@ function! s:BushuDecompose(ch)
   return ret
 endfunction
 
-" ‡¬Œã‚Ì•¶š‚ª‹ó‚Å‚È‚­AŒ³‚Ì•¶š‚Å‚à‚È‚¢‚±‚Æ‚ğŠm”F
-" @param ch ‡¬Œã‚Ì•¶š
-" @param char1 Œ³‚Ì•¶š
-" @param char2 Œ³‚Ì•¶š
-" @return 1: ch‚ª‹ó‚Å‚àchar1‚Å‚àchar2‚Å‚à‚È‚¢ê‡B0: ‚»‚êˆÈŠO‚Ìê‡
+" åˆæˆå¾Œã®æ–‡å­—ãŒç©ºã§ãªãã€å…ƒã®æ–‡å­—ã§ã‚‚ãªã„ã“ã¨ã‚’ç¢ºèª
+" @param ch åˆæˆå¾Œã®æ–‡å­—
+" @param char1 å…ƒã®æ–‡å­—
+" @param char2 å…ƒã®æ–‡å­—
+" @return 1: chãŒç©ºã§ã‚‚char1ã§ã‚‚char2ã§ã‚‚ãªã„å ´åˆã€‚0: ãã‚Œä»¥å¤–ã®å ´åˆ
 function! s:BushuCharOK(ch, char1, char2)
   if strlen(a:ch) > 0 && a:ch !=# a:char1 && a:ch !=# a:char2
     return 1
@@ -1755,19 +1755,19 @@ function! s:BushuCharOK(ch, char1, char2)
   endif
 endfunction
 
-" •”ñ‡¬•ÏŠ·«‘‚ğŒŸõ
+" éƒ¨é¦–åˆæˆå¤‰æ›è¾æ›¸ã‚’æ¤œç´¢
 function! s:BushuSearch(char1, char2)
   let char1 = a:char1
   let char2 = a:char2
   let i = 0
   while i < 2
-    " ‚»‚Ì‚Ü‚Ü‡¬‚Å‚«‚é?
+    " ãã®ã¾ã¾åˆæˆã§ãã‚‹?
     let retchar = s:BushuSearchCompose(char1, char2)
     if s:BushuCharOK(retchar, char1, char2)
       return retchar
     endif
 
-    " “™‰¿•¶š‚Ç‚¤‚µ‚Å‡¬‚Å‚«‚é?
+    " ç­‰ä¾¡æ–‡å­—ã©ã†ã—ã§åˆæˆã§ãã‚‹?
     if !exists("ch1alt")
       let ch1alt = s:BushuAlternative(char1)
     endif
@@ -1779,7 +1779,7 @@ function! s:BushuSearch(char1, char2)
       return retchar
     endif
 
-    " “™‰¿•¶š‚ğ•”ñ‚É•ª‰ğ
+    " ç­‰ä¾¡æ–‡å­—ã‚’éƒ¨é¦–ã«åˆ†è§£
     if !exists("ch1a1")
       if s:BushuDecompose(ch1alt) == 1
 	let ch1a1 = s:decomp1
@@ -1810,7 +1810,7 @@ function! s:BushuSearch(char1, char2)
     let lench1alt = strlen(ch1alt)
     let lench2alt = strlen(ch2alt)
 
-    " ˆø‚«Z
+    " å¼•ãç®—
     if lench1a1 > 0 && lench1a2 > 0 && ch1a2 ==# ch2alt
       let retchar = ch1a1
       if s:BushuCharOK(retchar, char1, char2)
@@ -1824,7 +1824,7 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
-    " ˆê•û‚ª•”•i‚É‚æ‚é‘«‚µZ
+    " ä¸€æ–¹ãŒéƒ¨å“ã«ã‚ˆã‚‹è¶³ã—ç®—
     if lench1alt > 0 && lench2a1 > 0
       let retchar = s:BushuSearchCompose(ch1alt, ch2a1)
       if s:BushuCharOK(retchar, char1, char2)
@@ -1850,7 +1850,7 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
-    " —¼•û‚ª•”•i‚É‚æ‚é‘«‚µZ
+    " ä¸¡æ–¹ãŒéƒ¨å“ã«ã‚ˆã‚‹è¶³ã—ç®—
     if lench1a1 > 0 && lench2a1 > 0
       let retchar = s:BushuSearchCompose(ch1a1, ch2a1)
       if s:BushuCharOK(retchar, char1, char2)
@@ -1876,7 +1876,7 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
-    " •”•i‚É‚æ‚éˆø‚«Z
+    " éƒ¨å“ã«ã‚ˆã‚‹å¼•ãç®—
     if lench1a2 > 0 && lench2a1 > 0 && ch1a2 ==# ch2a1
       let retchar = ch1a1
       if s:BushuCharOK(retchar, char1, char2)
@@ -1902,7 +1902,7 @@ function! s:BushuSearch(char1, char2)
       endif
     endif
 
-    " •¶š‚Ì‡‚ğ‹t‚É‚µ‚Ä‚â‚Á‚Ä‚İ‚é
+    " æ–‡å­—ã®é †ã‚’é€†ã«ã—ã¦ã‚„ã£ã¦ã¿ã‚‹
     let t = char1  | let char1  = char2  | let char2 = t
     let t = ch1alt | let ch1alt = ch2alt | let ch2alt = t
     let t = ch1a1  | let ch1a1  = ch2a1  | let ch2a1 = t
@@ -1910,17 +1910,17 @@ function! s:BushuSearch(char1, char2)
     let i = i + 1
   endwhile
 
-  " ‡¬‚Å‚«‚È‚©‚Á‚½
+  " åˆæˆã§ããªã‹ã£ãŸ
   return ''
 endfunction
 
 "==============================================================================
-"				  Š¿šƒe[ƒuƒ‹
+"				  æ¼¢å­—ãƒ†ãƒ¼ãƒ–ãƒ«
 
-" Š¿šƒe[ƒuƒ‹ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+" æ¼¢å­—ãƒ†ãƒ¼ãƒ–ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 function! tcvime#KanjiTable_FileOpen()
   if filereadable(s:kanjitable_file) != 1
-    echo 'Š¿šƒe[ƒuƒ‹ƒtƒ@ƒCƒ‹‚ª“Ç‚ß‚Ü‚¹‚ñ: <' . s:kanjitable_file . '>'
+    echo 'æ¼¢å­—ãƒ†ãƒ¼ãƒ–ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ãŒèª­ã‚ã¾ã›ã‚“: <' . s:kanjitable_file . '>'
     return
   endif
   if s:SelectWindowByName(s:kanjitable_file) < 0
@@ -1930,16 +1930,16 @@ function! tcvime#KanjiTable_FileOpen()
   nnoremap <buffer> <silent> q :<C-U>quit<CR>
 endfunction
 
-" Š¿šƒe[ƒuƒ‹ƒoƒbƒtƒ@‚©‚ç’¼‹ß‚Ìƒoƒbƒtƒ@‚ÉŠ¿š‚ğƒRƒs[‚·‚é
+" æ¼¢å­—ãƒ†ãƒ¼ãƒ–ãƒ«ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰ç›´è¿‘ã®ãƒãƒƒãƒ•ã‚¡ã«æ¼¢å­—ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
 function! s:KanjiTable_CopyChar()
   let ch = matchstr(getline('.'), '\%' . col('.') . 'c.')
   execute "normal! \<C-W>pa" . ch . "\<ESC>\<C-W>p"
 endfunction
 
 "==============================================================================
-" Œó•â‘I‘ğƒoƒbƒtƒ@
+" å€™è£œé¸æŠãƒãƒƒãƒ•ã‚¡
 
-" Œó•â‘I‘ğƒoƒbƒtƒ@‚ğŠJ‚­
+" å€™è£œé¸æŠãƒãƒƒãƒ•ã‚¡ã‚’é–‹ã
 function! s:Candwin_Open()
   if s:SelectWindowByName(s:candbufname) < 0
     execute "silent normal! :sp " . s:candbufname . "\<CR>"
@@ -1956,18 +1956,18 @@ function! s:Candwin_Open()
   nnoremap <buffer> <silent> <C-E> :<C-U>quit<CR>
 endfunction
 
-" Œó•â‘I‘ğƒoƒbƒtƒ@‚ğ•Â‚¶‚é
+" å€™è£œé¸æŠãƒãƒƒãƒ•ã‚¡ã‚’é–‰ã˜ã‚‹
 function! s:Candwin_Close()
   if s:SelectWindowByName(s:candbufname) > 0
     bwipeout!
   endif
 endfunction
 
-" Œó•â‚ğƒZƒbƒg‚·‚é
+" å€™è£œã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 function! s:Candwin_SetCands(candlist)
   call s:Candwin_Open()
 
-  " Œó•â‘I‘ğ—pƒL[‚Ìƒ‰ƒxƒ‹‚ğ’Ç‰Á
+  " å€™è£œé¸æŠç”¨ã‚­ãƒ¼ã®ãƒ©ãƒ™ãƒ«ã‚’è¿½åŠ 
   let lenlist = map(copy(a:candlist), 'strlen(v:val)')
   let maxlen = max(lenlist)
   let items = []
@@ -1989,14 +1989,14 @@ function! s:Candwin_SetCands(candlist)
   wincmd p
 endfunction
 
-" Œ»İs‚ÌŒó•â‚ğŠm’è‚·‚é
+" ç¾åœ¨è¡Œã®å€™è£œã‚’ç¢ºå®šã™ã‚‹
 function! s:Candwin_Select()
   let s:last_candidate = s:last_candidate_list[line('.') - 1]
   bwipeout!
   call s:FixCandidate()
 endfunction
 
-" w’èindex‚ÌŒó•â‚ğŠm’è‚·‚é
+" æŒ‡å®šindexã®å€™è£œã‚’ç¢ºå®šã™ã‚‹
 function! s:Candwin_SelectIndex(index)
   call cursor(a:index + 1, 1)
   call s:Candwin_Select()
