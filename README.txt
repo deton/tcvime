@@ -1,6 +1,6 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
-							     Version: 1.3.2
-							     Date: 2013-06-15
+							     Version: 1.4.0
+							     Date: 2013-10-12
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -14,9 +14,7 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
 必要条件
   Vim 7以降。
   日本語の表示ができることと、tcode/tutcode keymapでの入力ができること。
-  tcode/tutcodeのkeymapファイルは、香り屋版Vim
-  http://www.kaoriya.net/software/vim に含まれています。
-  なお、tutcode keymapはこのtcvimeのアーカイブにも含まれています。
+  tcode/tutcodeのkeymapファイルは、このtcvimeのアーカイブに含まれています。
 
 準備
   アーカイブに含まれるファイルを次の場所に置いてください。
@@ -24,11 +22,12 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
     ファイル            置く場所              ファイルの説明
   plugin/tcvime.vim   'runtimepath'/plugin/ プラグインスクリプト本体
   autoload/tcvime.vim 'runtimepath'/autoload/ プラグインから呼び出す関数
-  doc/tcvime.txt      'runtimepath'/doc/    スクリプトの説明書
+  doc/tcvime.jax      'runtimepath'/doc/    スクリプトの説明書
   mazegaki.dic        'runtimepath'         交ぜ書き変換用辞書
   bushu.help          'runtimepath'         ユーザ用部首合成辞書
   bushu.rev           'runtimepath'         部首合成変換用辞書
   kanjitable.txt      'runtimepath'         漢字テーブルファイル
+  keymap/tcode.vim    'runtimepath'/keymap/ T-Codeのkeymap
   keymap/tutcodep.vim 'runtimepath'/keymap/ tutcodeに新常用漢字対応等63文字追加
   keymap/tutcodek.vim 'runtimepath'/keymap/ 'でひらがな/カタカナモード切り替え
 					    ができるようにしたtutcodeのkeymap。
@@ -38,13 +37,13 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
   :echo &runtimepath を実行することで確認できます。
   (UNIXでは$HOME/.vim/、Windowsでは$HOME/vimfiles/)
 
-  辞書ファイルや.txtファイルの漢字コードはShift_JISです。
-  EUC-JPやUTF-8環境で、各ファイルをvimでそのまま開いても正しく読めない場合は、
+  辞書ファイルや.txtファイルの漢字コードはUTF-8です。
+  EUC-JPやCP932環境で、各ファイルをvimでそのまま開いても正しく読めない場合は、
   環境に合わせて漢字コードを変換しておいてください。
   (でないと各ファイルを使う部首合成変換や交ぜ書き変換が動作しません)
 
 使い方
-  tcvime.txtを参照してください。
+  tcvime.jaxを参照してください。
 
 謝辞
   - 村岡さんのvime.vimをベースにさせていただいています。
@@ -57,6 +56,13 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
     含まれているものです。
 
 更新履歴
+  - 1.4.0 (2013-10-12)
+   - スクリプトファイルや辞書ファイルの文字コードをUTF-8に変更。
+   - 交ぜ書き変換候補選択バッファを開いたまま、
+     再度交ぜ書き変換した際のエラーを修正。
+   - Macの端末内Vimで__TcvimeHelp__が生成され続ける問題を修正(issue#3)
+   - keymap/tcode.vimを追加。
+
   - 1.3.2 (2013-06-15)
    - 交ぜ書き変換辞書編集中の、交ぜ書き変換のバグを修正
    - 交ぜ書き変換で候補が無い場合の辞書編集に関するバグや動作修整
