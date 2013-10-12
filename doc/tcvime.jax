@@ -1,4 +1,4 @@
-*tcvime.txt*   mazegaki/bushu conversion for tcode/tutcode keymaps.
+*tcvime.jax*   漢字直接入力の補助機能プラグイン
 
 			  tcvime説明書
 
@@ -743,3 +743,4 @@ endfunction
   <BS>で元の文字を消しているためです。
 
 ==============================================================================
+ vim:set ft=help:
