@@ -606,15 +606,15 @@ bushu.helpの例:
 if has('keymap')
   let tcvime_keymap_for_help = 'tutcodep'
   set iminsert=0 imsearch=0
-  imap <C-J> <C-R>=<SID>EnableKeymap()<CR>
-  imap <silent> <C-L> <C-R>=<SID>DisableKeymap()<CR>
-  imap <silent> <ESC> <ESC>:set imsearch=0<CR>
-  nmap <silent> <C-K>k <Plug>TcvimeNKatakana
-  nmap <silent> <C-K><Space> <Plug>TcvimeNConvert
-  vmap <silent> <C-K>k <Plug>TcvimeVKatakana
-  vmap <silent> <C-K>; <Plug>TcvimeVKanji2Seq
-  vmap <silent> <C-K>z <Plug>TcvimeVSeq2Kanji
-  vmap <silent> <C-K>, <Plug>TcvimeVShiftSeq
+  imap <unique> <C-J> <C-R>=<SID>EnableKeymap()<CR>
+  imap <silent> <unique> <C-L> <C-R>=<SID>DisableKeymap()<CR>
+  imap <silent> <unique> <ESC> <ESC>:set imsearch=0<CR>
+  nmap <silent> <unique> <C-K>k <Plug>TcvimeNKatakana
+  nmap <silent> <unique> <C-K><Space> <Plug>TcvimeNConvert
+  vmap <silent> <unique> <C-K>k <Plug>TcvimeVKatakana
+  vmap <silent> <unique> <C-K>; <Plug>TcvimeVKanji2Seq
+  vmap <silent> <unique> <C-K>z <Plug>TcvimeVSeq2Kanji
+  vmap <silent> <unique> <C-K>, <Plug>TcvimeVShiftSeq
 endif
 
 function! s:EnableKeymap()
