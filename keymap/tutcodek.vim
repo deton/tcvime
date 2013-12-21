@@ -1,6 +1,6 @@
 " Vim Keymap file for Japanese (TUT-Code with katakana mode toggle)
 " Maintainer: KIHARA, Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-10-12.
+" Last Change: 2013-12-21.
 
 scriptencoding utf-8
  
@@ -130,6 +130,40 @@ qlk	<C-R>=<SID>InsertKana("ゃ","ャ")<CR>
 qlu	<C-R>=<SID>InsertKana("ゅ","ュ")<CR>
 qlj	<C-R>=<SID>InsertKana("ょ","ョ")<CR>
 alk	<C-R>=<SID>InsertKana("ゎ","ヮ")<CR>
+q<Space>	“
+w<Space>	〒
+e<Space>	ー
+e<S-Space>	ー
+E<Space>	ー
+E<S-Space>	ー
+r<Space>	【
+t<Space>	「
+y<Space>	」
+u<Space>	】
+i<Space>	…
+o<Space>	・
+O<Space>	・
+p<Space>	”
+a<Space>	‘
+s<Space>	☆
+d<Space>	、
+f<Space>	。
+g<Space>	『
+h<Space>	』
+j<Space>	々
+k<Space>	※
+l<Space>	＼
+;<Space>	’
+z<Space>	〆
+x<Space>	§
+c<Space>	○
+v<Space>	÷
+b<Space>	←
+n<Space>	→
+m<Space>	×
+,<Space>	《
+.<Space>	》
+/<Space>	／
 Rk	ア
 Ri	イ
 Ru	ウ
@@ -302,40 +336,6 @@ QLK	ャ
 QLU	ュ
 QLJ	ョ
 ALK	ヮ
-q<Space>	“
-w<Space>	〒
-e<Space>	ー
-e<S-Space>	ー
-E<Space>	ー
-E<S-Space>	ー
-r<Space>	【
-t<Space>	「
-y<Space>	」
-u<Space>	】
-i<Space>	…
-o<Space>	・
-O<Space>	・
-p<Space>	”
-a<Space>	‘
-s<Space>	☆
-d<Space>	、
-f<Space>	。
-g<Space>	『
-h<Space>	』
-j<Space>	々
-k<Space>	※
-l<Space>	＼
-;<Space>	’
-z<Space>	〆
-x<Space>	§
-c<Space>	○
-v<Space>	÷
-b<Space>	←
-n<Space>	→
-m<Space>	×
-,<Space>	《
-.<Space>	》
-/<Space>	／
 ,,	個
 ,.	視
 ,/	練

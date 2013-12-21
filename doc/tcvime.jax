@@ -395,8 +395,8 @@ g:tcvime#selectkeys				*'g:tcvime#selectkeys'*
 
 '<Plug>TcvimeIKatuyo'				*'<Plug>TcvimeIKatuyo'*
    交ぜ書き変換: 活用する語の変換実行キー。省略値: <Leader>o
-   例(aloを指定する場合):
-     lmap <silent> alo <Plug>TcvimeIKatuyo
+   例(aliを指定する場合):
+     lmap <silent> ali <Plug>TcvimeIKatuyo
 
 '<Plug>TcvimeIShrink'				*'<Plug>TcvimeIShrink'*
    交ぜ書き変換: 直前の後置型交ぜ書き変換を縮めるキー。省略値: (無し: 未割当て)
@@ -651,7 +651,7 @@ function! TcvimeCustomKeymap()
   " 前置型交ぜ書き変換
   lmap <silent> al<Space> <C-G>u<Plug>TcvimeIConvOrStart
   " 前置型交ぜ書き変換(活用する語として変換)
-  lmap <silent> alo <C-G>u<Plug>TcvimeIKatuyo
+  lmap <silent> ali <C-G>u<Plug>TcvimeIKatuyo
   " 直前のカタカナ変換・交ぜ書き変換・部首合成変換の取り消し
   lmap <silent> alu <C-G>u<C-R>=tcvime#InputConvertUndo()<CR>
   " 直前の交ぜ書き変換を縮める
