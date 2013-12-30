@@ -1,6 +1,6 @@
 " Vim Keymap file for Japanese (TUT plus code)
 " Maintainer: KIHARA, Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-12-14
+" Last Change: 2013-12-30
 
 scriptencoding utf-8
 
@@ -48,6 +48,16 @@ m<Space>	×
 ,<Space>	《
 .<Space>	》
 /<Space>	／
+tld	ぱ
+tle	ぴ
+tlr	ぷ
+tlg	ぺ
+tlf	ぽ
+dlr	づ
+alu	ヴ
+alr	ヴ
+eld	ヵ
+elg	ヶ
 rl.	ふぁ
 rl,	ふぃ
 rll	ふゅ
