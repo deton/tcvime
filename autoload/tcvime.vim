@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-10-11
+" Last Change: 2013-12-22
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -385,7 +385,6 @@ endfunction
 
 " 設定
 let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
-let s:bushu_file = globpath($VIM.','.&runtimepath, 'bushu.rev')
 let s:bushuhelp_file = globpath($VIM.','.&runtimepath, 'bushu.help')
 let s:kanjitable_file = globpath($VIM.','.&runtimepath, 'kanjitable.txt')
 let s:helpbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeHelp__'
@@ -1393,18 +1392,15 @@ endfunction
 " 部首合成辞書から、指定された文字を含む行を検索する
 function! s:SearchBushuDic(ch)
   let lines = []
-  if !s:Bushu_FileOpen()
-    return lines
-  endif
-  silent! normal! G$
-  let pat = '\V' . escape(a:ch, '\')
-  if search(pat, 'w') != 0
-    call add(lines, getline('.'))
-    while search(pat, 'W') != 0
-      call add(lines, getline('.'))
-    endwhile
-  endif
-  quit!
+  let pat = 'v:key =~ "' . a:ch . '" || v:val =~ "' . a:ch . '"'
+  let alts = filter(copy(g:tcvime#bushudic#altchar), pat)
+  for [key, value] in items(alts)
+    call add(lines, value . key)
+  endfor
+  let dict = filter(copy(g:tcvime#bushudic#bushudic), pat)
+  for [key, value] in items(dict)
+    call add(lines, value . key)
+  endfor
   return lines
 endfunction
 
@@ -1656,18 +1652,6 @@ function! s:BushuHelp_FileOpen()
   return 1
 endfunction
 
-" 部首合成辞書データファイルをオープン
-function! s:Bushu_FileOpen()
-  if filereadable(s:bushu_file) != 1
-    return 0
-  endif
-  if s:SelectWindowByName(s:bushu_file) < 0
-    silent execute 'sv '.s:bushu_file
-    set nobuflisted
-  endif
-  return 1
-endfunction
-
 " 部首合成変換
 function! s:BushuConvert(char1, char2)
   let retchar = s:BushuHelpSearch(a:char1, a:char2)
@@ -1696,50 +1680,29 @@ endfunction
 
 " 等価文字を検索して返す。等価文字がない場合はもとの文字そのものを返す
 function! s:BushuAlternative(ch)
-  if !s:Bushu_FileOpen()
-    return a:ch
-  endif
-  if search('^.\V' . escape(a:ch, '\') . '\$', 'w') != 0
-    let retchar = matchstr(getline('.'), '^.')
-  else
-    let retchar = a:ch
-  endif
-  quit!
-  return retchar
+  return get(g:tcvime#bushudic#altchar, a:ch, a:ch)
 endfunction
 
 " char1とchar2をこの順番で合成してできる文字を検索して返す。
 " 見つからない場合は''を返す
 function! s:BushuSearchCompose(char1, char2)
-  if !s:Bushu_FileOpen()
-    return ''
-  endif
-  if search('^.\V' . escape(a:char1 . a:char2, '\'), 'w') != 0
-    let retchar = matchstr(getline('.'), '^.')
-  else
-    let retchar = ''
-  endif
-  quit!
-  return retchar
+  return get(g:tcvime#bushudic#bushudic, a:char1 . a:char2, '')
 endfunction
 
 " 指定された文字を2つの部首に分解する。
-" 分解した部首をs:decomp1, s:decomp2にセットする。
-" @return 1: 分解に成功した場合、0: 分解できなかった場合
+" 分解した部首をListで返す。分解できなかった場合は、['', '']を返す。
 function! s:BushuDecompose(ch)
-  if !s:Bushu_FileOpen()
-    return 0
+  if !exists('s:revbushudic')
+    let s:revbushudic = {}
+    for [key, value] in items(g:tcvime#bushudic#bushudic)
+      let s:revbushudic[value] = key
+    endfor
   endif
-  if search('^\V' . escape(a:ch, '\') . '\.\.', 'w') != 0
-    let chars = matchstr(getline('.'), '^...')
-    let s:decomp1 = substitute(chars, '^.\(.\).', '\1', '')
-    let s:decomp2 = matchstr(chars, '.$')
-    let ret = 1
-  else
-    let ret = 0
+  let chars = get(s:revbushudic, a:ch, '')
+  if chars == ''
+    return ['', '']
   endif
-  quit!
-  return ret
+  return split(chars, '\zs')
 endfunction
 
 " 合成後の文字が空でなく、元の文字でもないことを確認
@@ -1781,26 +1744,10 @@ function! s:BushuSearch(char1, char2)
 
     " 等価文字を部首に分解
     if !exists("ch1a1")
-      if s:BushuDecompose(ch1alt) == 1
-	let ch1a1 = s:decomp1
-	let ch1a2 = s:decomp2
-	unlet s:decomp1
-	unlet s:decomp2
-      else
-	let ch1a1 = ''
-	let ch1a2 = ''
-      endif
+      let [ch1a1, ch1a2] = s:BushuDecompose(ch1alt)
     endif
     if !exists("ch2a1")
-      if s:BushuDecompose(ch2alt) == 1
-	let ch2a1 = s:decomp1
-	let ch2a2 = s:decomp2
-	unlet s:decomp1
-	unlet s:decomp2
-      else
-	let ch2a1 = ''
-	let ch2a2 = ''
-      endif
+      let [ch2a1, ch2a2] = s:BushuDecompose(ch2alt)
     endif
 
     let lench1a1 = strlen(ch1a1)

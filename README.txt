@@ -1,6 +1,6 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
-							     Version: 1.4.0
-							     Date: 2013-10-12
+							     Version: 1.4.1
+							     Date: 2013-12-XXX
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -22,10 +22,10 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
     ファイル            置く場所              ファイルの説明
   plugin/tcvime.vim   'runtimepath'/plugin/ プラグインスクリプト本体
   autoload/tcvime.vim 'runtimepath'/autoload/ プラグインから呼び出す関数
+  autoload/tcvime/bushudic.vim 'runtimepath'/autoload/tcvime/ 部首合成変換用辞書
   doc/tcvime.jax      'runtimepath'/doc/    スクリプトの説明書
   mazegaki.dic        'runtimepath'         交ぜ書き変換用辞書
   bushu.help          'runtimepath'         ユーザ用部首合成辞書
-  bushu.rev           'runtimepath'         部首合成変換用辞書
   kanjitable.txt      'runtimepath'         漢字テーブルファイル
   keymap/tcode.vim    'runtimepath'/keymap/ T-Codeのkeymap
   keymap/tutcodep.vim 'runtimepath'/keymap/ tutcodeに新常用漢字対応等63文字追加
@@ -52,10 +52,14 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
   - tservの部首合成アルゴリズムを使っています。
     もともとはEmacs用のTコード入力環境tcで使われていたアルゴリズムのようです。
 
-  - mazegaki.dic, bushu.revはEmacs用のTコード入力環境tc2(tc-2.3.1)に
-    含まれているものです。
+  - mazegaki.dicはEmacs用のTコード入力環境tc2(tc-2.3.1)に含まれているものです。
+    bushudic.vimは、tc2に含まれるbushu.revから作ったものです。
 
 更新履歴
+  - 1.4.1 (2013-12-XXX)
+   - 部首合成変換高速化のため、bushu.revをautoload/tcvime/bushudic.vimに変更。
+   - keymap/tutcodep.vimに、Touch16+やTUT98.COMの拗音等の短縮ストロークを追加。
+
   - 1.4.0 (2013-10-12)
    - スクリプトファイルや辞書ファイルの文字コードをUTF-8に変更。
    - 交ぜ書き変換候補選択バッファを開いたまま、
