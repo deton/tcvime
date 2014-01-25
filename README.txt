@@ -1,6 +1,6 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
 							     Version: 1.4.1
-							     Date: 2013-12-XXX
+							     Date: 2014-01-XXX
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -59,6 +59,12 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
   - 1.4.1 (2013-12-XXX)
    - 部首合成変換高速化のため、bushu.revをautoload/tcvime/bushudic.vimに変更。
    - keymap/tutcodep.vimに、Touch16+やTUT98.COMの拗音等の短縮ストロークを追加。
+   - キーマッピングの登録・解除を行う:TcvimeOnと:TcvimeOffコマンドを削除し、
+     デフォルトでキーマッピングが登録されるように変更。
+     デフォルトのキーマッピングを使わず、自分で他のキーにmapしたい場合用に、
+     'tcvime_no_default_key_mappings'オプションを追加。
+     (従来、plugin/tcvime.vimで:TcvimeOnしておりautoload/tcvime.vimが常に読み
+     込まれて、必要な時のみ読み込むようにautoload化した意味がなかったので)
 
   - 1.4.0 (2013-10-12)
    - スクリプトファイルや辞書ファイルの文字コードをUTF-8に変更。

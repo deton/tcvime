@@ -347,7 +347,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
   lmapのカスタマイズ用の関数。tcvime#SetKeymap()からコールバックされる。
   設定例は|tcvime-setting|参照。
 
-g:tcvime#selectkeys				*'g:tcvime#selectkeys'*
+'g:tcvime#selectkeys'				*'g:tcvime#selectkeys'*
   交ぜ書き変換候補選択用キーのList。
   候補を選ぶ際に、CTRL-Nを何回か押した後CTRL-Yで確定するかわりに、
   このList内のキーを押すだけで候補を確定できるようになります。
@@ -356,6 +356,11 @@ g:tcvime#selectkeys				*'g:tcvime#selectkeys'*
     let g:tcvime#selectkeys = ['1','2','3','4','5','6','7','8','9','0']
   注: Insert modeでの候補選択の場合、
       このキーで始まるlmapやimapがある場合は、|'timeoutlen'|待ちが発生。
+
+'tcvime_no_default_key_mappings'        *'tcvime_no_default_key_mappings'*
+  デフォルトのキーマッピング(<Leader>q等)を登録したくない場合
+  (自分で他のキーにmapしたい場合)は1に設定してください。
+    let tcvime_no_default_key_mappings = 1
 
 'mapleader'
   キーマッピングのプレフィックス。|mapleader|を参照。省略値: CTRL-K
@@ -496,12 +501,6 @@ g:tcvime#selectkeys				*'g:tcvime#selectkeys'*
 
 ==============================================================================
 4. コマンド					*tcvime-command*
-
-:TcvimeOn					*:TcvimeOn*
-  キーマッピングを有効化する
-
-:TcvimeOff					*:TcvimeOff*
-  キーマッピングを無効化する
 
 :TcvimeHelp {str}				*:TcvimeHelp*
   指定した文字列内の各文字のヘルプ表を表示する

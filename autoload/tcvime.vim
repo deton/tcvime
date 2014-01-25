@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2013-12-22
+" Last Change: 2014-01-25
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -404,125 +404,11 @@ function! tcvime#SetKeymap(keymapname)
   endif
 endfunction
 
-"   マッピングを有効化
-function! tcvime#MappingOn()
-  let set_mapleader = 0
-  if !exists('g:mapleader')
-    let g:mapleader = "\<C-K>"
-    let set_mapleader = 1
-  endif
-  let s:mapleader = g:mapleader
-
-  if !hasmapto('<Plug>TcvimeIStart')
-    silent! imap <unique> <silent> <Leader>q <Plug>TcvimeIStart
-  endif
-  if !hasmapto('<Plug>TcvimeIConvOrStart')
-    silent! imap <unique> <silent> <Leader><Space> <Plug>TcvimeIConvOrStart
-  endif
-  if !hasmapto('<Plug>TcvimeIKatuyo')
-    silent! imap <unique> <silent> <Leader>o <Plug>TcvimeIKatuyo
-  endif
-  if !hasmapto('<Plug>TcvimeIBushu')
-    silent! imap <unique> <silent> <Leader>b <Plug>TcvimeIBushu
-  endif
-  if !hasmapto('<Plug>TcvimeNConvert')
-    silent! nmap <unique> <silent> <Leader><Space> <Plug>TcvimeNConvert
-  endif
-  if !hasmapto('<Plug>TcvimeNKatuyo')
-    silent! nmap <unique> <silent> <Leader>o <Plug>TcvimeNKatuyo
-  endif
-  if !hasmapto('<Plug>TcvimeNBushu')
-    silent! nmap <unique> <silent> <Leader>b <Plug>TcvimeNBushu
-  endif
-  if !hasmapto('<Plug>TcvimeNHelp')
-    silent! nmap <unique> <silent> <Leader>? <Plug>TcvimeNHelp
-  endif
-  if !hasmapto('<Plug>TcvimeNKanjiTable')
-    silent! nmap <unique> <silent> <Leader>t <Plug>TcvimeNKanjiTable
-  endif
-  if !hasmapto('<Plug>TcvimeVHelp')
-    silent! vmap <unique> <silent> <Leader>? <Plug>TcvimeVHelp
-  endif
-  if !hasmapto('<Plug>TcvimeVConvert')
-    silent! vmap <unique> <silent> <Leader><Space> <Plug>TcvimeVConvert
-  endif
-  if !hasmapto('<Plug>TcvimeVKatuyo')
-    silent! vmap <unique> <silent> <Leader>o <Plug>TcvimeVKatuyo
-  endif
-
-  inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=<SID>InputStart()<CR>
-  inoremap <script> <silent> <Plug>TcvimeIConvOrStart <C-R>=<SID>InputConvertOrStart(0)<CR>
-  inoremap <script> <silent> <Plug>TcvimeIConvOrSpace <C-R>=<SID>InputConvertOrSpace()<CR>
-  inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=<SID>InputConvertOrStart(1)<CR>
-  inoremap <script> <silent> <Plug>TcvimeIBushu <C-R>=<SID>InputConvertBushu(col('.'))<CR>
-  inoremap <script> <silent> <Plug>TcvimeIShrink <C-R>=tcvime#InputConvertUndo()<CR><C-R>=<SID>InputConvertShrinkLatest()<CR>
-  nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call <SID>ConvertCount(v:count, 0)<CR>
-  nnoremap <script> <silent> <Plug>TcvimeNKatuyo :<C-U>call <SID>ConvertCount(v:count, 1)<CR>
-  nnoremap <script> <silent> <Plug>TcvimeNKatakana :<C-U>call <SID>ConvertKatakana(v:count)<CR>
-  nnoremap <script> <silent> <Plug>TcvimeNKataHira :<C-U>call <SID>ConvertKatakana(-v:count)<CR>
-  nnoremap <script> <silent> <Plug>TcvimeNBushu :<C-U>call <SID>ConvertBushu()<CR>
-  nnoremap <script> <silent> <Plug>TcvimeNHelp :<C-U>call <SID>ShowStrokeHelp()<CR>
-  nnoremap <script> <silent> <Plug>TcvimeNKanjiTable :<C-U>call tcvime#KanjiTable_FileOpen()<CR>
-  nnoremap <script> <silent> <Plug>TcvimeNOpConvert :set opfunc=tcvime#ConvertOp<CR>g@
-  nnoremap <script> <silent> <Plug>TcvimeNOpKatuyo :set opfunc=tcvime#ConvertOpKatuyo<CR>g@
-  nnoremap <script> <silent> <Plug>TcvimeNOpKatakana :set opfunc=tcvime#ConvertOpKatakana<CR>g@
-  vnoremap <script> <silent> <Plug>TcvimeVHelp :<C-U>call <SID>ShowHelpVisual()<CR>
-  vnoremap <script> <silent> <Plug>TcvimeVConvert :<C-U>call tcvime#ConvertOp(visualmode(), 1)<CR>
-  vnoremap <script> <silent> <Plug>TcvimeVKatuyo :<C-U>call tcvime#ConvertOpKatuyo(visualmode(), 1)<CR>
-  vnoremap <script> <silent> <Plug>TcvimeVKatakana :<C-U>call tcvime#ConvertOpKatakana(visualmode(), 1)<CR>
-  vnoremap <script> <silent> <Plug>TcvimeVKanji2Seq :<C-U>call tcvime#ConvertOpKanji2Seq(visualmode(), 1)<CR>
-  vnoremap <script> <silent> <Plug>TcvimeVSeq2Kanji :<C-U>call tcvime#ConvertOpSeq2Kanji(visualmode(), 1)<CR>
-  vnoremap <script> <silent> <Plug>TcvimeVShiftSeq :<C-U>call tcvime#ConvertOpShiftSeq(visualmode(), 1)<CR>
-
-  if set_mapleader
-    unlet g:mapleader
-  endif
-
-  augroup Tcvime
-  autocmd!
-  autocmd InsertEnter * call <SID>OnInsertEnter()
-  augroup END
-endfunction
-
-"   マッピングを無効化
-function! tcvime#MappingOff()
-  let set_mapleader = 0
-  if !exists('g:mapleader')
-    let g:mapleader = "\<C-K>"
-    let set_mapleader = 1
-  else
-    let save_mapleader = g:mapleader
-  endif
-  let g:mapleader = s:mapleader
-  " TODO: tcvime以外でmapされたものをunmapしないようにする
-  silent! iunmap <Leader>q
-  silent! iunmap <Leader><Space>
-  silent! iunmap <Leader>o
-  silent! iunmap <Leader>b
-  silent! nunmap <Leader><Space>
-  silent! nunmap <Leader>o
-  silent! nunmap <Leader>b
-  silent! nunmap <Leader>?
-  silent! nunmap <Leader>t
-  silent! vunmap <Leader>?
-  silent! vunmap <Leader><Space>
-  silent! vunmap <Leader>o
-  if set_mapleader
-    unlet g:mapleader
-  else
-    let g:mapleader = save_mapleader
-  endif
-
-  augroup Tcvime
-  autocmd!
-  augroup END
-endfunction
-
 let s:insert_line = 0
 let s:insert_col = 1
 
 " 後置型変換用に、挿入開始位置を記録
-function! s:OnInsertEnter()
+function! tcvime#OnInsertEnter()
   let s:insert_line = line('.')
   let s:insert_col = col('.')
 endfunction
@@ -531,7 +417,7 @@ endfunction
 "				    入力制御
 
 " 読みの入力を開始
-function! s:InputStart()
+function! tcvime#InputStart()
   call s:StatusSet()
   return ''
 endfunction
@@ -656,7 +542,7 @@ endfunction
 
 " 直前の後置型交ぜ書き変換を縮める。
 " 候補1個のため自動確定された場合用。
-function! s:InputConvertShrinkLatest()
+function! tcvime#InputConvertShrinkLatest()
   if pumvisible()
     return s:InputConvertShrinkPum()
   endif
@@ -693,7 +579,7 @@ function! s:InputConvertShrinkLatest()
 endfunction
 
 " Insert modeで、読みがあれば交ぜ書き変換を開始し、無ければ' 'を返す。
-function! s:InputConvertOrSpace()
+function! tcvime#InputConvertOrSpace()
   let status = s:StatusGet('.', col('.'))
   if status == ''
     let s:last_keyword = ''
@@ -714,11 +600,11 @@ endfunction
 
 " Insert modeで交ぜ書き変換を行う。読みが無い場合は読み開始マークを付ける。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
-function! s:InputConvertOrStart(katuyo)
+function! tcvime#InputConvertOrStart(katuyo)
   let status = s:StatusGet('.', col('.'))
   if status == ''
     let s:last_keyword = ''
-    return s:InputStart()
+    return tcvime#InputStart()
   endif
   return s:InputConvertSub(status, a:katuyo, 1)
 endfunction
@@ -870,7 +756,7 @@ function! s:InputFix(col)
 endfunction
 
 " 直前の2文字の部首合成変換を行う
-function! s:InputConvertBushu(col)
+function! tcvime#InputConvertBushu(col)
   if a:col <= 2
     return ''
   endif
@@ -1057,7 +943,7 @@ let s:last_count = 0
 " 今の位置以前のcount文字を変換する
 " @param count 変換する文字列の長さ
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
-function! s:ConvertCount(count, katuyo)
+function! tcvime#ConvertCount(count, katuyo)
   let cnt = a:count
   if cnt == 0
     let cnt = s:last_count
@@ -1112,16 +998,16 @@ endfunction
 
 " 今の位置以前のcount文字をカタカナに変換する
 " @param count 変換する文字列の長さ
-function! s:ConvertKatakana(count)
+function! tcvime#ConvertKatakana(count)
   execute "normal! a\<ESC>"
   let inschars = tcvime#InputConvertKatakanaPos(col("'^"), a:count)
   call s:InsertString(inschars)
 endfunction
 
 " 今の位置以前の2文字を部首合成変換する
-function! s:ConvertBushu()
+function! tcvime#ConvertBushu()
   execute "normal! a\<ESC>"
-  let inschars = s:InputConvertBushu(col("'^"))
+  let inschars = tcvime#InputConvertBushu(col("'^"))
   call s:InsertString(inschars)
 endfunction
 
@@ -1213,13 +1099,13 @@ function! tcvime#CloseHelpBuffer()
 endfunction
 
 " カーソル位置の文字のヘルプ表を表示する
-function! s:ShowStrokeHelp()
+function! tcvime#ShowStrokeHelp()
   let ch = matchstr(getline('.'), '\%' . col('.') . 'c.')
   call s:ShowHelp([ch], 0)
 endfunction
 
 " Visual modeで選択されている文字列のヘルプ表を表示する
-function! s:ShowHelpVisual()
+function! tcvime#ShowHelpVisual()
   let save_reg = @@
   silent execute 'normal! `<' . visualmode() . '`>y'
   call tcvime#ShowHelpForStr(substitute(@@, '\n', '', 'g'), 0)
