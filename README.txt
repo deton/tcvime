@@ -56,7 +56,7 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
     bushudic.vimは、tc2に含まれるbushu.revから作ったものです。
 
 更新履歴
-  - 1.4.1 (2013-12-XXX)
+  - 1.4.1 (2014-01-XXX)
    - 部首合成変換高速化のため、bushu.revをautoload/tcvime/bushudic.vimに変更。
    - keymap/tutcodep.vimに、Touch16+やTUT98.COMの拗音等の短縮ストロークを追加。
    - キーマッピングの登録・解除を行う:TcvimeOnと:TcvimeOffコマンドを削除し、

@@ -657,67 +657,35 @@ function! TcvimeCustomKeymap()
   lmap <silent> m> <C-G>u<Plug>TcvimeIShrink
   " 後置型カタカナ変換: 指定文字数をカタカナ変換。0:ひらがなが続く間
   lmap <silent> k0 <C-G>u<C-R>=tcvime#InputConvertKatakana(0)<CR>
-  lmap <silent> k1 <C-G>u<C-R>=tcvime#InputConvertKatakana(1)<CR>
-  lmap <silent> k2 <C-G>u<C-R>=tcvime#InputConvertKatakana(2)<CR>
-  lmap <silent> k3 <C-G>u<C-R>=tcvime#InputConvertKatakana(3)<CR>
-  lmap <silent> k4 <C-G>u<C-R>=tcvime#InputConvertKatakana(4)<CR>
-  lmap <silent> k5 <C-G>u<C-R>=tcvime#InputConvertKatakana(5)<CR>
-  lmap <silent> k6 <C-G>u<C-R>=tcvime#InputConvertKatakana(6)<CR>
-  lmap <silent> k7 <C-G>u<C-R>=tcvime#InputConvertKatakana(7)<CR>
-  lmap <silent> k8 <C-G>u<C-R>=tcvime#InputConvertKatakana(8)<CR>
-  lmap <silent> k9 <C-G>u<C-R>=tcvime#InputConvertKatakana(9)<CR>
-  " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
-  lmap <silent> j1 <C-G>u<C-R>=tcvime#InputConvertKatakana(-1)<CR>
-  lmap <silent> j2 <C-G>u<C-R>=tcvime#InputConvertKatakana(-2)<CR>
-  lmap <silent> j3 <C-G>u<C-R>=tcvime#InputConvertKatakana(-3)<CR>
-  lmap <silent> j4 <C-G>u<C-R>=tcvime#InputConvertKatakana(-4)<CR>
-  lmap <silent> j5 <C-G>u<C-R>=tcvime#InputConvertKatakana(-5)<CR>
-  lmap <silent> j6 <C-G>u<C-R>=tcvime#InputConvertKatakana(-6)<CR>
-  " 直前のカタカナ変換を縮める
-  lmap <silent> l1 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
-  lmap <silent> l2 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(2)<CR>
-  lmap <silent> l3 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(3)<CR>
-  lmap <silent> l4 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(4)<CR>
-  lmap <silent> l5 <C-G>u<C-R>=tcvime#InputConvertKatakanaShrink(5)<CR>
+  for i in range(1, 9)
+    execute 'lmap <silent> k' . i "\<C-G>u\<C-R>=tcvime#InputConvertKatakana(" . i . ")\<CR>"
+    " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
+    execute 'lmap <silent> j' . i "\<C-G>u\<C-R>=tcvime#InputConvertKatakana(-" . i . ")\<CR>"
+    " 直前のカタカナ変換を縮める
+    execute 'lmap <silent> l' . i "\<C-G>u\<C-R>=tcvime#InputConvertKatakanaShrink(" . i . ")\<CR>"
+    " 後置型でカタカナ文字列を伸ばす: 文字数指定
+    execute 'lmap <silent> h' . i "\<C-G>u\<C-R>=tcvime#InputConvertKatakanaExtend(" . i . ")\<CR>"
+    " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用しない語
+    execute 'lmap <silent> m' . i "\<C-G>u\<C-R>=tcvime#InputPostConvert(" . i . ",0)\<CR>"
+    " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用する語
+    execute 'lmap <silent> n' . i "\<C-G>u\<C-R>=tcvime#InputPostConvert(" . i . ",1)\<CR>"
+    " 後置型漢字→入力シーケンス変換(指定文字数)
+    execute 'lmap <silent> ;' . i "\<C-G>u\<C-R>=tcvime#InputConvertKanji2Seq(" . i . ")\<CR>"
+    " 後置型入力シーケンス→漢字変換(指定文字数)
+    execute 'lmap <silent> z' . i "\<C-G>u\<C-R>=tcvime#InputConvertSeq2Kanji(" . i . ")\<CR>"
+  endfor
   " 後置型でカタカナ文字列を伸ばす: カタカナより前でひらがなが続く間
   lmap <silent> h0 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(0)<CR>
-  " 後置型でカタカナ文字列を伸ばす: 文字数指定
-  lmap <silent> h1 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(1)<CR>
-  lmap <silent> h2 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(2)<CR>
-  lmap <silent> h3 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(3)<CR>
-  lmap <silent> h4 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(4)<CR>
-  lmap <silent> h5 <C-G>u<C-R>=tcvime#InputConvertKatakanaExtend(5)<CR>
   " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用しない語
   lmap <silent> m0 <C-G>u<C-R>=tcvime#InputPostConvertStart(0)<CR>
-  " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用しない語
-  lmap <silent> m1 <C-G>u<C-R>=tcvime#InputPostConvert(1, 0)<CR>
-  lmap <silent> m2 <C-G>u<C-R>=tcvime#InputPostConvert(2, 0)<CR>
-  lmap <silent> m3 <C-G>u<C-R>=tcvime#InputPostConvert(3, 0)<CR>
-  lmap <silent> m4 <C-G>u<C-R>=tcvime#InputPostConvert(4, 0)<CR>
-  lmap <silent> m5 <C-G>u<C-R>=tcvime#InputPostConvert(5, 0)<CR>
-  lmap <silent> m6 <C-G>u<C-R>=tcvime#InputPostConvert(6, 0)<CR>
   " 後置型交ぜ書き変換: 読みの文字数指定無し: 活用する語
   lmap <silent> n0 <C-G>u<C-R>=tcvime#InputPostConvertStart(1)<CR>
-  " 後置型交ぜ書き変換: 読みの文字数指定有り: 活用する語
-  lmap <silent> n1 <C-G>u<C-R>=tcvime#InputPostConvert(1, 1)<CR>
-  lmap <silent> n2 <C-G>u<C-R>=tcvime#InputPostConvert(2, 1)<CR>
-  lmap <silent> n3 <C-G>u<C-R>=tcvime#InputPostConvert(3, 1)<CR>
-  lmap <silent> n4 <C-G>u<C-R>=tcvime#InputPostConvert(4, 1)<CR>
-  lmap <silent> n5 <C-G>u<C-R>=tcvime#InputPostConvert(5, 1)<CR>
-  lmap <silent> n6 <C-G>u<C-R>=tcvime#InputPostConvert(6, 1)<CR>
   " 後置型入力シーケンス→漢字変換
   lmap <silent> z0 <C-G>u<C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
   lmap <silent> ;0 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
   lmap <silent> ;9 <C-G>u<C-R>=tcvime#InputConvertKanji2SeqAll()<CR><C-R>=<SID>DisableKeymap()<CR>
-  " 後置型漢字→入力シーケンス変換(指定文字数)
-  lmap <silent> ;1 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(1)<CR>
-  lmap <silent> ;2 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(2)<CR>
-  lmap <silent> ;3 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(3)<CR>
-  lmap <silent> ;4 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(4)<CR>
-  lmap <silent> ;5 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(5)<CR>
-  lmap <silent> ;6 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(6)<CR>
   " tc2同様の後置型交ぜ書き変換を行うための設定:
   " " 活用しない語
   " lmap <silent> 18 <C-G>u<C-R>=tcvime#InputPostConvert(1, 0)<CR>
