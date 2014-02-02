@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-01-25
+" Last Change: 2014-02-02
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1085,6 +1085,10 @@ function! s:OpenHelpBuffer()
     set noswapfile
     set winfixheight
     set nobuflisted
+    set filetype=tcvimehelp
+    if has('conceal')
+      setlocal conceallevel=2 concealcursor=nc
+    endif
     nnoremap <buffer> <silent> q :<C-U>quit<CR>
   endif
   %d _
@@ -1198,6 +1202,10 @@ function! s:ShowHelpChar(ch)
   let keyseq = s:SearchKeymap(a:ch)
   if strlen(keyseq) > 0
     call s:SelectWindowByName(s:helpbufname)
+    let ret = s:ShowHelpTable(a:ch, keyseq)
+    if ret >= 0
+      return ret
+    endif
     return s:ShowHelpSequence(a:ch, keyseq)
   else
     return s:ShowHelpBushuDic(a:ch)
@@ -1223,6 +1231,34 @@ function! s:ShowHelpSequence(ch, keyseq)
   silent! execute range . 's@. . @・@g'
   silent! execute range . 's@@ @ge'
   call append(to - 1, '    ' . a:ch)
+  call cursor(from, 1)
+  return 1
+endfunction
+
+" syntax用文字を付加
+function! s:HelpSyntax(islastkey, ch)
+  " 最終(第2)打鍵と第1打鍵が同じ
+  if a:islastkey != ''
+    return '' . a:ch
+  endif
+  return '' . a:ch
+endfunction
+
+" 指定された文字を含む漢字表を表示する
+function! s:ShowHelpTable(ch, keyseq)
+  let commonseq = strpart(a:keyseq, 1)
+  let tblnr = get(g:tcvime#helptbl#seq2tbl, commonseq, -1)
+  let tbl = get(g:tcvime#helptbl#tbl, tblnr, '')
+  if tblnr == -1 || tbl == ''
+    return -1
+  endif
+
+  " syntax用文字^A追加
+  let pat = '\V\(\=\)\(' . escape(a:ch, '\') . '\)'
+  let tbl = substitute(tbl, pat, '\=s:HelpSyntax(submatch(1), submatch(2))', '')
+
+  let from = line('$')
+  call append(line('.') - 1, split(tbl, "\n"))
   call cursor(from, 1)
   return 1
 endfunction
