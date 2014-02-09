@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-02-09
+" Last Change: 2014-02-10
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1249,6 +1249,7 @@ function! s:ShowHelpTable(ch, keyseq)
   try
     let tblnr = get(g:tcvime#helptbl_{g:tcvime_keymap_for_help}#seq2tbl, commonseq, -1)
   catch /^Vim\%((\a\+)\)\=:E121/ " E121: Undefined variable
+    let g:tcvime_use_helptbl = 0
     return -1
   endtry
   let tbl = get(g:tcvime#helptbl_{g:tcvime_keymap_for_help}#tbl, tblnr, '')
