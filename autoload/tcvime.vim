@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-02-02
+" Last Change: 2014-02-09
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -14,6 +14,12 @@ if !exists("tcvime_mazegaki_edit_nocand")
 endif
 if !exists("tcvime_keymap_for_help")
   let tcvime_keymap_for_help = &keymap
+endif
+if !exists("tcvime_use_helptbl")
+  let tcvime_use_helptbl = 1
+endif
+if !exists("tcvime_hide_helptbl_mark")
+  let tcvime_hide_helptbl_mark = 0
 endif
 
 if !exists("tcvime_keyboard")
@@ -1091,7 +1097,7 @@ function! s:OpenHelpBuffer()
     endif
     nnoremap <buffer> <silent> q :<C-U>quit<CR>
   endif
-  %d _
+  silent! %d _
   5wincmd _
 endfunction
 
@@ -1202,9 +1208,11 @@ function! s:ShowHelpChar(ch)
   let keyseq = s:SearchKeymap(a:ch)
   if strlen(keyseq) > 0
     call s:SelectWindowByName(s:helpbufname)
-    let ret = s:ShowHelpTable(a:ch, keyseq)
-    if ret >= 0
-      return ret
+    if g:tcvime_use_helptbl
+      let ret = s:ShowHelpTable(a:ch, keyseq)
+      if ret >= 0
+	return ret
+      endif
     endif
     return s:ShowHelpSequence(a:ch, keyseq)
   else
@@ -1235,30 +1243,42 @@ function! s:ShowHelpSequence(ch, keyseq)
   return 1
 endfunction
 
-" syntax用文字を付加
-function! s:HelpSyntax(islastkey, ch)
-  " 最終(第2)打鍵と第1打鍵が同じ
-  if a:islastkey != ''
-    return '' . a:ch
-  endif
-  return '' . a:ch
-endfunction
-
 " 指定された文字を含む漢字表を表示する
 function! s:ShowHelpTable(ch, keyseq)
   let commonseq = strpart(a:keyseq, 1)
-  let tblnr = get(g:tcvime#helptbl#seq2tbl, commonseq, -1)
-  let tbl = get(g:tcvime#helptbl#tbl, tblnr, '')
+  try
+    let tblnr = get(g:tcvime#helptbl_{g:tcvime_keymap_for_help}#seq2tbl, commonseq, -1)
+  catch /^Vim\%((\a\+)\)\=:E121/ " E121: Undefined variable
+    return -1
+  endtry
+  let tbl = get(g:tcvime#helptbl_{g:tcvime_keymap_for_help}#tbl, tblnr, '')
   if tblnr == -1 || tbl == ''
     return -1
   endif
 
-  " syntax用文字^A追加
-  let pat = '\V\(\=\)\(' . escape(a:ch, '\') . '\)'
-  let tbl = substitute(tbl, pat, '\=s:HelpSyntax(submatch(1), submatch(2))', '')
-
   let from = line('$')
-  call append(line('.') - 1, split(tbl, "\n"))
+  call append(line('.') - 1, split(tbl, "\n", 1))
+  let to = line('.')
+  call cursor(from, 1)
+
+  " 第1打鍵を示す'^'追加
+  let pat = '\V' . escape(a:ch, '\')
+  if search(pat, 'c', to) == 0
+    return -1
+  endif
+  let line = line('.')
+  let col = col('.')
+  " 桁合わせ用' 'を入れる
+  silent! execute from . ',' . to . 's/\%' . col . 'c/ /'
+  let col += 1
+  " 第1打鍵を示す'^'を入れる
+  silent! execute line . 's/ \%' . col . 'c/^/'
+  " $のための桁合わせ用に既に' 'が入ってたら元に戻す
+  silent! execute from . ',' . to . 's/  / /'
+  silent! execute from . ',' . to . 's/ \^/^/'
+  silent! execute from . ',' . to . 's/\$ /$/'
+  " 最終(第2)打鍵と第1打鍵が同じ
+  silent! execute from . ',' . to . 's/\$\^/+/'
   call cursor(from, 1)
   return 1
 endfunction
