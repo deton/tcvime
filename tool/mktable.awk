@@ -125,13 +125,8 @@ END {
 					}
 					if (nr == onr) {
 						kanji = "$" kanji;
-						#if (kanji == "$＿") {
-						#	kanji = "$ ";
-						#} else if (kanji =="$△") {
-						#	kanji = "$ ";
-						#}
 					} else if (i == oi) {
-						kanji = " " kanji;
+						kanji = " " kanji; # padding
 					}
 					printf("%s", kanji);
 					if (i == 4) { # center
@@ -146,11 +141,9 @@ END {
 						}
 					}
 				}
-				if (j != 2) {
-					printf("\\n");
-				}
+				printf("\\n");
 			}
-			printf("\\n\",");
+			printf("\",");
 		}
 		#printf("\n");
 	}
