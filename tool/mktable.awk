@@ -48,19 +48,27 @@ BEGIN {
 		case "m":
 			midleft = ">";
 			midright = "<";
+			midrk = "v";
+			midlk = "m";
 			mididx = 2;
 			break;
 		case "t":
 		case "y":
 			mididx = 0;
+			midrk = "t";
+			midlk = "y";
 			break;
 		case "g":
 		case "h":
 			mididx = 1;
+			midrk = "g";
+			midlk = "h";
 			break;
 		case "b":
 		case "n":
 			mididx = 2;
+			midrk = "b";
+			midlk = "n";
 			break;
 		}
 	}
@@ -76,39 +84,10 @@ END {
 		for (oi = 0; oi < 10; oi++) {
 			onr = oj * 10 + oi;
 			if (midkey) {
-				switch (midkey) {
-				case "t":
-				case "y":
-					if (oi < 5) {
-						midkey = "y";
-					} else {
-						midkey = "t";
-					}
-					break;
-				case "g":
-				case "h":
-					if (oi < 5) {
-						midkey = "h";
-					} else {
-						midkey = "g";
-					}
-					break;
-				case "v":
-				case "m":
-					if (oi < 5) {
-						midkey = "m";
-					} else {
-						midkey = "v";
-					}
-					break;
-				case "b":
-				case "n":
-					if (oi < 5) {
-						midkey = "n";
-					} else {
-						midkey = "b";
-					}
-					break;
+				if (oi < 5) {
+					midkey = midlk;
+				} else {
+					midkey = midrk;
 				}
 			}
 			printf("'%s%s':", midkey, tblidx[onr]);
