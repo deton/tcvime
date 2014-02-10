@@ -111,7 +111,7 @@ END {
 					break;
 				}
 			}
-			printf("'%s%s':%d\t", midkey, tblidx[onr], onr + IDXOFFSET);
+			printf("'%s%s':", midkey, tblidx[onr]);
 			printf("\"");
 			for (j = 0; j < 3; j++) {
 				for (i = 0; i < 10; i++) {
@@ -150,9 +150,9 @@ END {
 					printf("\\n");
 				}
 			}
-			printf("\\n\"\n");
+			printf("\\n\",");
 		}
-		printf("\n");
+		#printf("\n");
 	}
-	printf("\n");
+	#printf("\n");
 }

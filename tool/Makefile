@@ -1,16 +1,13 @@
 all: helptbl_tutcode.vim
 
-helptbl_tutcode.vim: idxtbl.tmp mkscript.awk
-	LANG=C ./mkscript.awk idxtbl.tmp >helptbl_tutcode.vim
-
-idxtbl.tmp: mktbl.sh mktable.awk tutcode.2m tutcode.3
-	./mktbl.sh >idxtbl.tmp
+helptbl_tutcode.vim: mktbl.sh mktable.awk tutcode.2m tutcode.3
+	./mktbl.sh >helptbl_tutcode.vim
 
 tutcode.2m: tutcode.2 mid-t mid-y mid-g mid-h mid-v mid-m mid-b mid-n
 	cat mid-t mid-y mid-g mid-h mid-v mid-m mid-b mid-n tutcode.2 >tutcode.2m
 
 clean:
-	-rm -f helptbl_tutcode.vim idxtbl.tmp mid-t mid-y mid-g mid-h mid-v mid-m mid-b mid-n tutcode.2m
+	-rm -f helptbl_tutcode.vim mid-t mid-y mid-g mid-h mid-v mid-m mid-b mid-n tutcode.2m
 
 mid-t: tutcode.3
 	grep '^.t' tutcode.3|cut -c 1|sort -u|sed -e 's/$$/t	-/'>mid-t

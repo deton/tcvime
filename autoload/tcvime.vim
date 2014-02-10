@@ -1247,13 +1247,12 @@ endfunction
 function! s:ShowHelpTable(ch, keyseq)
   let commonseq = strpart(a:keyseq, 1)
   try
-    let tblnr = get(g:tcvime#helptbl_{g:tcvime_keymap_for_help}#seq2tbl, commonseq, -1)
+    let tbl = get(g:tcvime#helptbl_{g:tcvime_keymap_for_help}#tbl, commonseq, '')
   catch /^Vim\%((\a\+)\)\=:E121/ " E121: Undefined variable
     let g:tcvime_use_helptbl = 0
     return -1
   endtry
-  let tbl = get(g:tcvime#helptbl_{g:tcvime_keymap_for_help}#tbl, tblnr, '')
-  if tblnr == -1 || tbl == ''
+  if tbl == ''
     return -1
   endif
 
