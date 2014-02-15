@@ -17,12 +17,12 @@ if tcvime_hide_helptbl_mark
   syn match tcvimeFirstKey contained '\^' conceal
   syn match tcvimeLastKey contained '\$' conceal
   syn match tcvime12Key contained '+' conceal
-  syn match tcvimePadding '[^ ]\zs \ze[^ ]' conceal
+  syn match tcvimePadding ' ' conceal
 else
   syn match tcvimeFirstKey contained '\^'
   syn match tcvimeLastKey contained '\$'
   syn match tcvime12Key contained '+'
-  syn match tcvimePadding '[^ ]\zs \ze[^ ]'
+  syn match tcvimePadding ' '
 endif
 syn match tcvimeMidLKey '>'
 syn match tcvimeMidRKey '<'

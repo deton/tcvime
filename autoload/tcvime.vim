@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-02-10
+" Last Change: 2014-02-15
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1181,7 +1181,7 @@ function! s:ShowHelp(ar, forcebushu)
       continue
     endif
     let ln = line('.')
-    .,$-1g/^/s//  /
+    .,$-1g/^/s//　/
     call cursor(ln, 1)
     let save_reg = @@
     silent! execute "normal! \<C-V>Gk$x" . lastfrom . "G$p"
