@@ -1091,9 +1091,11 @@ function! s:OpenHelpBuffer()
     set noswapfile
     set winfixheight
     set nobuflisted
-    set filetype=tcvimehelp
-    if has('conceal')
-      setlocal conceallevel=2 concealcursor=nc
+    if g:tcvime_use_helptbl
+      set filetype=tcvimehelp
+      if g:tcvime_hide_helptbl_mark && has('conceal')
+	setlocal conceallevel=2 concealcursor=nc
+      endif
     endif
     nnoremap <buffer> <silent> q :<C-U>quit<CR>
   endif
