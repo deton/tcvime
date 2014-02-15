@@ -292,10 +292,15 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
 例: "鍵"という文字の上にカーソルを置いて"<Leader>?"と打つと、
     "__TcvimeHelp__"というバッファが開いて次のように表示されます
     (keymapがtutcodeの場合)。
-        ・・・・    ・・・・    鍵
+        桟頃 篇猿析|$△・・・・
+        尉軟 辰祖彫| ・・・・・
+        砦闇^鍵渓抄< ・・・・・
+
+    ただし、|'tcvime_use_helptbl'|が0の場合は以下。
         ・・・・  3 ・・・・
         ・・・・    ・・・・
         ・・1 2     ・・・・
+            鍵
 
 文字ヘルプ表表示(Visual mode)			*tcvime-visual-help*
 -----------------------------
@@ -324,6 +329,22 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
   文字ヘルプ表示に使うkeymap。現在のバッファで&keymapが未設定の場合に使用。
   設定例:
 	let tcvime_keymap_for_help = 'tutcode'
+
+'tcvime_use_helptbl'				*'tcvime_use_helptbl'*
+  文字ヘルプ表示時に、該当文字の打ち方だけでなく、
+  第1打鍵以外の打ち方が共通する文字のテーブル(文字表)を表示するかどうか。
+  省略値: 1
+  設定例:
+    let tcvime_use_helptbl = 0
+
+'tcvime_hide_helptbl_mark'			*'tcvime_hide_helptbl_mark'*
+  |'tcvime_use_helptbl'|が1で、syntax enableの場合、文字表内の'^','$','+',' 'を
+  非表示(conceal)にするかどうか。
+  '^'や'$'のせいで表が間延びするのを嫌う場合用。
+  構文ハイライトだけで、第1打鍵や最終打鍵の位置を見分けることになります。
+  省略値: 0
+  設定例:
+    let tcvime_hide_helptbl_mark = 1
 
 'tcvime_movecandto'				*'tcvime_movecandto'*
    交ぜ書き変換で確定した候補の、

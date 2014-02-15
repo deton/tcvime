@@ -1,6 +1,6 @@
 tcvime - 漢字直接入力補助機能プラグインスクリプト
 							     Version: 1.4.1
-							     Date: 2014-01-XXX
+							     Date: 2014-02-XXX
 
 解説
   tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供する
@@ -23,11 +23,15 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
   plugin/tcvime.vim   'runtimepath'/plugin/ プラグインスクリプト本体
   autoload/tcvime.vim 'runtimepath'/autoload/ プラグインから呼び出す関数
   autoload/tcvime/bushudic.vim 'runtimepath'/autoload/tcvime/ 部首合成変換用辞書
+  autoload/tcvime/helptbl_tcode.vim    'runtimepath'/autoload/tcvime/ ヘルプ表
+  autoload/tcvime/helptbl_tutcode.vim  'runtimepath'/autoload/tcvime/ ヘルプ表
+  autoload/tcvime/helptbl_tutcodep.vim 'runtimepath'/autoload/tcvime/ ヘルプ表
   doc/tcvime.jax      'runtimepath'/doc/    スクリプトの説明書
   mazegaki.dic        'runtimepath'         交ぜ書き変換用辞書
   bushu.help          'runtimepath'         ユーザ用部首合成辞書
   kanjitable.txt      'runtimepath'         漢字テーブルファイル
   keymap/tcode.vim    'runtimepath'/keymap/ T-Codeのkeymap
+  keymap/tutcode.vim  'runtimepath'/keymap/ TUT-Codeのkeymap
   keymap/tutcodep.vim 'runtimepath'/keymap/ tutcodeに新常用漢字対応等63文字追加
   keymap/tutcodek.vim 'runtimepath'/keymap/ 'でひらがな/カタカナモード切り替え
 					    ができるようにしたtutcodeのkeymap。
@@ -56,7 +60,7 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
     bushudic.vimは、tc2に含まれるbushu.revから作ったものです。
 
 更新履歴
-  - 1.4.1 (2014-01-XXX)
+  - 1.4.1 (2014-02-XXX)
    - 部首合成変換高速化のため、bushu.revをautoload/tcvime/bushudic.vimに変更。
    - keymap/tutcodep.vimに、Touch16+やTUT98.COMの拗音等の短縮ストロークを追加。
    - キーマッピングの登録・解除を行う:TcvimeOnと:TcvimeOffコマンドを削除し、
