@@ -347,7 +347,7 @@ function! s:Seq2KanjiFeedkeys(str)
     endif
     call tcvime#SetKeymap(keymap)
   endif
-  call feedkeys('a' . a:str . "\<ESC>", 't')
+  call feedkeys('gvc' . a:str . "\<ESC>", 't')
 endfunction
 
 " 漢字文字列を入力シーケンスに変換する。
@@ -932,10 +932,10 @@ function! tcvime#ConvertOpSeq2Kanji(type, ...)
   let reg_save = @@
 
   if a:0  " Invoked from Visual mode, use '< and '> marks.
-    silent exe "normal! `<" . a:type . "`>c"
+    silent exe "normal! `<" . a:type . "`>y"
     call s:Seq2KanjiFeedkeys(@@)
   elseif a:type == 'char'
-    silent exe "normal! `[v`]c"
+    silent exe "normal! `[v`]y"
     call s:Seq2KanjiFeedkeys(@@)
   endif
 
@@ -952,10 +952,10 @@ function! tcvime#ConvertOpShiftSeq(type, ...)
   let reg_save = @@
 
   if a:0  " Invoked from Visual mode, use '< and '> marks.
-    silent exe "normal! `<" . a:type . "`>c"
+    silent exe "normal! `<" . a:type . "`>y"
     call s:ConvertOpShiftSeqSub(@@)
   elseif a:type == 'char'
-    silent exe "normal! `[v`]c"
+    silent exe "normal! `[v`]y"
     call s:ConvertOpShiftSeqSub(@@)
   endif
 
