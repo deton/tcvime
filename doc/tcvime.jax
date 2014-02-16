@@ -410,6 +410,15 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    例(aljを指定する場合):
      lmap <silent> alj <Plug>TcvimeIStart
 
+'<Plug>TcvimeIAsciiStart'			*'<Plug>TcvimeIAsciiStart'*
+   交ぜ書き変換: ASCII変換用の読みの開始位置の印を付けるキー。
+   keymapをオフにする。
+   省略値: (無し: 未割当て)
+   例(<C-K>/を指定する場合):
+     imap <silent> <unique> <C-K>/ <Plug>TcvimeIAsciiStart
+   例(lmapのalsを指定する場合):
+     lmap <silent> als <Plug>TcvimeIAsciiStart
+
 '<Plug>TcvimeIConvOrStart'			*'<Plug>TcvimeIConvOrStart'*
    交ぜ書き変換: 変換実行キー。
    読みの開始位置の印が付けられていれば、
@@ -639,6 +648,7 @@ if has('keymap')
   imap <unique> <C-J> <C-R>=<SID>EnableKeymap()<CR>
   imap <silent> <unique> <C-L> <C-R>=<SID>DisableKeymap()<CR>
   imap <silent> <unique> <ESC> <ESC>:set imsearch=0<CR>
+  imap <silent> <unique> <C-K>/ <Plug>TcvimeIAsciiStart
   nmap <silent> <unique> <C-K>k <Plug>TcvimeNKatakana
   nmap <silent> <unique> <C-K><Space> <Plug>TcvimeNConvert
   vmap <silent> <unique> <C-K>k <Plug>TcvimeVKatakana
@@ -678,6 +688,8 @@ function! TcvimeCustomKeymap()
   lmap <silent> ala <C-G>u<Plug>TcvimeIBushu
   " 前置型交ぜ書き変換の読み入力開始
   lmap <silent> alj <Plug>TcvimeIStart
+  " 前置型ASCII変換の読み入力開始
+  lmap <silent> als <Plug>TcvimeIAsciiStart
   " 前置型交ぜ書き変換
   lmap <silent> al<Space> <C-G>u<Plug>TcvimeIConvOrStart
   " 前置型交ぜ書き変換(活用する語として変換)

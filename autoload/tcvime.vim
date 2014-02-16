@@ -447,6 +447,16 @@ function! tcvime#InputStart()
   return ''
 endfunction
 
+" ASCII読みの入力を開始
+function! tcvime#InputAsciiStart()
+  call s:StatusSet()
+  if &iminsert ==# 0
+    return ''
+  endif
+  set iminsert=0
+  return "\<C-^>"
+endfunction
+
 let s:completeyomi = ''
 let s:completeop = 0
 
@@ -620,7 +630,7 @@ function! tcvime#InputConvertOrSpace()
     call s:StatusReset()
     return ' '
   endif
-  return ret
+  return s:AddEnableKeymap(ret)
 endfunction
 
 " Insert modeで交ぜ書き変換を行う。読みが無い場合は読み開始マークを付ける。
@@ -631,7 +641,17 @@ function! tcvime#InputConvertOrStart(katuyo)
     let s:last_keyword = ''
     return tcvime#InputStart()
   endif
-  return s:InputConvertSub(status, a:katuyo, 1)
+  return s:AddEnableKeymap(s:InputConvertSub(status, a:katuyo, 1))
+endfunction
+
+" ASCII変換で一時的にASCII入力にしている場合があるので、
+" keymapを有効にするためのキー操作を追加する
+function! s:AddEnableKeymap(chars)
+  if &iminsert ==# 1
+    return a:chars
+  endif
+  set iminsert=1
+  return a:chars . "\<C-^>"
 endfunction
 
 " Insert modeで交ぜ書き変換を行う。

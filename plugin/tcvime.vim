@@ -5,7 +5,7 @@ scriptencoding utf-8
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-01-25
+" Last Change: 2014-02-16
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 if exists('plugin_tcvime_disable')
@@ -41,6 +41,7 @@ if !exists(":TcvimeEditMazegaki")
 endif
 
 inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=tcvime#InputStart()<CR>
+inoremap <script> <silent> <Plug>TcvimeIAsciiStart <C-R>=tcvime#InputAsciiStart()<CR>
 inoremap <script> <silent> <Plug>TcvimeIConvOrStart <C-R>=tcvime#InputConvertOrStart(0)<CR>
 inoremap <script> <silent> <Plug>TcvimeIConvOrSpace <C-R>=tcvime#InputConvertOrSpace()<CR>
 inoremap <script> <silent> <Plug>TcvimeIKatuyo <C-R>=tcvime#InputConvertOrStart(1)<CR>
