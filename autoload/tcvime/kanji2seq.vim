@@ -10,30 +10,67 @@ function! tcvime#kanji2seq#get(ch)
     return get(s:kanji2seqdict, a:ch, '')
   endif
   let keymap = s:keymapname()
+  if keymap == ''
+    return ''
+  endif
   try
     let s:kanji2seqdict = g:tcvime#kanji2seq_{keymap}#dict
   catch /^Vim\%((\a\+)\)\=:E121/ " E121: Undefined variable
-    let s:kanji2seqdict = {}
-    call s:loadkeymapfile(keymap)
+    let s:kanji2seqdict = tcvime#kanji2seq#keymap2revdict(keymap)
   endtry
   return get(s:kanji2seqdict, a:ch, '')
 endfunction
 
-function! s:loadkeymapfile(keymap)
+" autoload/tcvime/kanji2seq_tutcode.vim等を作るための文字列を作成。
+" keymapから逆変換表を生成すると、不要な行も含まれるので、手で加工する想定。
+" (例: 'e 'と'E 'の両方で'ー'に変換されるよう定義している場合、
+" 'ー'からの逆変換では'e 'にしたいが、Dictionaryへの変換時に'E 'になる場合あり)
+"
+" 操作例: 新しいファイルを開いて、
+" :call append(line('$'), tcvime#kanji2seq#dict2list(tcvime#kanji2seq#keymap2revdict('tutcodep')))
+" 不要な行を削除した後、以下の操作でVim script化。
+" :$a
+" }
+" .
+" :0a
+" scriptencoding utf-8
+" let tcvime#kanji2seq_tutcodep#dict = {
+" .
+" :.,$j!
+function! tcvime#kanji2seq#dict2list(dict)
+  let list = []
+  for k in sort(keys(a:dict))
+    let ek = substitute(k, "'", "''", 'g')
+    let ev = substitute(a:dict[k], "'", "''", 'g')
+    call add(list, "'" . ek . "':'" . ev . "',")
+  endfor
+  return list
+endfunction
+
+" :や,の後にスペースが入るが無駄なのでうれしくない。
+function! tcvime#kanji2seq#echodict(keymapname)
+  redir => str
+    execute "silent echo tcvime#kanji2seq#keymap2revdict(a:keymapname)"
+  redir END
+  return str
+endfunction
+
+function! tcvime#kanji2seq#keymap2revdict(keymap)
+  let dict = {}
   let kmfile = globpath(&rtp, "keymap/" . a:keymap . "_" . &encoding . ".vim")
   if filereadable(kmfile) != 1
     let kmfile = globpath(&rtp, "keymap/" . a:keymap . ".vim")
     if filereadable(kmfile) != 1
-      return -1
+      return dict
     endif
   endif
   if kmfile == ''
-    return -1
+    return dict
   endif
   silent execute 'sv ' . kmfile
   if search('loadkeymap', 'w') == 0
     quit!
-    return -1
+    return dict
   endif
   let lines = getline(line('.') + 1, '$')
   quit!
@@ -43,10 +80,10 @@ function! s:loadkeymapfile(keymap)
   for line in lines
     let m = matchlist(line, '\([^ 	]\+\)[ 	]\+\([^ 	]\+\)')
     if !empty(m)
-      let s:kanji2seqdict[m[2]] = substitute(m[1], '<Space>', ' ', 'g')
+      let dict[m[2]] = substitute(m[1], '<[Ss]pace>', ' ', 'g')
     endif
   endfor
-  return 0
+  return dict
 endfunction
 
 function! s:keymapname()
