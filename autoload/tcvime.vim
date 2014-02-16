@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-02-15
+" Last Change: 2014-02-16
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -329,6 +329,36 @@ function! s:Seq2Kanji(str)
     set iminsert=0
   endif
   return kstr
+endfunction
+
+" 入力シーケンスを漢字文字列に置換する。
+" 置換する漢字文字列を引数にcallback関数を呼ぶ。
+" (feedkeys()を使用するので、非同期実行)
+function! s:Seq2KanjiAsync(str, callback)
+  let s:Seq2KanjiCallback = a:callback
+  if a:str == ''
+    return s:Seq2KanjiCallback('')
+  endif
+  call s:Candwin_Open()
+  let keymap = &keymap
+  if !empty(keymap)
+    setlocal iminsert=1
+  else
+    let keymap = g:tcvime_keymap_for_help
+    if empty(keymap)
+      echo 'tcvime入力シーケンス→漢字変換には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
+      return s:Seq2KanjiCallback('')
+    endif
+    call tcvime#SetKeymap(keymap)
+  endif
+  call feedkeys('a' . a:str . "\<ESC>:call tcvime#Seq2KanjiCont()\<CR>", 't')
+endfunction
+
+" Seq2Kanji内のfeedkeys()実行完了時に呼ばれ、続きの処理(callback呼出)を行う
+function! tcvime#Seq2KanjiCont()
+  let kstr = getline('.')
+  call s:Candwin_Close()
+  call call(s:Seq2KanjiCallback, [kstr])
 endfunction
 
 " 漢字文字列を入力シーケンスに変換する。
@@ -891,13 +921,22 @@ function! tcvime#ConvertOpSeq2Kanji(type, ...)
   let sel_save = &selection
   let &selection = "inclusive"
 
+  let s:asyncvars = {'sel_save': sel_save}
   if a:0  " Invoked from Visual mode, use '< and '> marks.
     call s:ConvertOpSeq2KanjiSub(col("'<"), col("'>"))
   elseif a:type == 'char'
     call s:ConvertOpSeq2KanjiSub(col("'["), col("']"))
   endif
 
-  let &selection = sel_save
+  " s:ConvertOpSeq2KanjiSubCont(kstr)内で実行
+  " let &selection = sel_save
+endfunction
+
+function! s:ConvertOpSeq2KanjiSubCont(kstr)
+  let inschars = substitute(s:asyncvars.chars, '.', "\<BS>", 'g') . a:kstr
+  call s:InsertString(inschars)
+  call cursor(0, s:asyncvars.col)
+  let &selection = s:asyncvars.sel_save
 endfunction
 
 function! s:ConvertOpSeq2KanjiSub(beg, end)
@@ -905,10 +944,9 @@ function! s:ConvertOpSeq2KanjiSub(beg, end)
   call cursor(0, a:end)
   execute "normal! a\<ESC>"
   let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
-  let kstr = s:Seq2Kanji(chars)
-  let inschars = substitute(chars, '.', "\<BS>", 'g') . kstr
-  call s:InsertString(inschars)
-  call cursor(0, col)
+  let s:asyncvars.chars = chars
+  let s:asyncvars.col = col
+  call s:Seq2KanjiAsync(chars, function('s:ConvertOpSeq2KanjiSubCont'))
 endfunction
 
 " operatorfuncとして、選択された文字列の入力シーケンスをずらして漢字に変換。
@@ -918,13 +956,23 @@ function! tcvime#ConvertOpShiftSeq(type, ...)
   let sel_save = &selection
   let &selection = "inclusive"
 
+  let s:asyncvars = {'sel_save': sel_save}
   if a:0  " Invoked from Visual mode, use '< and '> marks.
-    call s:ConvertOpShiftSeqSub(col("'<"), col("'>"))
+    let async = s:ConvertOpShiftSeqSub(col("'<"), col("'>"))
   elseif a:type == 'char'
-    call s:ConvertOpShiftSeqSub(col("'["), col("']"))
+    let async = s:ConvertOpShiftSeqSub(col("'["), col("']"))
   endif
 
-  let &selection = sel_save
+  if !async
+    let &selection = sel_save
+  endif
+endfunction
+
+function! s:ConvertOpShiftSeqSubCont(kstr)
+  let inschars = substitute(s:asyncvars.chars, '.', "\<BS>", 'g') . a:kstr
+  call s:InsertString(inschars)
+  call cursor(0, s:asyncvars.col)
+  let &selection = s:asyncvars.sel_save
 endfunction
 
 function! s:ConvertOpShiftSeqSub(beg, end)
@@ -934,12 +982,14 @@ function! s:ConvertOpShiftSeqSub(beg, end)
   let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
   let seq = s:Kanji2Seq(chars, 0)
   let m = matchlist(seq, '.\(.*\)')
-  if !empty(m)
-    let kstr = s:Seq2Kanji(m[1])
-    let inschars = substitute(chars, '.', "\<BS>", 'g') . kstr
-    call s:InsertString(inschars)
+  if empty(m)
+    call cursor(0, col)
+    return 0
   endif
-  call cursor(0, col)
+  let s:asyncvars.chars = chars
+  let s:asyncvars.col = col
+  call s:Seq2KanjiAsync(m[1], function('s:ConvertOpShiftSeqSubCont'))
+  return 1
 endfunction
 
 " 以前のConvertCount()に渡されたcount引数の値。
