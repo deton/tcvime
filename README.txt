@@ -26,6 +26,12 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
   autoload/tcvime/helptbl_tcode.vim    'runtimepath'/autoload/tcvime/ ヘルプ表
   autoload/tcvime/helptbl_tutcode.vim  'runtimepath'/autoload/tcvime/ ヘルプ表
   autoload/tcvime/helptbl_tutcodep.vim 'runtimepath'/autoload/tcvime/ ヘルプ表
+  autoload/tcvime/kanji2seq.vim        'runtimepath'/autoload/tcvime/
+					    漢字から入力シーケンスへの変換。
+					    部首合成変換やヘルプ表示時に使用。
+  autoload/tcvime/kanji2seq_tcode.vim    'runtimepath'/autoload/tcvime/ 高速化用
+  autoload/tcvime/kanji2seq_tutcode.vim  'runtimepath'/autoload/tcvime/ 高速化用
+  autoload/tcvime/kanji2seq_tutcodep.vim 'runtimepath'/autoload/tcvime/ 高速化用
   doc/tcvime.jax      'runtimepath'/doc/    スクリプトの説明書
   mazegaki.dic        'runtimepath'         交ぜ書き変換用辞書
   bushu.help          'runtimepath'         ユーザ用部首合成辞書
@@ -74,6 +80,9 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
         ・・・・    ・・・・
         ・・1 2     ・・・・
             鍵
+   - 部首合成変換やヘルプ表示高速化のため、漢字から入力シーケンスへの変換用
+     Dictionaryをautoload化。(毎回keymapファイルから生成するかわり。
+     ただしkeymap変更時は手でautoload/tcvime/kanji2seq_tutcode.vim等の変更要)
    - 部首合成変換高速化のため、bushu.revをautoload/tcvime/bushudic.vimに変更。
    - keymap/tutcodep.vimに、Touch16+やTUT98.COMの拗音等の短縮ストロークを追加。
    - キーマッピングの登録・解除を行う:TcvimeOnと:TcvimeOffコマンドを削除し、
