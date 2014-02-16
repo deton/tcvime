@@ -411,7 +411,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
      lmap <silent> alj <Plug>TcvimeIStart
 
 '<Plug>TcvimeIAsciiStart'			*'<Plug>TcvimeIAsciiStart'*
-   交ぜ書き変換: ASCII変換用の読みの開始位置の印を付けるキー。
+   交ぜ書き変換: 英字変換用の読みの開始位置の印を付けるキー。
    keymapをオフにする。
    省略値: (無し: 未割当て)
    例(<C-K>/を指定する場合):
@@ -688,7 +688,7 @@ function! TcvimeCustomKeymap()
   lmap <silent> ala <C-G>u<Plug>TcvimeIBushu
   " 前置型交ぜ書き変換の読み入力開始
   lmap <silent> alj <Plug>TcvimeIStart
-  " 前置型ASCII変換の読み入力開始
+  " 前置型英字変換の読み入力開始
   lmap <silent> als <Plug>TcvimeIAsciiStart
   " 前置型交ぜ書き変換
   lmap <silent> al<Space> <C-G>u<Plug>TcvimeIConvOrStart
