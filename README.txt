@@ -80,6 +80,9 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
         ・・・・    ・・・・
         ・・1 2     ・・・・
             鍵
+   - <Plug>TcvimeVSeq2Kanjiにおいて、入力シーケンス中で後置型カタカナ変換等を
+     使っていると、"<C-R>=tcvime#InputConvertKatakana(3)"等がそのまま入る問題
+     を修正。
    - 部首合成変換やヘルプ表示高速化のため、漢字から入力シーケンスへの変換用
      Dictionaryをautoload化。(毎回keymapファイルから生成するかわり。
      ただしkeymap変更時は手でautoload/tcvime/kanji2seq_tutcode.vim等の変更要)

@@ -609,7 +609,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 部首合成変換辞書				*tcvime-file-bushu*
 ----------------
 
-bushu.rev   部首合成変換用辞書
+autoload/tcvime/bushudic.vim   部首合成変換用辞書
 bushu.help  ユーザ用部首合成辞書
 
 ユーザ用部首合成辞書(bushu.help)ファイルがあれば、
