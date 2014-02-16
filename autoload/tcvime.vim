@@ -1157,6 +1157,9 @@ endfunction
 function! s:ShowAutoHelp(yomi, str)
   let s:prev_str = a:yomi
   let s:commit_str = a:str
+  if matchstr(a:yomi, '[^\x00-\x7f]') == '' " ASCII変換の場合はヘルプ表示しない
+    return
+  endif
   let yomichars = split(a:yomi, '\zs')
   let chars = split(a:str, '\zs')
   " 読みで入力した漢字はヘルプ表示不要なので取り除く
