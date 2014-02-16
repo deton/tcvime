@@ -331,15 +331,11 @@ function! s:Seq2Kanji(str)
   return kstr
 endfunction
 
-" 入力シーケンスを漢字文字列に置換する。
-" 置換する漢字文字列を引数にcallback関数を呼ぶ。
-" (feedkeys()を使用するので、非同期実行)
-function! s:Seq2KanjiAsync(str, callback)
-  let s:Seq2KanjiCallback = a:callback
+" 入力シーケンスを漢字文字列に置換する。feedkeys()を使用。
+function! s:Seq2KanjiFeedkeys(str)
   if a:str == ''
-    return s:Seq2KanjiCallback('')
+    return
   endif
-  call s:Candwin_Open()
   let keymap = &keymap
   if !empty(keymap)
     setlocal iminsert=1
@@ -347,18 +343,11 @@ function! s:Seq2KanjiAsync(str, callback)
     let keymap = g:tcvime_keymap_for_help
     if empty(keymap)
       echo 'tcvime入力シーケンス→漢字変換には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
-      return s:Seq2KanjiCallback('')
+      return
     endif
     call tcvime#SetKeymap(keymap)
   endif
-  call feedkeys('a' . a:str . "\<ESC>:call tcvime#Seq2KanjiCont()\<CR>", 't')
-endfunction
-
-" Seq2Kanji内のfeedkeys()実行完了時に呼ばれ、続きの処理(callback呼出)を行う
-function! tcvime#Seq2KanjiCont()
-  let kstr = getline('.')
-  call s:Candwin_Close()
-  call call(s:Seq2KanjiCallback, [kstr])
+  call feedkeys('a' . a:str . "\<ESC>", 't')
 endfunction
 
 " 漢字文字列を入力シーケンスに変換する。
@@ -920,33 +909,18 @@ endfunction
 function! tcvime#ConvertOpSeq2Kanji(type, ...)
   let sel_save = &selection
   let &selection = "inclusive"
+  let reg_save = @@
 
-  let s:asyncvars = {'sel_save': sel_save}
   if a:0  " Invoked from Visual mode, use '< and '> marks.
-    call s:ConvertOpSeq2KanjiSub(col("'<"), col("'>"))
+    silent exe "normal! `<" . a:type . "`>c"
+    call s:Seq2KanjiFeedkeys(@@)
   elseif a:type == 'char'
-    call s:ConvertOpSeq2KanjiSub(col("'["), col("']"))
+    silent exe "normal! `[v`]c"
+    call s:Seq2KanjiFeedkeys(@@)
   endif
 
-  " s:ConvertOpSeq2KanjiSubCont(kstr)内で実行
-  " let &selection = sel_save
-endfunction
-
-function! s:ConvertOpSeq2KanjiSubCont(kstr)
-  let inschars = substitute(s:asyncvars.chars, '.', "\<BS>", 'g') . a:kstr
-  call s:InsertString(inschars)
-  call cursor(0, s:asyncvars.col)
-  let &selection = s:asyncvars.sel_save
-endfunction
-
-function! s:ConvertOpSeq2KanjiSub(beg, end)
-  let col = col('.')
-  call cursor(0, a:end)
-  execute "normal! a\<ESC>"
-  let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
-  let s:asyncvars.chars = chars
-  let s:asyncvars.col = col
-  call s:Seq2KanjiAsync(chars, function('s:ConvertOpSeq2KanjiSubCont'))
+  let &selection = sel_save
+  let @@ = reg_save
 endfunction
 
 " operatorfuncとして、選択された文字列の入力シーケンスをずらして漢字に変換。
@@ -955,41 +929,26 @@ endfunction
 function! tcvime#ConvertOpShiftSeq(type, ...)
   let sel_save = &selection
   let &selection = "inclusive"
+  let reg_save = @@
 
-  let s:asyncvars = {'sel_save': sel_save}
   if a:0  " Invoked from Visual mode, use '< and '> marks.
-    let async = s:ConvertOpShiftSeqSub(col("'<"), col("'>"))
+    silent exe "normal! `<" . a:type . "`>c"
+    call s:ConvertOpShiftSeqSub(@@)
   elseif a:type == 'char'
-    let async = s:ConvertOpShiftSeqSub(col("'["), col("']"))
+    silent exe "normal! `[v`]c"
+    call s:ConvertOpShiftSeqSub(@@)
   endif
 
-  if !async
-    let &selection = sel_save
-  endif
+  let &selection = sel_save
+  let @@ = reg_save
 endfunction
 
-function! s:ConvertOpShiftSeqSubCont(kstr)
-  let inschars = substitute(s:asyncvars.chars, '.', "\<BS>", 'g') . a:kstr
-  call s:InsertString(inschars)
-  call cursor(0, s:asyncvars.col)
-  let &selection = s:asyncvars.sel_save
-endfunction
-
-function! s:ConvertOpShiftSeqSub(beg, end)
-  let col = col('.')
-  call cursor(0, a:end)
-  execute "normal! a\<ESC>"
-  let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
-  let seq = s:Kanji2Seq(chars, 0)
+function! s:ConvertOpShiftSeqSub(chars)
+  let seq = s:Kanji2Seq(a:chars, 0)
   let m = matchlist(seq, '.\(.*\)')
-  if empty(m)
-    call cursor(0, col)
-    return 0
+  if !empty(m)
+    call s:Seq2KanjiFeedkeys(m[1])
   endif
-  let s:asyncvars.chars = chars
-  let s:asyncvars.col = col
-  call s:Seq2KanjiAsync(m[1], function('s:ConvertOpShiftSeqSubCont'))
-  return 1
 endfunction
 
 " 以前のConvertCount()に渡されたcount引数の値。
