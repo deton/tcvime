@@ -1,27 +1,8 @@
 " vi:set ts=8 sts=2 sw=2 tw=0:
 scriptencoding utf-8
 
-let s:keytbl = [
-\['q','w','e','r','t','y','u','i','o','p'],
-\['a','s','d','f','g','h','j','k','l',';'],
-\['z','x','c','v','b','n','m',',','.','/']]
-
-function! s:initvar()
-  let s:keytblflat = []
-  for i in range(len(s:keytbl))
-    let s:keytblflat += s:keytbl[i]
-  endfor
-
-  " 2打鍵目のソート順番(TUT-Codeの3打鍵用ヘルプ表作成用)
-  let s:key2order = []
-  let s:key2order += reverse(s:keytbl[0][4:5]) " ['y','t']
-  let s:key2order += reverse(s:keytbl[1][4:5]) " ['h','g']
-  call add(s:key2order, s:keytbl[2][6]) " 'm'
-  call add(s:key2order, s:keytbl[2][3]) " 'v'
-  let s:key2order += reverse(s:keytbl[2][4:5]) " ['n','b']
-endfunction
-call s:initvar()
-
+" mkhelptbl.vim: 打鍵ヘルプ文字表データ作成用スクリプト。
+"
 " autoload/tcvime/helptbl_tutcode.vim等を作るための文字列を作成。
 " keymapからヘルプ表を生成すると、不要な行も含まれるので、手で加工する想定。
 "
@@ -37,6 +18,40 @@ call s:initvar()
 " let tcvime#helptbl_tutcodep#tbl = {
 " .
 " :.,$j!
+
+let g:tcvime#mkhelptbl#keytbl = [
+\['1','2','3','4','5','6','7','8','9','0'],
+\['q','w','e','r','t','y','u','i','o','p'],
+\['a','s','d','f','g','h','j','k','l',';'],
+\['z','x','c','v','b','n','m',',','.','/']]
+
+if get(g:, 'tcvime#mkhelptbl#exclude_numrow', 0)
+  " 数字段が不要の場合(TUT-Code等)
+  call remove(g:tcvime#mkhelptbl#keytbl, 0)
+endif
+
+function! s:initvar()
+  let s:keytblflat = []
+  for i in range(len(g:tcvime#mkhelptbl#keytbl))
+    let s:keytblflat += g:tcvime#mkhelptbl#keytbl[i]
+  endfor
+
+  " 2打鍵目のソート順番(TUT-Codeの3打鍵用ヘルプ表作成用)
+  let s:key2order = []
+  let offset = 0
+  if len(g:tcvime#mkhelptbl#keytbl) == 4 " 数字段あり
+    let offset = 1
+  endif
+  let s:key2order += reverse(g:tcvime#mkhelptbl#keytbl[offset][4:5]) " ['y','t']
+  let offset += 1
+  let s:key2order += reverse(g:tcvime#mkhelptbl#keytbl[offset][4:5]) " ['h','g']
+  let offset += 1
+  call add(s:key2order, g:tcvime#mkhelptbl#keytbl[offset][6]) " 'm'
+  call add(s:key2order, g:tcvime#mkhelptbl#keytbl[offset][3]) " 'v'
+  let s:key2order += reverse(g:tcvime#mkhelptbl#keytbl[offset][4:5]) " ['n','b']
+endfunction
+call s:initvar()
+
 function! tcvime#mkhelptbl#dict2list(helpdict)
   let list = []
   for k in sort(keys(a:helpdict), function('s:cmpkeytbl'))
@@ -47,7 +62,7 @@ function! tcvime#mkhelptbl#dict2list(helpdict)
   return list
 endfunction
 
-" s:keytbl順にソートするための比較関数
+" g:tcvime#mkhelptbl#keytbl順にソートするための比較関数
 function! s:cmpkeytbl(s1, s2)
   let len1 = strlen(a:s1)
   let len2 = strlen(a:s2)
@@ -166,7 +181,7 @@ endfunction
 function! s:mktbl1(keymapdict, key23)
   let tbl1 = []
   let haskanji = 0
-  for tl in s:keytbl
+  for tl in g:tcvime#mkhelptbl#keytbl
     let cols = []
     for key1 in tl
       let kanji = get(a:keymapdict, key1 . a:key23, '・')
@@ -188,13 +203,13 @@ function! s:mktbl1(keymapdict, key23)
 endfunction
 
 function! s:addlastmark(tbl, key3)
-  let [x3, y3] = s:tblindex(s:keytbl, a:key3)
+  let [x3, y3] = s:tblindex(g:tcvime#mkhelptbl#keytbl, a:key3)
   if x3 == -1
     return
   endif
   for y in range(len(a:tbl))
     if y == y3
-      if a:tbl[y][x3] == '・'
+      if a:tbl[y][x3] == '・' || a:tbl[y][x3] == '＿'
 	let a:tbl[y][x3] = '$△'
       else
 	let a:tbl[y][x3] = '$' . a:tbl[y][x3]
@@ -217,7 +232,7 @@ endfunction
 
 " 右手ブロックと左手ブロックの区切り|を入れる
 function! s:addrlsep(tbl, key2)
-  let [x2, y2] = s:tblindex(s:keytbl, a:key2)
+  let [x2, y2] = s:tblindex(g:tcvime#mkhelptbl#keytbl, a:key2)
   if x2 == -1
     let mark = '|' " 2打鍵の場合
   elseif x2 == 3

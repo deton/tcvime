@@ -333,6 +333,11 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
 'tcvime_use_helptbl'				*'tcvime_use_helptbl'*
   文字ヘルプ表示時に、該当文字の打ち方だけでなく、
   第1打鍵以外の打ち方が共通する文字のテーブル(文字表)を表示するかどうか。
+  なお、文字表のデータは、autoload/tcvime/helptbl_tutcode.vim等を読み込むので、
+  該当ファイルが存在しない場合は文字表表示はオフになります。
+  また、keymap変更時は、文字表データファイルも合わせて変更しておく必要が
+  あります。keymapから文字表データファイル作成補助用に、
+  autoload/tcvime/mkhelptbl.vimを用意しています。
   省略値: 1
   設定例:
     let tcvime_use_helptbl = 0
