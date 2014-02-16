@@ -382,7 +382,7 @@ function! s:Kanji2SeqChar(ch)
   if char2nr(a:ch) < 0x80
     return a:ch
   endif
-  let seq = s:SearchKeymap(a:ch)
+  let seq = tcvime#kanji2seq#get(a:ch)
   if seq == ''
     return a:ch
   endif
@@ -1207,7 +1207,7 @@ endfunction
 
 " 指定された文字のヘルプ表を表示する
 function! s:ShowHelpChar(ch)
-  let keyseq = s:SearchKeymap(a:ch)
+  let keyseq = tcvime#kanji2seq#get(a:ch)
   if strlen(keyseq) > 0
     call s:SelectWindowByName(s:helpbufname)
     if g:tcvime_use_helptbl
@@ -1346,56 +1346,6 @@ function! s:SearchBushuDic(ch)
     call add(lines, value . key)
   endfor
   return lines
-endfunction
-
-function! s:KeymapFile_GetName()
-  let keymap = &keymap
-  if strlen(keymap) == 0
-    let keymap = g:tcvime_keymap_for_help
-    if strlen(keymap) == 0
-      echo 'tcvime文字ヘルプ表示には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
-      return ''
-    endif
-  endif
-
-  let kmfile = globpath(&rtp, "keymap/" . keymap . "_" . &encoding . ".vim")
-  if filereadable(kmfile) != 1
-    let kmfile = globpath(&rtp, "keymap/" . keymap . ".vim")
-    if filereadable(kmfile) != 1
-      return ''
-    endif
-  endif
-  return kmfile
-endfunction
-
-" 指定された文字を入力するためのストロークをkeymapファイルから検索する
-function! s:SearchKeymap(ch)
-  if exists('s:kanji2seqdict')
-    return get(s:kanji2seqdict, a:ch, '')
-  endif
-  let s:kanji2seqdict = {}
-
-  let kmfile = s:KeymapFile_GetName()
-  if kmfile == ''
-    return ''
-  endif
-  silent execute 'sv ' . kmfile
-  if search('loadkeymap', 'w') == 0
-    quit!
-    return ''
-  endif
-  let lines = getline(line('.') + 1, '$')
-  quit!
-
-  call filter(lines, 'v:val !~ "^\""')
-  call filter(lines, 'v:val !~ "^$"')
-  for line in lines
-    let m = matchlist(line, '\([^ 	]\+\)[ 	]\+\([^ 	]\+\)')
-    if !empty(m)
-      let s:kanji2seqdict[m[2]] = substitute(m[1], '<Space>', ' ', 'g')
-    endif
-  endfor
-  return get(s:kanji2seqdict, a:ch, '')
 endfunction
 
 "==============================================================================
