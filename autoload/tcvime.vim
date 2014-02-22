@@ -61,6 +61,34 @@ endif
 let g:tcvime#hiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん'
 let g:tcvime#katakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲン'
 
+" lmapをオフにする
+function! tcvime#EnableKeymap()
+  call tcvime#InputReset()
+  " 既にオンの場合は何もしない
+  if &iminsert !=# 0
+    return ''
+  endif
+  call tcvime#SetKeymap(g:tcvime_keymap_for_help)
+  if exists('*OnTcvimeEnableKeymap')
+    call OnTcvimeEnableKeymap()
+  endif
+  return "\<C-^>"
+endfunction
+
+" lmapをオンにする
+function! tcvime#DisableKeymap()
+  call tcvime#InputReset()
+  " 既にオフの場合は何もしない
+  if &iminsert ==# 0
+    return ''
+  endif
+  set iminsert=0
+  if exists('*OnTcvimeDisableKeymap')
+    call OnTcvimeDisableKeymap()
+  endif
+  return "\<C-^>"
+endfunction
+
 " insert mode時に、直前の指定された文字数のひらがな→カタカナ変換を行う
 " ための文字列を返す。
 "

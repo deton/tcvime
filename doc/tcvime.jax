@@ -374,8 +374,19 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
     let tcvime_mazegaki_edit_nocand = 1
   交ぜ書き変換辞書編集に関しては、|tcvime-file-mazegaki-edit|参照。
 
+OnTcvimeEnableKeymap()				*OnTcvimeEnableKeymap()*
+  tcvime#EnableKeymap()からコールバックされる関数。
+  設定例は|tcvime-setting|参照。
+
+OnTcvimeDisableKeymap()				*OnTcvimeDisableKeymap()*
+  tcvime#DisableKeymap()からコールバックされる関数。
+  設定例は|tcvime-setting|参照。
+
 TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
-  lmapのカスタマイズ用の関数。tcvime#SetKeymap()からコールバックされる。
+  lmapのカスタマイズ用の関数。
+  tcvime#EnableKeymap()内のtcvime#SetKeymap()からコールバックされる。
+  (lmapのロード時に1回のみ実行されるようにするため、
+  OnTcvimeEnableKeymap()と別関数)
   設定例は|tcvime-setting|参照。
 
 'g:tcvime#selectkeys'				*'g:tcvime#selectkeys'*
@@ -645,8 +656,8 @@ bushu.helpの例:
 if has('keymap')
   let tcvime_keymap_for_help = 'tutcodep'
   set iminsert=0 imsearch=0
-  imap <unique> <C-J> <C-R>=<SID>EnableKeymap()<CR>
-  imap <silent> <unique> <C-L> <C-R>=<SID>DisableKeymap()<CR>
+  imap <unique> <C-J> <C-R>=tcvime#EnableKeymap()<CR>
+  imap <silent> <unique> <C-L> <C-R>=tcvime#DisableKeymap()<CR>
   imap <silent> <unique> <ESC> <ESC>:set imsearch=0<CR>
   imap <silent> <unique> <C-K>/ <Plug>TcvimeIAsciiStart
   nmap <silent> <unique> <C-K>k <Plug>TcvimeNKatakana
@@ -657,32 +668,23 @@ if has('keymap')
   vmap <silent> <unique> <C-K>, <Plug>TcvimeVShiftSeq
 endif
 
-function! s:EnableKeymap()
-  " 既にオンの場合は何もしない
-  if &iminsert
-    return ''
-  endif
-  call tcvime#InputReset()
-  call tcvime#SetKeymap(g:tcvime_keymap_for_help)
+" tcvime#EnableKeymap()からコールバックされる関数。
+function! OnTcvimeEnableKeymap()
   " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
   " (lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可。(<C-R>=なので))
   imap <silent> <Space> <C-G>u<Plug>TcvimeIConvOrSpace
-  return "\<C-^>"
 endfunction
 
-function! s:DisableKeymap()
-  " 既にオフの場合は何もしない
-  if !&iminsert
-    return ''
-  endif
-  set iminsert=0
+" tcvime#DisableKeymap()からコールバックされる関数。
+function! OnTcvimeDisableKeymap()
   silent! iunmap <Space>
   TcvimeCloseHelp
-  return "\<C-^>"
 endfunction
 
-" lmapのカスタマイズを行う関数。
-" tcvime#SetKeymap()からコールバックされる。
+" lmapのカスタマイズ用の関数。
+" tcvime#EnableKeymap()内のtcvime#SetKeymap()からコールバックされる。
+" (lmapのロード時に1回のみ実行されるようにするため、
+" OnTcvimeEnableKeymap()と別関数)
 function! TcvimeCustomKeymap()
   " (TUT-Code用の例)
   " 後置型部首合成変換
