@@ -40,8 +40,8 @@ if !exists(":TcvimeEditMazegaki")
   command! TcvimeEditMazegaki call tcvime#MazegakiDic_Edit(1)
 endif
 
-inoremap <script> <silent> <Plug>TcvimeEnableKeymap <C-R>=tcvime#EnableKeymap()<CR>
-inoremap <script> <silent> <Plug>TcvimeDisableKeymap <C-R>=tcvime#DisableKeymap()<CR>
+inoremap <script> <silent> <Plug>TcvimeIEnableKeymap <C-R>=tcvime#EnableKeymap()<CR>
+inoremap <script> <silent> <Plug>TcvimeIDisableKeymap <C-R>=tcvime#DisableKeymap()<CR>
 inoremap <script> <silent> <Plug>TcvimeIStart <C-R>=tcvime#InputStart()<CR>
 inoremap <script> <silent> <Plug>TcvimeIAsciiStart <C-R>=tcvime#InputAsciiStart()<CR>
 inoremap <script> <silent> <Plug>TcvimeIConvOrStart <C-R>=tcvime#InputConvertOrStart(0)<CR>
