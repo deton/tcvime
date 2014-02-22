@@ -375,16 +375,18 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
   交ぜ書き変換辞書編集に関しては、|tcvime-file-mazegaki-edit|参照。
 
 OnTcvimeEnableKeymap()				*OnTcvimeEnableKeymap()*
-  tcvime#EnableKeymap()からコールバックされる関数。
+  |<Plug>TcvimeEnableKeymap|実行時にコールバックされる関数
+  (ただし、<Plug>TcvimeEnableKeymap実行時に既にlmapオンの場合は呼ばれません)。
   設定例は|tcvime-setting|参照。
 
 OnTcvimeDisableKeymap()				*OnTcvimeDisableKeymap()*
-  tcvime#DisableKeymap()からコールバックされる関数。
+  |<Plug>TcvimeDisableKeymap|実行時にコールバックされる関数
+  (ただし、<Plug>TcvimeDisableKeymap実行時に既にlmapオフの場合は呼ばれません)。
   設定例は|tcvime-setting|参照。
 
 TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
   lmapのカスタマイズ用の関数。
-  tcvime#EnableKeymap()内のtcvime#SetKeymap()からコールバックされる。
+  |<Plug>TcvimeEnableKeymap|実行中にtcvime#SetKeymap()からコールバックされる。
   (lmapのロード時に1回のみ実行されるようにするため、
   OnTcvimeEnableKeymap()と別関数)
   設定例は|tcvime-setting|参照。
@@ -415,6 +417,14 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 
 キー設定オプション(Insert mode)
 -------------------------------
+
+'<Plug>TcvimeEnableKeymap'			*'<Plug>TcvimeEnableKeymap'*
+  lmapをオンにする。|i_CTRL-^|のようなトグルでなくオンにするためのキーです。
+  |OnTcvimeEnableKeymap()|を呼び出します。
+
+'<Plug>TcvimeDisableKeymap'			*'<Plug>TcvimeDisableKeymap'*
+  lmapをオフにする。|i_CTRL-^|のようなトグルでなくオフにするためのキーです。
+  |OnTcvimeDisableKeymap()|を呼び出します。
 
 '<Plug>TcvimeIStart'				*'<Plug>TcvimeIStart'*
    交ぜ書き変換: 読みの開始位置の印を付けるキー。省略値: <Leader>q
@@ -656,8 +666,8 @@ bushu.helpの例:
 if has('keymap')
   let tcvime_keymap_for_help = 'tutcodep'
   set iminsert=0 imsearch=0
-  imap <unique> <C-J> <C-R>=tcvime#EnableKeymap()<CR>
-  imap <silent> <unique> <C-L> <C-R>=tcvime#DisableKeymap()<CR>
+  imap <unique> <C-J> <Plug>TcvimeEnableKeymap
+  imap <silent> <unique> <C-L> <Plug>TcvimeDisableKeymap
   imap <silent> <unique> <ESC> <ESC>:set imsearch=0<CR>
   imap <silent> <unique> <C-K>/ <Plug>TcvimeIAsciiStart
   nmap <silent> <unique> <C-K>k <Plug>TcvimeNKatakana
@@ -668,21 +678,21 @@ if has('keymap')
   vmap <silent> <unique> <C-K>, <Plug>TcvimeVShiftSeq
 endif
 
-" tcvime#EnableKeymap()からコールバックされる関数。
+" <Plug>TcvimeEnableKeymap実行時にコールバックされる関数。
 function! OnTcvimeEnableKeymap()
   " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
   " (lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可。(<C-R>=なので))
   imap <silent> <Space> <C-G>u<Plug>TcvimeIConvOrSpace
 endfunction
 
-" tcvime#DisableKeymap()からコールバックされる関数。
+" <Plug>TcvimeDisableKeymap()実行時にコールバックされる関数。
 function! OnTcvimeDisableKeymap()
   silent! iunmap <Space>
   TcvimeCloseHelp
 endfunction
 
 " lmapのカスタマイズ用の関数。
-" tcvime#EnableKeymap()内のtcvime#SetKeymap()からコールバックされる。
+" <Plug>TcvimeEnableKeymap実行中にtcvime#SetKeymap()からコールバックされる。
 " (lmapのロード時に1回のみ実行されるようにするため、
 " OnTcvimeEnableKeymap()と別関数)
 function! TcvimeCustomKeymap()

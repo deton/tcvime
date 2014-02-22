@@ -61,7 +61,7 @@ endif
 let g:tcvime#hiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん'
 let g:tcvime#katakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲン'
 
-" lmapをオフにする
+" lmapをオンにする
 function! tcvime#EnableKeymap()
   call tcvime#InputReset()
   " 既にオンの場合は何もしない
@@ -75,7 +75,7 @@ function! tcvime#EnableKeymap()
   return "\<C-^>"
 endfunction
 
-" lmapをオンにする
+" lmapをオフにする
 function! tcvime#DisableKeymap()
   call tcvime#InputReset()
   " 既にオフの場合は何もしない
