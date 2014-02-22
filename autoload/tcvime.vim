@@ -646,6 +646,29 @@ function! tcvime#InputConvertShrinkLatest()
   return ''
 endfunction
 
+" コントロールキーを伴わないモード切り替え用。
+" Insert modeで、直前が' 'の場合、lmapをオンにする
+"   imap <silent> <unique> , <C-R>=tcvime#EnableKeymapOrInsertChar(',',1)<CR>
+" (<Space>,にimapすると<Space>を押した際にtimeout待ちになるのが嫌なので。)
+" @param ch 直前が' 'でない場合に挿入する文字
+" @param removespace 直前が' 'の場合に、' 'を削除したい場合は1
+function! tcvime#EnableKeymapOrInsertChar(ch, removespace)
+  let col = col('.')
+  if s:insert_line == line('.') && s:insert_col >= col
+    " Insert mode開始直後はそのまま入力
+    " XXX: CTRL-Dでインデントを減らした場合には未対応
+    return a:ch
+  endif
+  let prevch = matchstr(getline('.'), '.\{,1}\%' . col('.') . 'c')
+  if prevch == ' '
+    if a:removespace == 1
+      return "\<BS>" . tcvime#EnableKeymap()
+    endif
+    return tcvime#EnableKeymap()
+  endif
+  return a:ch
+endfunction
+
 " Insert modeで、読みがあれば交ぜ書き変換を開始し、無ければ' 'を返す。
 function! tcvime#InputConvertOrSpace()
   let status = s:StatusGet('.', col('.'))
