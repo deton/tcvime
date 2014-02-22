@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-02-16
+" Last Change: 2014-02-22
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -444,6 +444,11 @@ endfunction
 " 読みの入力を開始
 function! tcvime#InputStart()
   call s:StatusSet()
+  return ''
+endfunction
+
+function! tcvime#InputReset()
+  call s:StatusReset()
   return ''
 endfunction
 

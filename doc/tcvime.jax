@@ -662,6 +662,7 @@ function! s:EnableKeymap()
   if &iminsert
     return ''
   endif
+  call tcvime#InputReset()
   call tcvime#SetKeymap(g:tcvime_keymap_for_help)
   " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
   " (lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可。(<C-R>=なので))
