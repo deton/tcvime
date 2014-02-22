@@ -58,6 +58,11 @@ if exists('g:tcvime#yomimarkchar')
   let g:tcvime#hira2kata_pat = g:tcvime#yomimarkchar . '\=' . tcvime#hira2kata_pat
 endif
 
+" 後置型英字変換の対象の読み文字列のパターン。' 'や日本語より後。
+if !exists("g:tcvime#asciiconv_pat")
+  let g:tcvime#asciiconv_pat = "[!-~]*"
+endif
+
 let g:tcvime#hiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん'
 let g:tcvime#katakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲン'
 
@@ -511,8 +516,9 @@ let s:completeop = 0
 " @param count 交ぜ書き変換の対象にする読みの文字数
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! tcvime#InputPostConvert(count, katuyo)
+  let col = col('.')
   let s:status_line = line(".")
-  let yomi = matchstr(getline('.'), '.\{' . a:count . '}\%' . col('.') . 'c')
+  let yomi = matchstr(getline('.'), '.\{' . a:count . '}\%' . col . 'c')
   let len = strlen(yomi)
   if len == 0
     let s:last_keyword = ''
@@ -520,8 +526,8 @@ function! tcvime#InputPostConvert(count, katuyo)
     call s:StatusReset()
     return ''
   endif
-  let s:status_column = col('.') - len
-  return s:InputConvertSub(yomi, a:katuyo, 1)
+  let s:status_column = col - len
+  return s:InputConvertSub(yomi, a:katuyo, 1, col)
 endfunction
 
 " 後置型交ぜ書き変換で、文字数が指定されていない際に、
@@ -549,7 +555,7 @@ function! tcvime#InputPostConvertStart(katuyo)
   while yomi != ''
     let len = strlen(yomi)
     let s:status_column = col - len
-    let ret = s:InputConvertSub(yomi, a:katuyo, 0)
+    let ret = s:InputConvertSub(yomi, a:katuyo, 0, col)
     " 候補が見つかった場合は終了
     if ret != '' || s:completeyomi != ''
       return ret
@@ -562,6 +568,43 @@ function! tcvime#InputPostConvertStart(katuyo)
   let s:last_count = 0
   call s:StatusReset()
   return ''
+endfunction
+
+" Insert modeで、直前が' 'の場合、英字変換を行う。
+"   imap <silent> <unique> ; <C-R>=tcvime#InputPostConvertAscii(';')<CR>
+" @param ch 直前が' 'でない場合に挿入する文字
+function! tcvime#InputPostConvertAscii(ch)
+  if !s:IsPrevSpace()
+    return a:ch
+  endif
+  let col = col('.') - 1
+  let line = getline('.')
+  let c = col
+  if s:insert_line == line('.') && s:insert_col < col
+    " Insert mode開始位置以降を変換対象とする
+    " XXX: CTRL-Dでインデントを減らした場合には未対応
+    let line = strpart(line, s:insert_col - 1)
+    let c = col - s:insert_col + 1
+  endif
+  let yomi = matchstr(line, g:tcvime#asciiconv_pat . '\%' . c . 'c')
+  if yomi == ''
+    return a:ch
+  endif
+  let s:status_line = line('.')
+  let len = strlen(yomi)
+  let s:status_column = col - len
+  let ret = s:InputConvertSub(yomi, 0, 1, col)
+  if ret != ''
+    return "\<BS>" . ret
+  endif
+  " 候補選択中
+  if s:completeyomi != ''
+    return ret
+  endif
+  let s:last_keyword = ''
+  let s:last_count = 0
+  call s:StatusReset()
+  return "\<BS>"
 endfunction
 
 " 交ぜ書き変換の読みを縮める
@@ -592,7 +635,7 @@ function! s:InputConvertShrink()
   while yomi != ''
     let len = strlen(yomi)
     let s:status_column += oldlen - len
-    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0)
+    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0, s:status_colend)
     " 候補が見つかった場合は終了
     if s:last_candidate != ''
       return ret
@@ -614,11 +657,12 @@ function! tcvime#InputConvertShrinkLatest()
   if pumvisible()
     return s:InputConvertShrinkPum()
   endif
+  let col = col('.')
   " カーソル位置前が、直前に変換した文字列でない場合は、何もしない。
   " 変換後に別の文字を入力した後で間違ってこの関数が呼ばれて、
   " 古い変換の内容をもとに上書きすると困るので。
   let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
-  let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
+  let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col . 'c')
   if chars != s:commit_str
     return ''
   endif
@@ -630,8 +674,8 @@ function! tcvime#InputConvertShrinkLatest()
   let s:status_line = line('.')
   while yomi != ''
     let len = strlen(yomi)
-    let s:status_column = col('.') - len
-    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0)
+    let s:status_column = col - len
+    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0, col)
     " 候補が見つかった場合は終了
     if ret != '' || s:completeyomi != ''
       return ret
@@ -653,31 +697,40 @@ endfunction
 " @param ch 直前が' 'でない場合に挿入する文字
 " @param removespace 直前が' 'の場合に、' 'を削除したい場合は1
 function! tcvime#EnableKeymapOrInsertChar(ch, removespace)
+  if !s:IsPrevSpace()
+    return a:ch
+  endif
+  if a:removespace == 1
+    return "\<BS>" . tcvime#EnableKeymap()
+  endif
+  return tcvime#EnableKeymap()
+endfunction
+
+" カーソル位置直前が' 'かどうかを返す
+function! s:IsPrevSpace()
   let col = col('.')
   if s:insert_line == line('.') && s:insert_col >= col
     " Insert mode開始直後はそのまま入力
     " XXX: CTRL-Dでインデントを減らした場合には未対応
-    return a:ch
+    return 0
   endif
   let prevch = matchstr(getline('.'), '.\{,1}\%' . col('.') . 'c')
   if prevch == ' '
-    if a:removespace == 1
-      return "\<BS>" . tcvime#EnableKeymap()
-    endif
-    return tcvime#EnableKeymap()
+    return 1
   endif
-  return a:ch
+  return 0
 endfunction
 
 " Insert modeで、読みがあれば交ぜ書き変換を開始し、無ければ' 'を返す。
 function! tcvime#InputConvertOrSpace()
-  let status = s:StatusGet('.', col('.'))
+  let col = col('.')
+  let status = s:StatusGet('.', col)
   if status == ''
     let s:last_keyword = ''
     return ' '
   endif
   let lastyomi = s:last_keyword
-  let ret = s:InputConvertSub(status, 0, 1)
+  let ret = s:InputConvertSub(status, 0, 1, col)
   " 候補無し && 前回と同じ読み→前回も変換不可。再度<Space>なので' 'を返す。
   " でないと、' 'を挿入できなくなったように見えるので。
   " <Plug>TcvimeIStartキーを押して読み開始位置リセットすれば挿入できるけど。
@@ -692,12 +745,13 @@ endfunction
 " Insert modeで交ぜ書き変換を行う。読みが無い場合は読み開始マークを付ける。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! tcvime#InputConvertOrStart(katuyo)
-  let status = s:StatusGet('.', col('.'))
+  let col = col('.')
+  let status = s:StatusGet('.', col)
   if status == ''
     let s:last_keyword = ''
     return tcvime#InputStart()
   endif
-  return s:AddEnableKeymap(s:InputConvertSub(status, a:katuyo, 1))
+  return s:AddEnableKeymap(s:InputConvertSub(status, a:katuyo, 1, col))
 endfunction
 
 " ASCII変換で一時的にASCII入力にしている場合があるので、
@@ -715,7 +769,9 @@ endfunction
 " 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 " @param finish 候補が見つからなかった時にechoするかどうか。
-function! s:InputConvertSub(yomi, katuyo, finish)
+" @param colend 読みの終了column
+function! s:InputConvertSub(yomi, katuyo, finish, colend)
+  let s:status_colend = a:colend
   let s:completeyomi = ''
   let inschars = ''
   let s:is_katuyo = a:katuyo
@@ -727,7 +783,7 @@ function! s:InputConvertSub(yomi, katuyo, finish)
   let ncands = s:CandidateSearch(key, a:finish)
   if ncands == 1
     if !pumvisible()
-      let inschars = s:InputFix(col('.'))
+      let inschars = s:InputFix(s:status_colend)
     else
       " InputConvertShrink()から呼び出された場合。
       " さらにShrinkするためのs:commit_str更新や自動ヘルプ表示を
@@ -791,11 +847,11 @@ function! s:OnCursorMovedI()
   " 読みの伸縮操作による再検索で複数候補が見つかった場合、再度popup menuを表示
   if s:completeop == 1
     let s:completeop = 0
-    call s:InputConvertShowPopup(s:StatusGet('.', col('.')))
+    call s:InputConvertShowPopup(s:StatusGet('.', s:status_colend))
     return
   endif
 
-  let col = col('.')
+  let col = s:status_colend
   if col == 1
     " <CR>で確定して改行が挿入されて行頭になった場合。TODO: autoindent対応
     let lnum = line('.') - 1
