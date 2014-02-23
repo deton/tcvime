@@ -744,6 +744,9 @@ function! tcvime#InputConvertOrSpace()
     call s:StatusReset()
     return ' '
   endif
+  if s:completeyomi != ''
+    return ret
+  endif
   return ret . tcvime#EnableKeymap()
 endfunction
 
@@ -755,7 +758,11 @@ function! tcvime#InputConvertOrStart(katuyo)
     let s:last_keyword = ''
     return tcvime#InputStart()
   endif
-  return s:InputConvertSub(status, a:katuyo, 1) . tcvime#EnableKeymap()
+  let ret = s:InputConvertSub(status, a:katuyo, 1)
+  if s:completeyomi != ''
+    return ret
+  endif
+  return ret . tcvime#EnableKeymap()
 endfunction
 
 " Insert modeで交ぜ書き変換を行う。
