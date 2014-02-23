@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-02-22
+" Last Change: 2014-02-23
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -527,7 +527,7 @@ function! tcvime#InputPostConvert(count, katuyo)
     return ''
   endif
   let s:status_column = col - len
-  return s:InputConvertSub(yomi, a:katuyo, 1, col)
+  return s:InputConvertSub(yomi, a:katuyo, 1)
 endfunction
 
 " 後置型交ぜ書き変換で、文字数が指定されていない際に、
@@ -555,7 +555,7 @@ function! tcvime#InputPostConvertStart(katuyo)
   while yomi != ''
     let len = strlen(yomi)
     let s:status_column = col - len
-    let ret = s:InputConvertSub(yomi, a:katuyo, 0, col)
+    let ret = s:InputConvertSub(yomi, a:katuyo, 0)
     " 候補が見つかった場合は終了
     if ret != '' || s:completeyomi != ''
       return ret
@@ -593,18 +593,16 @@ function! tcvime#InputPostConvertAscii(ch)
   let s:status_line = line('.')
   let len = strlen(yomi)
   let s:status_column = col - len
-  let ret = s:InputConvertSub(yomi, 0, 1, col)
-  if ret != ''
-    return "\<BS>" . ret
+  " 交ぜ書き変換は現在colまでを対象にする想定なので、それと整合性を合わせるため
+  let yomi .= ' '
+  let ret = s:InputConvertSub(yomi, 0, 1)
+  if ret == '' && s:completeyomi == ''
+    let s:last_keyword = ''
+    let s:last_count = 0
+    call s:StatusReset()
+    return "\<BS>"
   endif
-  " 候補選択中
-  if s:completeyomi != ''
-    return ret
-  endif
-  let s:last_keyword = ''
-  let s:last_count = 0
-  call s:StatusReset()
-  return "\<BS>"
+  return ret
 endfunction
 
 " 交ぜ書き変換の読みを縮める
@@ -635,7 +633,7 @@ function! s:InputConvertShrink()
   while yomi != ''
     let len = strlen(yomi)
     let s:status_column += oldlen - len
-    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0, s:status_colend)
+    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0)
     " 候補が見つかった場合は終了
     if s:last_candidate != ''
       return ret
@@ -675,7 +673,7 @@ function! tcvime#InputConvertShrinkLatest()
   while yomi != ''
     let len = strlen(yomi)
     let s:status_column = col - len
-    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0, col)
+    let ret = s:InputConvertSub(yomi, s:is_katuyo, 0)
     " 候補が見つかった場合は終了
     if ret != '' || s:completeyomi != ''
       return ret
@@ -723,14 +721,13 @@ endfunction
 
 " Insert modeで、読みがあれば交ぜ書き変換を開始し、無ければ' 'を返す。
 function! tcvime#InputConvertOrSpace()
-  let col = col('.')
-  let status = s:StatusGet('.', col)
+  let status = s:StatusGet('.', col('.'))
   if status == ''
     let s:last_keyword = ''
     return ' '
   endif
   let lastyomi = s:last_keyword
-  let ret = s:InputConvertSub(status, 0, 1, col)
+  let ret = s:InputConvertSub(status, 0, 1)
   " 候補無し && 前回と同じ読み→前回も変換不可。再度<Space>なので' 'を返す。
   " でないと、' 'を挿入できなくなったように見えるので。
   " <Plug>TcvimeIStartキーを押して読み開始位置リセットすれば挿入できるけど。
@@ -745,13 +742,12 @@ endfunction
 " Insert modeで交ぜ書き変換を行う。読みが無い場合は読み開始マークを付ける。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 function! tcvime#InputConvertOrStart(katuyo)
-  let col = col('.')
-  let status = s:StatusGet('.', col)
+  let status = s:StatusGet('.', col('.'))
   if status == ''
     let s:last_keyword = ''
     return tcvime#InputStart()
   endif
-  return s:AddEnableKeymap(s:InputConvertSub(status, a:katuyo, 1, col))
+  return s:AddEnableKeymap(s:InputConvertSub(status, a:katuyo, 1))
 endfunction
 
 " ASCII変換で一時的にASCII入力にしている場合があるので、
@@ -769,21 +765,13 @@ endfunction
 " 変換対象文字列の末尾に「―」を追加して交ぜ書き辞書を検索する。
 " @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 " @param finish 候補が見つからなかった時にechoするかどうか。
-" @param colend 読みの終了column
-function! s:InputConvertSub(yomi, katuyo, finish, colend)
-  let s:status_colend = a:colend
+function! s:InputConvertSub(yomi, katuyo, finish)
   let s:completeyomi = ''
   let inschars = ''
-  let s:is_katuyo = a:katuyo
-  if s:is_katuyo
-    let key = a:yomi . '―'
-  else
-    let key = a:yomi
-  endif
-  let ncands = s:CandidateSearch(key, a:finish)
+  let ncands = s:CandidateSearch(a:yomi, a:katuyo, a:finish)
   if ncands == 1
     if !pumvisible()
-      let inschars = s:InputFix(s:status_colend)
+      let inschars = s:InputFix(col('.'))
     else
       " InputConvertShrink()から呼び出された場合。
       " さらにShrinkするためのs:commit_str更新や自動ヘルプ表示を
@@ -847,11 +835,11 @@ function! s:OnCursorMovedI()
   " 読みの伸縮操作による再検索で複数候補が見つかった場合、再度popup menuを表示
   if s:completeop == 1
     let s:completeop = 0
-    call s:InputConvertShowPopup(s:StatusGet('.', s:status_colend))
+    call s:InputConvertShowPopup(s:StatusGet('.', col('.')))
     return
   endif
 
-  let col = s:status_colend
+  let col = col('.')
   if col == 1
     " <CR>で確定して改行が挿入されて行頭になった場合。TODO: autoindent対応
     let lnum = line('.') - 1
@@ -881,32 +869,18 @@ function! tcvime#InputConvertSelectCand(idx)
   return "\<C-E>" . bs . s:last_candidate
 endfunction
 
-" 確定しようとしている候補が問題ないかどうかチェック
-function! s:IsCandidateOK(str)
-  if strlen(a:str) > 0 && strlen(s:last_candidate) > 0
-    if s:is_katuyo && s:last_keyword ==# (a:str . '―') || s:last_keyword ==# a:str
-      return 1
-    endif
-  endif
-  return 0
-endfunction
-
 " 候補を確定して、確定した文字列を返す
 function! s:InputFix(col)
   let inschars = ''
   let str = s:StatusGet('.', a:col)
-  if s:IsCandidateOK(str)
-    let inschars = s:last_candidate
-    if strlen(inschars) > 0
-      if g:tcvime_movecandto >= 0
-	call s:LearnCand(inschars)
-      endif
-      call s:ShowAutoHelp(str, inschars)
-      let bs = substitute(str, '.', "\<BS>", "g")
-      let inschars = bs . inschars
+  let inschars = s:last_candidate
+  if strlen(inschars) > 0
+    if g:tcvime_movecandto >= 0
+      call s:LearnCand(inschars)
     endif
-  else
-    " echom str s:last_candidate s:is_katuyo s:last_keyword " DEBUG
+    call s:ShowAutoHelp(str, inschars)
+    let bs = substitute(str, '.', "\<BS>", "g")
+    let inschars = bs . inschars
   endif
   call s:StatusReset()
   return inschars
@@ -1110,27 +1084,22 @@ function! tcvime#ConvertCount(count, katuyo)
 endfunction
 
 function! s:ConvertSub(yomi, katuyo)
-  let chars = a:yomi
-  if chars != ''
-    let s:is_katuyo = a:katuyo
-    if s:is_katuyo
-      let chars = chars . '―'
-    endif
-    let ncands = s:CandidateSearch(chars, 1)
-    if ncands > 1
-      call s:Candwin_SetCands(s:last_candidate_list)
-      call s:SelectWindowByName(s:candbufname)
-    elseif ncands == 1
-      call s:FixCandidate()
-    elseif ncands == 0
-      echo '交ぜ書き辞書中には見つかりません: <' . chars . '>'
-    else
-      echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
-    endif
-  else
+  if a:yomi == ''
     let s:last_keyword = ''
     let s:last_count = 0
     call s:StatusReset()
+    return
+  endif
+  let ncands = s:CandidateSearch(a:yomi, a:katuyo, 1)
+  if ncands > 1
+    call s:Candwin_SetCands(s:last_candidate_list)
+    call s:SelectWindowByName(s:candbufname)
+  elseif ncands == 1
+    call s:FixCandidate()
+  elseif ncands == 0
+    echo '交ぜ書き辞書中には見つかりません: <' . a:yomi . '>'
+  else
+    echo '交ぜ書き変換辞書ファイルのオープンに失敗しました: ' . s:candidate_file
   endif
 endfunction
 
@@ -1538,9 +1507,20 @@ let s:last_candidate_list = []
 let s:is_katuyo = 0
 
 " 辞書から未確定文字列を検索
+" @param katuyo 活用する語の変換かどうか。0:活用しない, 1:活用する
 " @return -1:辞書が開けない場合, 0:文字列が見つからない場合,
 "   1:候補が1つだけ見つかった場合, 2:候補が2つ以上見つかった場合
-function! s:CandidateSearch(keyword, finish)
+function! s:CandidateSearch(keyword, katuyo, finish)
+  let s:is_katuyo = a:katuyo
+  " tcvime#InputPostConvertAscii()の場合、最後に' 'があるので除去
+  let key = substitute(a:keyword, ' \+$', '', '')
+  if s:is_katuyo
+    let key .= '―'
+  endif
+  return s:CandidateSearchSub(key, a:finish)
+endfunction
+
+function! s:CandidateSearchSub(keyword, finish)
   let s:last_keyword = a:keyword
   let s:last_candidate = ''
   let altbufnr = bufnr('')
