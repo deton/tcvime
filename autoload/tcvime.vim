@@ -1581,7 +1581,15 @@ function! s:MazegakiDic_CandSelect()
   let s:status_line = line('.')
   execute "normal! a\<ESC>"
   let s:status_colend = col("'^.")
-  let s:status_column = s:status_colend - strlen(s:last_keyword)
+  " tcvime#InputPostConvertAscii()の場合、
+  " 最後にある' 'はs:last_keywordに含まれないので。
+  let pat = '\V' . escape(s:last_keyword, '\') . ' \*\%' . s:status_colend . 'c'
+  let i = match(getline('.'), pat)
+  if i == -1
+    let s:status_column = s:status_colend - strlen(s:last_keyword)
+  else
+    let s:status_column = i + 1 " index to column number
+  endif
   let inschars = s:InputFix(col("'^"))
   let s:last_count = 0
   call s:InsertString(inschars)
