@@ -596,13 +596,16 @@ function! tcvime#InputPostConvertAscii(ch)
   " 交ぜ書き変換は現在colまでを対象にする想定なので、それと整合性を合わせるため
   let yomi .= ' '
   let ret = s:InputConvertSub(yomi, 0, 1)
-  if ret == '' && s:completeyomi == ''
-    let s:last_keyword = ''
-    let s:last_count = 0
-    call s:StatusReset()
-    return "\<BS>"
+  if ret != ''
+    return ret . tcvime#EnableKeymap()
   endif
-  return ret
+  if s:completeyomi != ''
+    return ret
+  endif
+  let s:last_keyword = ''
+  let s:last_count = 0
+  call s:StatusReset()
+  return "\<BS>" . tcvime#EnableKeymap()
 endfunction
 
 " 交ぜ書き変換の読みを縮める
@@ -741,7 +744,7 @@ function! tcvime#InputConvertOrSpace()
     call s:StatusReset()
     return ' '
   endif
-  return s:AddEnableKeymap(ret)
+  return ret . tcvime#EnableKeymap()
 endfunction
 
 " Insert modeで交ぜ書き変換を行う。読みが無い場合は読み開始マークを付ける。
@@ -752,17 +755,7 @@ function! tcvime#InputConvertOrStart(katuyo)
     let s:last_keyword = ''
     return tcvime#InputStart()
   endif
-  return s:AddEnableKeymap(s:InputConvertSub(status, a:katuyo, 1))
-endfunction
-
-" ASCII変換で一時的にASCII入力にしている場合があるので、
-" keymapを有効にするためのキー操作を追加する
-function! s:AddEnableKeymap(chars)
-  if &iminsert ==# 1
-    return a:chars
-  endif
-  set iminsert=1
-  return a:chars . "\<C-^>"
+  return s:InputConvertSub(status, a:katuyo, 1) . tcvime#EnableKeymap()
 endfunction
 
 " Insert modeで交ぜ書き変換を行う。
@@ -871,7 +864,7 @@ function! tcvime#InputConvertSelectCand(idx)
   endif
   let s:last_candidate = s:last_candidate_list[a:idx]
   let bs = substitute(s:completeyomi, '.', "\<BS>", 'g')
-  return "\<C-E>" . bs . s:last_candidate
+  return "\<C-E>" . bs . s:last_candidate . tcvime#EnableKeymap()
 endfunction
 
 " 候補を確定して、確定した文字列を返す
@@ -1598,6 +1591,7 @@ function! s:MazegakiDic_CandSelect()
   let inschars = s:InputFix(col("'^"))
   let s:last_count = 0
   call s:InsertString(inschars)
+  call tcvime#EnableKeymap()
 endfunction
 
 " 交ぜ書き辞書を編集用に開いて、直前に変換した読みを検索する
