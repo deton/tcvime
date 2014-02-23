@@ -80,7 +80,9 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
         ・・・・    ・・・・
         ・・1 2     ・・・・
             鍵
-   - 前置型英字変換(SKK abbrev変換)機能追加。<Plug>TcvimeIAsciiStart。
+   - Insert mode用にコントロールキーを伴わないモード切り替え用関数追加。
+   - Insert mode用後置型英字変換(SKK abbrev変換)関数追加。
+   - 前置型英字変換機能追加。<Plug>TcvimeIAsciiStart。
      カタカナ入力が面倒で、英字変換する方が楽な場合があるので。
    - <Plug>TcvimeVSeq2Kanjiにおいて、入力シーケンス中で後置型カタカナ変換等を
      使っていると、"<C-R>=tcvime#InputConvertKatakana(3)"等がそのまま入る問題

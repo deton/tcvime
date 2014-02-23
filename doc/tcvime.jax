@@ -670,6 +670,10 @@ if has('keymap')
   imap <silent> <unique> <C-L> <Plug>TcvimeIDisableKeymap
   imap <silent> <unique> <ESC> <ESC>:set imsearch=0<CR>
   imap <silent> <unique> <C-K>/ <Plug>TcvimeIAsciiStart
+  " コントロールキーを伴わないモード切り替え: <Space>,でオンにする
+  imap <silent> <unique> , <C-G>u<C-R>=tcvime#EnableKeymapOrInsertChar(',',1)<CR>
+  " <Space>;で後置型英字変換
+  imap <silent> <unique> ; <C-G>u<C-R>=tcvime#InputPostConvertAscii(';')<CR>
   nmap <silent> <unique> <C-K>k <Plug>TcvimeNKatakana
   nmap <silent> <unique> <C-K><Space> <Plug>TcvimeNConvert
   vmap <silent> <unique> <C-K>k <Plug>TcvimeVKatakana
@@ -682,12 +686,13 @@ endif
 function! OnTcvimeEnableKeymap()
   " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
   " (lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可。(<C-R>=なので))
-  imap <silent> <Space> <C-G>u<Plug>TcvimeIConvOrSpace
+  " コントロールキーを伴わないモード切り替えとの併用は不可。
+  "imap <silent> <Space> <C-G>u<Plug>TcvimeIConvOrSpace
 endfunction
 
 " <Plug>TcvimeIDisableKeymap()実行時にコールバックされる関数。
 function! OnTcvimeDisableKeymap()
-  silent! iunmap <Space>
+  "silent! iunmap <Space>
   TcvimeCloseHelp
 endfunction
 
