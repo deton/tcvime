@@ -574,7 +574,7 @@ endfunction
 "   imap <silent> <unique> ; <C-R>=tcvime#InputPostConvertAscii(';')<CR>
 " @param ch 直前が' 'でない場合に挿入する文字
 function! tcvime#InputPostConvertAscii(ch)
-  if !s:IsPrevSpace()
+  if s:IsPrevSpace() <= 0
     return a:ch
   endif
   let col = col('.') - 1
@@ -695,18 +695,23 @@ endfunction
 " @param ch 直前が' 'でない場合に挿入する文字
 " @param removespace 直前が' 'の場合に、' 'を削除したい場合は1
 function! tcvime#EnableKeymapOrInsertChar(ch, removespace)
-  if !s:IsPrevSpace()
+  let prevspace = s:IsPrevSpace()
+  if prevspace == 0
     return a:ch
   endif
-  if a:removespace == 1
+  if prevspace == 1 && a:removespace == 1
     return "\<BS>" . tcvime#EnableKeymap()
   endif
   return tcvime#EnableKeymap()
 endfunction
 
-" カーソル位置直前が' 'かどうかを返す
+" カーソル位置直前が行頭か' 'かどうかを返す
+" @return 1: カーソル位置直前が空白の場合。-1: 行頭の場合。0: それ以外
 function! s:IsPrevSpace()
   let col = col('.')
+  if col == 1
+    return -1
+  endif
   if s:insert_line == line('.') && s:insert_col >= col
     " Insert mode開始直後はそのまま入力
     " XXX: CTRL-Dでインデントを減らした場合には未対応
