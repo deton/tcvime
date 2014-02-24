@@ -686,13 +686,12 @@ endif
 function! OnTcvimeEnableKeymap()
   " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
   " (lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可。(<C-R>=なので))
-  " コントロールキーを伴わないモード切り替えとの併用は不可。
-  "imap <silent> <Space> <C-G>u<Plug>TcvimeIConvOrSpace
+  imap <silent> <Space> <C-G>u<Plug>TcvimeIConvOrSpace
 endfunction
 
 " <Plug>TcvimeIDisableKeymap()実行時にコールバックされる関数。
 function! OnTcvimeDisableKeymap()
-  "silent! iunmap <Space>
+  silent! iunmap <Space>
   TcvimeCloseHelp
 endfunction
 
@@ -704,16 +703,16 @@ function! TcvimeCustomKeymap()
   " (TUT-Code用の例)
   " 後置型部首合成変換
   lmap <silent> ala <C-G>u<Plug>TcvimeIBushu
-  " 前置型交ぜ書き変換の読み入力開始
-  lmap <silent> alj <Plug>TcvimeIStart
+  " lmapオフ
+  lmap <silent> a9 <C-G>u<Plug>TcvimeIDisableKeymap
   " 前置型英字変換の読み入力開始
-  lmap <silent> als <Plug>TcvimeIAsciiStart
+  lmap <silent> a8 <Plug>TcvimeIAsciiStart
   " 前置型交ぜ書き変換
   lmap <silent> al<Space> <C-G>u<Plug>TcvimeIConvOrStart
   " 前置型交ぜ書き変換(活用する語として変換)
   lmap <silent> ali <C-G>u<Plug>TcvimeIKatuyo
   " 直前のカタカナ変換・交ぜ書き変換・部首合成変換の取り消し
-  lmap <silent> alu <C-G>u<C-R>=tcvime#InputConvertUndo()<CR>
+  lmap <silent> alz <C-G>u<C-R>=tcvime#InputConvertUndo()<CR>
   " 直前の交ぜ書き変換を縮める
   lmap <silent> m> <C-G>u<Plug>TcvimeIShrink
   " 後置型カタカナ変換: 指定文字数をカタカナ変換。0:ひらがなが続く間
