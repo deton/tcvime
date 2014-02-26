@@ -57,20 +57,26 @@ endfunction
 
 function! tcvime#kanji2seq#keymap2revdict(keymap)
   let dict = {}
+  let list = tcvime#kanji2seq#keymap2list(a:keymap)
+  for [seq, kanji] in list
+    let dict[kanji] = seq
+  endfor
+  return dict
+endfunction
+
+function! tcvime#kanji2seq#keymap2list(keymap)
+  let list = []
   let kmfile = globpath(&rtp, "keymap/" . a:keymap . "_" . &encoding . ".vim")
   if filereadable(kmfile) != 1
     let kmfile = globpath(&rtp, "keymap/" . a:keymap . ".vim")
     if filereadable(kmfile) != 1
-      return dict
+      return list
     endif
-  endif
-  if kmfile == ''
-    return dict
   endif
   silent execute 'sv ' . kmfile
   if search('loadkeymap', 'w') == 0
     quit!
-    return dict
+    return list
   endif
   let lines = getline(line('.') + 1, '$')
   quit!
@@ -80,10 +86,11 @@ function! tcvime#kanji2seq#keymap2revdict(keymap)
   for line in lines
     let m = matchlist(line, '\([^ 	]\+\)[ 	]\+\([^ 	]\+\)')
     if !empty(m)
-      let dict[m[2]] = substitute(m[1], '<[Ss]pace>', ' ', 'g')
+      let seq = substitute(m[1], '\c<space>', ' ', 'g')
+      call add(list, [seq, m[2]])
     endif
   endfor
-  return dict
+  return list
 endfunction
 
 function! s:keymapname()

@@ -119,30 +119,9 @@ endfunction
 
 function! tcvime#mkhelptbl#keymap2dict(keymapname)
   let dict = {}
-
-  let kmfile = globpath(&rtp, "keymap/" . a:keymapname . "_" . &encoding . ".vim")
-  if filereadable(kmfile) != 1
-    let kmfile = globpath(&rtp, "keymap/" . a:keymapname . ".vim")
-    if filereadable(kmfile) != 1
-      return []
-    endif
-  endif
-  silent execute 'sv ' . kmfile
-  if search('loadkeymap', 'w') == 0
-    quit!
-    return []
-  endif
-  let lines = getline(line('.') + 1, '$')
-  quit!
-
-  call filter(lines, 'v:val !~ "^\""')
-  call filter(lines, 'v:val !~ "^$"')
-  for line in lines
-    let m = matchlist(line, '\([^ 	]\+\)[ 	]\+\([^ 	]\+\)')
-    if !empty(m)
-      let seq = substitute(m[1], '<Space>', ' ', 'g')
-      let dict[seq] = m[2]
-    endif
+  let list = tcvime#kanji2seq#keymap2list(a:keymapname)
+  for [seq, kanji] in list
+    let dict[seq] = kanji
   endfor
   return dict
 endfunction
