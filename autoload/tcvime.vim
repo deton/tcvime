@@ -1348,6 +1348,12 @@ function! s:ShowHelpSequence(ch, keyseq)
   silent! execute range . 's@\(.\). @\1@ge'
   silent! execute range . 's@. . @・@g'
   silent! execute range . 's@@ @ge'
+  call cursor(from, 1)
+  if search('\d', 'c', to) == 0
+    " 表内に表示するもの(何番目のキー位置かを示す文字)が何も無い
+    silent! execute range . 'd _'
+    return -1
+  endif
   call append(to - 1, '    ' . a:ch)
   call cursor(from, 1)
   return 1
