@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-02-23
+" Last Change: 2014-03-01
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -12,8 +12,8 @@ set cpo&vim
 if !exists("tcvime_mazegaki_edit_nocand")
   let tcvime_mazegaki_edit_nocand = 0
 endif
-if !exists("tcvime_keymap_for_help")
-  let tcvime_keymap_for_help = &keymap
+if !exists("tcvime_keymap")
+  let tcvime_keymap = get(g:, 'tcvime_keymap_for_help', &keymap)
 endif
 if !exists("tcvime_use_helptbl")
   let tcvime_use_helptbl = 1
@@ -73,7 +73,7 @@ function! tcvime#EnableKeymap()
   if &iminsert !=# 0
     return ''
   endif
-  call tcvime#SetKeymap(g:tcvime_keymap_for_help)
+  call tcvime#SetKeymap(g:tcvime_keymap)
   if exists('*OnTcvimeEnableKeymap')
     call OnTcvimeEnableKeymap()
   endif
@@ -323,17 +323,7 @@ function! s:Seq2Kanji(str)
   if a:str == ''
     return ''
   endif
-  let hassetkeymap = 0
-  let keymap = &keymap
-  if empty(keymap)
-    let keymap = g:tcvime_keymap_for_help
-    if empty(keymap)
-      echo 'tcvime入力シーケンス→漢字変換には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
-      return ''
-    endif
-    call tcvime#SetKeymap(keymap)
-    let hassetkeymap = 1
-  endif
+  let hassetkeymap = tcvime#EnableKeymap()
 
   let kstr = ''
   let s = a:str
@@ -358,8 +348,8 @@ function! s:Seq2Kanji(str)
     endif
     let s = strpart(s, i)
   endwhile
-  if hassetkeymap
-    set iminsert=0
+  if hassetkeymap != ''
+    call tcvime#DisableKeymap()
   endif
   return kstr
 endfunction
@@ -369,17 +359,7 @@ function! s:Seq2KanjiFeedkeys(str)
   if a:str == ''
     return
   endif
-  let keymap = &keymap
-  if !empty(keymap)
-    setlocal iminsert=1
-  else
-    let keymap = g:tcvime_keymap_for_help
-    if empty(keymap)
-      echo 'tcvime入力シーケンス→漢字変換には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
-      return
-    endif
-    call tcvime#SetKeymap(keymap)
-  endif
+  call tcvime#EnableKeymap()
   call feedkeys('gvc' . a:str . "\<ESC>", 't')
 endfunction
 
@@ -452,14 +432,24 @@ let s:candbufname = substitute(s:candbufname, '\\', '/', 'g')
 
 " keymapを設定する
 function! tcvime#SetKeymap(keymapname)
+  if a:keymapname == ''
+    echoerr 'tcvime#SetKeymap(): keymapnameが空。g:tcvime_keymapを設定してください。(もしくは直接tcvime#SetKeymap()を呼び出している場合は引数を確認ください)'
+    return -1
+  endif
   if &l:keymap !=# a:keymapname
+    let g:tcvime_keymap = a:keymapname
     execute 'set keymap=' . a:keymapname
     if exists('*TcvimeCustomKeymap')
       call TcvimeCustomKeymap()
     endif
-  else
-    set iminsert=1
+    return 2
   endif
+  " 旧版のSetKeymap()と動作を合わせておくためiminsert=1にする処理も残しておく
+  if &iminsert ==# 0
+    setlocal iminsert=1
+    return 1
+  endif
+  return 0
 endfunction
 
 let s:insert_line = 0
@@ -720,7 +710,7 @@ function! s:IsPrevSpace()
     " XXX: CTRL-Dでインデントを減らした場合には未対応
     return 0
   endif
-  let prevch = matchstr(getline('.'), '.\{,1}\%' . col('.') . 'c')
+  let prevch = matchstr(getline('.'), '.\{,1}\%' . col . 'c')
   if prevch == ' '
     return 1
   endif
@@ -1367,7 +1357,7 @@ endfunction
 function! s:ShowHelpTable(ch, keyseq)
   let commonseq = strpart(a:keyseq, 1)
   try
-    let tbl = get(g:tcvime#helptbl_{g:tcvime_keymap_for_help}#tbl, commonseq, '')
+    let tbl = get(g:tcvime#helptbl_{g:tcvime_keymap}#tbl, commonseq, '')
   catch /^Vim\%((\a\+)\)\=:E121/ " E121: Undefined variable
     let g:tcvime_use_helptbl = 0
     return -1

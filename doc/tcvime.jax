@@ -324,6 +324,11 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
 ==============================================================================
 3. オプション					*tcvime-option*
 
+'tcvime_keymap'					*'tcvime_keymap'*
+  使用するkeymap。|<Plug>TcvimeIEnableKeymap|から参照される。
+  設定例:
+	let tcvime_keymap = 'tutcode'
+
 'tcvime_keyboard'				*'tcvime_keyboard'*
   文字ヘルプ表用のキーボード配列を表す文字列。
   キーの後にスペース、を2回ずつ記述します。
@@ -331,6 +336,7 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
 	let tcvime_keyboard = "1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 \<CR>q q w w e e r r t t y y u u i i o o p p \<CR>a a s s d d f f g g h h j j k k l l ; ; \<CR>z z x x c c v v b b n n m m , , . . / / "
 
 'tcvime_keymap_for_help'			*'tcvime_keymap_for_help'*
+  このオプションは、|'tcvime_keymap'|に変更になりました。
   文字ヘルプ表示に使うkeymap。現在のバッファで&keymapが未設定の場合に使用。
   設定例:
 	let tcvime_keymap_for_help = 'tutcode'
@@ -421,6 +427,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 '<Plug>TcvimeIEnableKeymap'			*'<Plug>TcvimeIEnableKeymap'*
   lmapをオンにする。|i_CTRL-^|のようなトグルでなくオンにするためのキーです。
   |OnTcvimeEnableKeymap()|を呼び出します。
+  |'tcvime_keymap'|を設定しておいてください。
 
 '<Plug>TcvimeIDisableKeymap'			*'<Plug>TcvimeIDisableKeymap'*
   lmapをオフにする。|i_CTRL-^|のようなトグルでなくオフにするためのキーです。
@@ -660,11 +667,11 @@ bushu.helpの例:
 6. 設定例					*tcvime-setting*
 
 ~/.vimrcでの設定例です。
-<C-J>でtutcodeを有効にし、<C-L>でtutcodeを無効にする設定の例です。
+<C-J>でtutcodepを有効にし、<C-L>でtutcodepを無効にする設定の例です。
 (<C-^>でのトグル操作における、現在の状態を意識する負担を無くしたい場合用)
 
 if has('keymap')
-  let tcvime_keymap_for_help = 'tutcodep'
+  let tcvime_keymap = 'tutcodep'
   set iminsert=0 imsearch=0
   imap <unique> <C-J> <Plug>TcvimeIEnableKeymap
   imap <silent> <unique> <C-L> <Plug>TcvimeIDisableKeymap
