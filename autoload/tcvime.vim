@@ -66,6 +66,15 @@ endif
 let g:tcvime#hiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん'
 let g:tcvime#katakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲン'
 
+" 'imactivatefunc'用関数
+function! tcvime#Activate(active)
+  if a:active
+    call tcvime#EnableKeymap()
+  else
+    call tcvime#DisableKeymap()
+  endif
+endfunction
+
 " lmapをオンにする
 function! tcvime#EnableKeymap()
   call tcvime#InputReset()
