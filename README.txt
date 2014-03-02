@@ -57,7 +57,7 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
 
 謝辞
   - 村岡さんのvime.vimをベースにさせていただいています。
-    tcvime.vimの交ぜ書き変換部分はほとんどvime.vimそのものです。
+    tcvime.vimの交ぜ書き変換部分はもとはvime.vimのものです。
 
   - tservの部首合成アルゴリズムを使っています。
     もともとはEmacs用のTコード入力環境tcで使われていたアルゴリズムのようです。
@@ -93,6 +93,10 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
    - 部首合成変換高速化のため、bushu.revをautoload/tcvime/bushudic.vimに変更。
    - keymap/tutcodep.vimに、Touch16+やTUT98.COMの拗音等の短縮ストロークを追加。
    - 'tcvime_keymap_for_help'を'tcvime_keymap'に変更
+   - シーケンス最初の文字のみが大文字のカタカナ定義(例:Wi	ミ)を
+     tutcodep.vimから削除。これらの定義はめったに使わない一方で'WiFi'等を
+     そのまま入力したいので。シーケンス最初が大文字のカタカナ定義を生成する
+     関数をtcvime#lmapcust#mkcapitalkatalist()として追加。
    - キーマッピングの登録・解除を行う:TcvimeOnと:TcvimeOffコマンドを削除し、
      デフォルトでキーマッピングが登録されるように変更。
      デフォルトのキーマッピングを使わず、自分で他のキーにmapしたい場合用に、

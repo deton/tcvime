@@ -9,7 +9,7 @@ function! tcvime#kanji2seq#get(ch)
   if exists('s:kanji2seqdict')
     return get(s:kanji2seqdict, a:ch, '')
   endif
-  let keymap = s:keymapname()
+  let keymap = tcvime#getkeymap()
   if keymap == ''
     return ''
   endif
@@ -91,16 +91,4 @@ function! tcvime#kanji2seq#keymap2list(keymap)
     endif
   endfor
   return list
-endfunction
-
-function! s:keymapname()
-  let keymap = &keymap
-  if strlen(keymap) == 0
-    let keymap = g:tcvime_keymap_for_help
-    if strlen(keymap) == 0
-      echo 'tcvime文字ヘルプ表示には、keymapオプションかg:tcvime_keymap_for_helpの設定要'
-      return ''
-    endif
-  endif
-  return keymap
 endfunction

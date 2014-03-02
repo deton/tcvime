@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-03-01
+" Last Change: 2014-03-02
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -82,7 +82,7 @@ function! tcvime#EnableKeymap()
   if &iminsert !=# 0
     return ''
   endif
-  call tcvime#SetKeymap(g:tcvime_keymap)
+  call tcvime#SetKeymap(tcvime#getkeymap())
   if exists('*OnTcvimeEnableKeymap')
     call OnTcvimeEnableKeymap()
   endif
@@ -101,6 +101,26 @@ function! tcvime#DisableKeymap()
     call OnTcvimeDisableKeymap()
   endif
   return "\<C-^>"
+endfunction
+
+" g:tcvime_keymapを取得。未設定の場合は&keymapの値をg:tcvime_keymapに設定。
+" (&keymapがtcvime.vimロード時に未設定で、
+" 後から直接&keymapのみを設定された場合にも対応できるように)
+function! tcvime#getkeymap()
+  if g:tcvime_keymap != ''
+    return g:tcvime_keymap
+  endif
+  if &l:keymap != ''
+    let g:tcvime_keymap = &l:keymap
+    return g:tcvime_keymap
+  endif
+  " &keymapや&l:keymapだと、:se keymap=tutcodepとしても空のままのようなので
+  if &g:keymap != ''
+    let g:tcvime_keymap = &g:keymap
+    return g:tcvime_keymap
+  endif
+  echoerr 'g:tcvime_keymapが未設定。g:tcvime_keymapを設定してください'
+  return ''
 endfunction
 
 " insert mode時に、直前の指定された文字数のひらがな→カタカナ変換を行う
@@ -441,10 +461,6 @@ let s:candbufname = substitute(s:candbufname, '\\', '/', 'g')
 
 " keymapを設定する
 function! tcvime#SetKeymap(keymapname)
-  if a:keymapname == ''
-    echoerr 'tcvime#SetKeymap(): keymapnameが空。g:tcvime_keymapを設定してください。(もしくは直接tcvime#SetKeymap()を呼び出している場合は引数を確認ください)'
-    return -1
-  endif
   if &l:keymap !=# a:keymapname
     let g:tcvime_keymap = a:keymapname
     execute 'set keymap=' . a:keymapname
@@ -1371,8 +1387,9 @@ endfunction
 " 指定された文字を含む漢字表を表示する
 function! s:ShowHelpTable(ch, keyseq)
   let commonseq = strpart(a:keyseq, 1)
+  let km = tcvime#getkeymap()
   try
-    let tbl = get(g:tcvime#helptbl_{g:tcvime_keymap}#tbl, commonseq, '')
+    let tbl = get(g:tcvime#helptbl_{km}#tbl, commonseq, '')
   catch /^Vim\%((\a\+)\)\=:E121/ " E121: Undefined variable
     let g:tcvime_use_helptbl = 0
     return -1
