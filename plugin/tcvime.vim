@@ -122,8 +122,6 @@ if !get(g:, 'tcvime_no_default_key_mappings', 0)
 endif
 
 augroup Tcvime
-  autocmd!
-  if get(g:, 'tcvime_postconv_from_insstart', 1)
-    autocmd InsertEnter * call tcvime#OnInsertEnter()
-  endif
+autocmd!
+autocmd InsertEnter * call tcvime#OnInsertEnter()
 augroup END
