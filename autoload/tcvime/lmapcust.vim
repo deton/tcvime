@@ -31,12 +31,33 @@ endfunction
 " カタカナは後置型で変換するか、シフトキー押しっぱなしで入力するので、
 " このようなシーケンスはほとんど使わない一方で、
 " 'WiFi'等をそのまま入力できる方がうれしいので。
+" :call append(line('.'), tcvime#lmapcust#unmapcapital(tcvime#mkhelptbl#keymap2dict('tutcodep')))
 function! tcvime#lmapcust#unmapcapital(keymapdict)
   let list = []
   for [k, v] in items(a:keymapdict)
     if k =~ '^\u\l\+'
       call add(list, '  lunmap <buffer> ' . k)
     endif
+  endfor
+  return list
+endfunction
+
+" ひらがな定義から、最初が大文字のカタカナ定義を生成。
+" 例: 'wi ま'から'Wi マ'を生成。
+" :call append(line('.'), tcvime#lmapcust#mkcapitalkatalist(tcvime#mkhelptbl#keymap2dict('tutcodep')))
+function! tcvime#lmapcust#mkcapitalkatalist(keymapdict)
+  let dict = {}
+  for [k, v] in items(a:keymapdict)
+    if v =~ '[ぁ-ん]' && k =~ '^\l\+$'
+      let capk = substitute(k, '^\(.\)\(.*\)', '\u\1\L\2', '')
+      let kata = tcvime#hira2kata(v)
+      let dict[capk] = kata
+    endif
+  endfor
+
+  let list = []
+  for [k, v] in items(dict)
+    call add(list, '  lmap ' . k . "\t" . v)
   endfor
   return list
 endfunction
