@@ -384,6 +384,13 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
     let tcvime_mazegaki_edit_nocand = 1
   交ぜ書き変換辞書編集に関しては、|tcvime-file-mazegaki-edit|参照。
 
+'tcvime_postconv_from_insstart'		*'tcvime_postconv_from_insstart'*
+  後置型変換の対象文字列取得時に、
+  Insert mode開始位置以降のみを対象にするかどうか。
+  省略値: 1
+  設定例:
+    let tcvime_postconv_from_insstart = 0
+
 OnTcvimeEnableKeymap()				*OnTcvimeEnableKeymap()*
   |<Plug>TcvimeIEnableKeymap|実行時にコールバックされる関数
   (ただし、<Plug>TcvimeIEnableKeymap実行時に既にlmapオンの場合は呼ばれません)。
