@@ -5,7 +5,7 @@ scriptencoding utf-8
 "              交ぜ書き変換、部首合成変換、文字ヘルプ表表示機能。
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-02-22
+" Last Change: 2014-03-02
 " Original Plugin: vime.vim by Muraoka Taro <koron@tka.att.ne.jp>
 
 if exists('plugin_tcvime_disable')
@@ -53,16 +53,19 @@ nnoremap <script> <silent> <Plug>TcvimeNConvert :<C-U>call tcvime#ConvertCount(v
 nnoremap <script> <silent> <Plug>TcvimeNKatuyo :<C-U>call tcvime#ConvertCount(v:count, 1)<CR>
 nnoremap <script> <silent> <Plug>TcvimeNKatakana :<C-U>call tcvime#ConvertKatakana(v:count)<CR>
 nnoremap <script> <silent> <Plug>TcvimeNKataHira :<C-U>call tcvime#ConvertKatakana(-v:count)<CR>
+nnoremap <script> <silent> <Plug>TcvimeNHiragana :<C-U>call tcvime#ConvertHiragana(v:count)<CR>
 nnoremap <script> <silent> <Plug>TcvimeNBushu :<C-U>call tcvime#ConvertBushu()<CR>
 nnoremap <script> <silent> <Plug>TcvimeNHelp :<C-U>call tcvime#ShowStrokeHelp()<CR>
 nnoremap <script> <silent> <Plug>TcvimeNKanjiTable :<C-U>call tcvime#KanjiTable_FileOpen()<CR>
 nnoremap <script> <silent> <Plug>TcvimeNOpConvert :set opfunc=tcvime#ConvertOp<CR>g@
 nnoremap <script> <silent> <Plug>TcvimeNOpKatuyo :set opfunc=tcvime#ConvertOpKatuyo<CR>g@
 nnoremap <script> <silent> <Plug>TcvimeNOpKatakana :set opfunc=tcvime#ConvertOpKatakana<CR>g@
+nnoremap <script> <silent> <Plug>TcvimeNOpHiragana :set opfunc=tcvime#ConvertOpHiragana<CR>g@
 vnoremap <script> <silent> <Plug>TcvimeVHelp :<C-U>call tcvime#ShowHelpVisual()<CR>
 vnoremap <script> <silent> <Plug>TcvimeVConvert :<C-U>call tcvime#ConvertOp(visualmode(), 1)<CR>
 vnoremap <script> <silent> <Plug>TcvimeVKatuyo :<C-U>call tcvime#ConvertOpKatuyo(visualmode(), 1)<CR>
 vnoremap <script> <silent> <Plug>TcvimeVKatakana :<C-U>call tcvime#ConvertOpKatakana(visualmode(), 1)<CR>
+vnoremap <script> <silent> <Plug>TcvimeVHiragana :<C-U>call tcvime#ConvertOpHiragana(visualmode(), 1)<CR>
 vnoremap <script> <silent> <Plug>TcvimeVKanji2Seq :<C-U>call tcvime#ConvertOpKanji2Seq(visualmode(), 1)<CR>
 vnoremap <script> <silent> <Plug>TcvimeVSeq2Kanji :<C-U>call tcvime#ConvertOpSeq2Kanji(visualmode(), 1)<CR>
 vnoremap <script> <silent> <Plug>TcvimeVShiftSeq :<C-U>call tcvime#ConvertOpShiftSeq(visualmode(), 1)<CR>

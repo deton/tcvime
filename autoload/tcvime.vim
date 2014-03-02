@@ -50,12 +50,14 @@ endif
 " 後置型カタカナ変換で、文字数が指定されていない際に、
 " このパターンにマッチする文字が続く間はカタカナに変換する。
 let g:tcvime#hira2kata_pat = '[ぁ-ん][ぁ-んー]*'
+let g:tcvime#kata2hira_pat = '[ァ-ン][ァ-ンー]*'
 " 読み開始位置マークを' '入力で代替する場合の設定例:
 "   let g:tcvime#yomimarkchar = ' '
 " '* アイテム'のように、*等の後の' 'は残したい場合の設定例:
 "   let g:tcvime#yomimarkchar = '\%([[:graph:]] \zs\| \)'
 if exists('g:tcvime#yomimarkchar')
   let g:tcvime#hira2kata_pat = g:tcvime#yomimarkchar . '\=' . tcvime#hira2kata_pat
+  let g:tcvime#kata2hira_pat = g:tcvime#yomimarkchar . '\=' . tcvime#kata2hira_pat
 endif
 
 " 後置型英字変換の対象の読み文字列のパターン。' 'や日本語より後。
@@ -138,23 +140,13 @@ endfunction
 "
 " 文字数として負の値を指定すると、ひらがなとして残す文字数の指定とみなす。
 " (カタカナに変換する文字列が長くて文字数を数えるのが面倒な場合向け)
-" 「例えばあぷりけーしょん」el2→「例えばアプリケーション」
-"
-" tutcode keymapで後置型カタカナ変換を行うための設定例:
-"     lmap <silent> e0 <C-R>=tcvime#InputConvertKatakana(0)<CR>
-"     lmap <silent> e1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
-"     lmap <silent> e2 <C-R>=tcvime#InputConvertKatakana(2)<CR>
-"     ...
-"     lmap <silent> e9 <C-R>=tcvime#InputConvertKatakana(9)<CR>
-" 指定した文字数のひらがなを残してカタカナ変換する場合の設定例:
-"     lmap <silent> el1 <C-R>=tcvime#InputConvertKatakana(-1)<CR>
-"     lmap <silent> el2 <C-R>=tcvime#InputConvertKatakana(-2)<CR>
-"     lmap <silent> el3 <C-R>=tcvime#InputConvertKatakana(-3)<CR>
-"     lmap <silent> el4 <C-R>=tcvime#InputConvertKatakana(-4)<CR>
-"     lmap <silent> el5 <C-R>=tcvime#InputConvertKatakana(-5)<CR>
-"     lmap <silent> el6 <C-R>=tcvime#InputConvertKatakana(-6)<CR>
+" 「例えばあぷりけーしょん」j2→「例えばアプリケーション」
 function! tcvime#InputConvertKatakana(n)
   return tcvime#InputConvertKatakanaPos(col('.'), a:n)
+endfunction
+
+function! tcvime#InputConvertHiragana(n)
+  return tcvime#InputConvertHiraganaPos(col('.'), a:n)
 endfunction
 
 " 後置型でカタカナ文字列を伸ばす
@@ -245,6 +237,22 @@ function! tcvime#InputConvertKatakanaPos(col, n)
   endif
   let s:prev_str = chars
   let s:commit_str = tcvime#hira2kata(chars)
+  if exists('g:tcvime#yomimarkchar')
+    let s:prev_str = substitute(s:prev_str, '^' . g:tcvime#yomimarkchar . '\=', '', '')
+    let s:commit_str = substitute(s:commit_str, '^' . g:tcvime#yomimarkchar . '\=', '', '')
+  endif
+  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
+endfunction
+
+" insert mode時に、指定位置から指定された文字数の文字列を取得して、
+" カタカナ→ひらがな変換を行うための文字列を返す。
+function! tcvime#InputConvertHiraganaPos(col, n)
+  let chars = s:AcquireYomi(g:tcvime#kata2hira_pat, a:col, a:n)
+  if strlen(chars) == 0
+    return ''
+  endif
+  let s:prev_str = chars
+  let s:commit_str = tcvime#kata2hira(chars)
   if exists('g:tcvime#yomimarkchar')
     let s:prev_str = substitute(s:prev_str, '^' . g:tcvime#yomimarkchar . '\=', '', '')
     let s:commit_str = substitute(s:commit_str, '^' . g:tcvime#yomimarkchar . '\=', '', '')
@@ -1006,6 +1014,30 @@ function! s:ConvertOpKatakanaSub(beg, end)
   call cursor(0, col)
 endfunction
 
+" operatorfuncとして、選択された文字列をひらがなに変換する
+function! tcvime#ConvertOpHiragana(type, ...)
+  let sel_save = &selection
+  let &selection = "inclusive"
+
+  if a:0  " Invoked from Visual mode, use '< and '> marks.
+    call s:ConvertOpHiraganaSub(col("'<"), col("'>"))
+  elseif a:type == 'char'
+    call s:ConvertOpHiraganaSub(col("'["), col("']"))
+  endif
+
+  let &selection = sel_save
+endfunction
+
+function! s:ConvertOpHiraganaSub(beg, end)
+  let col = col('.')
+  call cursor(0, a:end)
+  execute "normal! a\<ESC>"
+  let chars = matchstr(getline('.'), '\%' . a:beg . 'c.*\%' . col("'^") . 'c')
+  let inschars = substitute(chars, '.', "\<BS>", 'g') . tcvime#kata2hira(chars)
+  call s:InsertString(inschars)
+  call cursor(0, col)
+endfunction
+
 " operatorfuncとして、選択された文字列を入力シーケンスに変換する
 function! tcvime#ConvertOpKanji2Seq(type, ...)
   let sel_save = &selection
@@ -1137,6 +1169,14 @@ endfunction
 function! tcvime#ConvertKatakana(count)
   execute "normal! a\<ESC>"
   let inschars = tcvime#InputConvertKatakanaPos(col("'^"), a:count)
+  call s:InsertString(inschars)
+endfunction
+
+" 今の位置以前のcount文字をひらがなに変換する
+" @param count 変換する文字列の長さ
+function! tcvime#ConvertHiragana(count)
+  execute "normal! a\<ESC>"
+  let inschars = tcvime#InputConvertHiraganaPos(col("'^"), a:count)
   call s:InsertString(inschars)
 endfunction
 

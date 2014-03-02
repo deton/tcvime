@@ -62,12 +62,14 @@ tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供す�
 
 部首合成変換辞書の形式に関しては、|tcvime-file-bushu|参照。
 
-カタカナ変換					*tcvime-katakana*
+カタカナ変換				*tcvime-katakana*
 ------------
 
 |'<Plug>TcvimeNKatakana'|  Normal modeでのカタカナ変換
 |'<Plug>TcvimeNKataHira'|  Normal modeでのカタカナ変換(ひらがなを指定文字数残す)
 |'<Plug>TcvimeVKatakana'|  Visual modeでのカタカナ変換
+|'<Plug>TcvimeNHiragana'|  Normal modeでのひらがな変換
+|'<Plug>TcvimeVHiragana'|  Visual modeでのひらがな変換
 
 Insert mode用には、lmap用の後置型カタカナ変換関数を用意しています。
 |tcvime-setting|
@@ -81,6 +83,8 @@ Insert mode用には、lmap用の後置型カタカナ変換関数を用意し�
   lmap <silent> l1 <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
   " 後置型でカタカナ文字列を伸ばす
   lmap <silent> h1 <C-R>=tcvime#InputConvertKatakanaExtend(1)<CR>
+  " 後置型ひらがな変換: 指定文字数をひらがな変換。0:カタカナが続く間
+  lmap <silent> i0 <C-R>=tcvime#InputConvertHiragana(0)<CR>
 
 カタカナモード切り替えは例えばkeymap/tutcodek.vimを参照してください。
 'でひらがな/カタカナモード切り替えができるようにしたtutcodeのkeymapです。
@@ -513,6 +517,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 
 '<Plug>TcvimeNKatakana'				*'<Plug>TcvimeNKatakana'*
    カタカナ変換: カーソル位置以前の[count]文字のカタカナへの変換を行うキー。
+   [count]が指定されない場合は、連続するひらがなと「ー」を対象とする。
    省略値: (無し: 未割当て)
 
 '<Plug>TcvimeNKataHira'				*'<Plug>TcvimeNKataHira'*
@@ -520,8 +525,18 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    [count]で指定した文字数はひらがなとして残す。
    省略値: (無し: 未割当て)
 
+'<Plug>TcvimeNHiragana'				*'<Plug>TcvimeNHiragana'*
+   ひらがな変換: カーソル位置以前の[count]文字のひらがなへの変換を行うキー。
+   [count]が指定されない場合は、カタカナと「ー」が続く間を対象とする。
+   省略値: (無し: 未割当て)
+
 '<Plug>TcvimeNOpKatakana'			*'<Plug>TcvimeNOpKatakana'*
    カタカナ変換: このキーを押した後の{motion}で指定される文字列をカタカナ変換。
+   注意: キーを押した際に|'operatorfunc'|を上書きします。
+   省略値: (無し: 未割当て)
+
+'<Plug>TcvimeNOpHiragana'			*'<Plug>TcvimeNOpHiragana'*
+   ひらがな変換: このキーを押した後の{motion}で指定される文字列をひらがな変換。
    注意: キーを押した際に|'operatorfunc'|を上書きします。
    省略値: (無し: 未割当て)
 
@@ -551,6 +566,10 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
 
 '<Plug>TcvimeVKatakana'				*'<Plug>TcvimeVKatakana'*
    カタカナ変換: 選択中の文字列をカタカナに変換するキー。
+   省略値: (無し: 未割当て)
+
+'<Plug>TcvimeVHiragana'				*'<Plug>TcvimeVHiragana'*
+   ひらがな変換: 選択中の文字列をひらがなに変換するキー。
    省略値: (無し: 未割当て)
 
 '<Plug>TcvimeVKanji2Seq'			*'<Plug>TcvimeVKanji2Seq'*
@@ -682,8 +701,10 @@ if has('keymap')
   " <Space>;で後置型英字変換
   imap <silent> <unique> ; <C-G>u<C-R>=tcvime#InputPostConvertAscii(';')<CR>
   nmap <silent> <unique> <C-K>k <Plug>TcvimeNKatakana
+  nmap <silent> <unique> <C-K>h <Plug>TcvimeNHiragana
   nmap <silent> <unique> <C-K><Space> <Plug>TcvimeNConvert
   vmap <silent> <unique> <C-K>k <Plug>TcvimeVKatakana
+  vmap <silent> <unique> <C-K>h <Plug>TcvimeVHiragana
   vmap <silent> <unique> <C-K>; <Plug>TcvimeVKanji2Seq
   vmap <silent> <unique> <C-K>z <Plug>TcvimeVSeq2Kanji
   vmap <silent> <unique> <C-K>, <Plug>TcvimeVShiftSeq
@@ -722,6 +743,8 @@ function! TcvimeCustomKeymap()
   lmap <silent> alz <C-G>u<C-R>=tcvime#InputConvertUndo()<CR>
   " 直前の交ぜ書き変換を縮める
   lmap <silent> m> <C-G>u<Plug>TcvimeIShrink
+  " 後置型ひらがな変換: 指定文字数をひらがな変換。0:カタカナが続く間
+  lmap <silent> i0 <C-G>u<C-R>=tcvime#InputConvertHiragana(0)<CR>
   " 後置型カタカナ変換: 指定文字数をカタカナ変換。0:ひらがなが続く間
   lmap <silent> k0 <C-G>u<C-R>=tcvime#InputConvertKatakana(0)<CR>
   for i in range(1, 9)
