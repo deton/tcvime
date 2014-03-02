@@ -84,6 +84,11 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
    - Insert mode用後置型英字変換(SKK abbrev変換)関数追加。
    - 前置型英字変換機能追加。<Plug>TcvimeIAsciiStart。
      カタカナ入力が面倒で、英字変換する方が楽な場合があるので。
+   - ひらがな変換機能追加: 後置型(文字数指定、連続カタカナ)、Visual mode、
+     Normal mode、opfunc
+   - ひらがなとして残す文字数を指定する後置型カタカナ変換では、
+     Insert mode開始位置以降のみを対象にする機能は無効化するようにした。
+     バッファ表示内容を見て残す文字数を数える使い方なので。
    - <Plug>TcvimeVSeq2Kanjiにおいて、入力シーケンス中で後置型カタカナ変換等を
      使っていると、"<C-R>=tcvime#InputConvertKatakana(3)"等がそのまま入る問題
      を修正。

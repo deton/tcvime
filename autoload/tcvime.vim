@@ -274,8 +274,10 @@ function! s:AcquireYomi(pat, col, n)
     endif
   endif
   let line = getline('.')
-  if s:insert_line == line('.') && s:insert_col < a:col
-    " Insert mode開始位置以降を変換対象とする
+  if a:n >= 0 && s:insert_line == line('.') && s:insert_col < a:col
+    " Insert mode開始位置以降を変換対象とする。
+    " (除外する文字数指定の場合は除く。どこからInsert modeを開始したかよりも、
+    " 表示を見て残す文字数を指定したいので)
     " XXX: CTRL-Dでインデントを減らした場合には未対応
     let line = strpart(line, s:insert_col - 1)
     let col = a:col - s:insert_col + 1
