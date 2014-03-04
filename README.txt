@@ -52,6 +52,20 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
   環境に合わせて漢字コードを変換しておいてください。
   (でないと各ファイルを使う部首合成変換や交ぜ書き変換が動作しません)
 
+  ~/.vimrcの設定(詳細な設定例はdoc/tcvime.jax参照):
+    tcvime_keymapオプションの設定を入れてください。
+      let tcvime_keymap = 'tutcodep'
+    後置型変換を使う場合は、
+      TcvimeCustomKeymap()関数を定義して、
+      後置型変換に使うシーケンスのlmapを記述した上で、
+        function! TcvimeCustomKeymap()
+          lmap <silent> ala <C-G>u<Plug>TcvimeIBushu
+ 	  " ...
+        endfunction
+      TcvimeCustomKeymap()が呼ばれるように、
+      <Plug>TcvimeIEnableKeymapを使ってkeymapを有効化するようにしてください。
+        imap <unique> <C-J> <Plug>TcvimeIEnableKeymap
+
 使い方
   tcvime.jaxを参照してください。
 
@@ -66,7 +80,7 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
     bushudic.vimは、tc2に含まれるbushu.revから作ったものです。
 
 更新履歴
-  - 1.5.0 (2014-02-XXX)
+  - 1.5.0 (2014-03-XXX)
    - 文字ヘルプ表示時に、第1打鍵以外の打ち方が共通する文字のテーブル(文字表)を
      表示する機能を追加。デフォルトで有効化。'tcvime_use_helptbl'オプション。
      (ある漢字の打ち方を忘れて変換で入力した際は、ついでに近くの漢字の打ち方の

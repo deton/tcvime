@@ -5,12 +5,13 @@
 漢字直接入力の補助機能プラグイン		*tcvime*
 
 1. 概要					|tcvime-overview|
-2. 操作法				|tcvime-usage|
-3. オプション				|tcvime-option|
-4. コマンド				|tcvime-command|
-5. 辞書ファイル				|tcvime-file|
-6. 設定例				|tcvime-setting|
-7. 問題点				|tcvime-problem|
+2. 準備					|tcvime-setup|
+3. 操作法				|tcvime-usage|
+4. オプション				|tcvime-option|
+5. コマンド				|tcvime-command|
+6. 辞書ファイル				|tcvime-file|
+7. 設定例				|tcvime-setting|
+8. 問題点				|tcvime-problem|
 
 {Vi does not have any of these features}
 
@@ -25,6 +26,7 @@ tcode,tutcode等の漢字直接入力keymap用の入力補助機能を提供す�
 |tcvime-katakana|		カタカナ変換
 |tcvime-seq2kanji|		入力シーケンス→漢字変換
 |tcvime-kanji2seq|		漢字→入力シーケンス変換
+|tcvime-withoutctrl|		コントロールキーを伴わないモード切り替え
 |tcvime-help|			文字ヘルプ表表示
 |tcvime-normal-kanjitable|	漢字表からの漢字挿入
 
@@ -133,6 +135,24 @@ Insert mode用には、lmap用の後置型漢字→入力シーケンス変換�
 
 使用例: 「電地給月分動田新同 」→「うかもしれません。」
 
+コントロールキーを伴わないモード切り替え	*tcvime-withoutctrl*
+----------------------------------------
+
+行頭または空白直後に','キーを入力した時にlmapをオンにするには、
+以下のimapを登録してください。なお、tcvime#EnableKeymapOrInsertChar()の
+2番目の引数を0にすると、直前の空白を削除しません。
+
+" コントロールキーを伴わないモード切り替え: <Space>,でオンにする
+imap <silent> <unique> , <C-G>u<C-R>=tcvime#EnableKeymapOrInsertChar(',',1)<CR>
+
+コントロールキー無しでlmapオフにするには、以下のようなlmapを登録してください。
+
+function! TcvimeCustomKeymap()
+  " lmapオフ
+  lmap <silent> a9 <C-G>u<Plug>TcvimeIDisableKeymap
+  " ...
+endfunction
+
 文字ヘルプ表表示				*tcvime-help*
 ----------------
 
@@ -143,7 +163,24 @@ Insert mode用には、lmap用の後置型漢字→入力シーケンス変換�
 優先して部首合成ヘルプ表示に使用します。
 
 ==============================================================================
-2. 操作法					*tcvime-usage*
+2. 準備						*tcvime-setup*
+
+~/.vimrcの設定(詳細な設定例はdoc/tcvime.jax参照):
+  tcvime_keymapオプションの設定を入れてください。
+    let tcvime_keymap = 'tutcodep'
+  後置型変換を使う場合は、
+    TcvimeCustomKeymap()関数を定義して、
+    後置型変換に使うシーケンスのlmapを記述した上で、
+      function! TcvimeCustomKeymap()
+	lmap <silent> ala <C-G>u<Plug>TcvimeIBushu
+	" ...
+      endfunction
+    TcvimeCustomKeymap()が呼ばれるように、
+    <Plug>TcvimeIEnableKeymapを使ってkeymapを有効化するようにしてください。
+      imap <unique> <C-J> <Plug>TcvimeIEnableKeymap
+
+==============================================================================
+3. 操作法					*tcvime-usage*
 
 tcvimeの機能は'mapleader'で指定されたキーの後に'q'などのキーを入力することで
 実行されます。tcvimeでは'mapleader'のデフォルトはCTRL-K(CTRLキーを押しながらk)
@@ -326,7 +363,7 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
 漢字テーブルファイルの形式に関しては、|tcvime-file-kanjitable|参照。
 
 ==============================================================================
-3. オプション					*tcvime-option*
+4. オプション					*tcvime-option*
 
 'tcvime_keymap'					*'tcvime_keymap'*
   使用するkeymap。|<Plug>TcvimeIEnableKeymap|から参照される。
@@ -587,7 +624,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
    省略値: (無し: 未割当て)
 
 ==============================================================================
-4. コマンド					*tcvime-command*
+5. コマンド					*tcvime-command*
 
 :TcvimeHelp {str}				*:TcvimeHelp*
   指定した文字列内の各文字のヘルプ表を表示する
@@ -613,7 +650,7 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
   交ぜ書き変換辞書編集に関しては、|tcvime-file-mazegaki-edit|参照。
 
 ==============================================================================
-5. 辞書ファイル					*tcvime-file*
+6. 辞書ファイル					*tcvime-file*
 
 |tcvime-file-mazegaki|		交ぜ書き変換辞書
 |tcvime-file-mazegaki-edit|	交ぜ書き変換辞書の編集
@@ -683,7 +720,7 @@ bushu.helpの例:
 単なるテキストファイルなので、形式は自由です。
 
 ==============================================================================
-6. 設定例					*tcvime-setting*
+7. 設定例					*tcvime-setting*
 
 ~/.vimrcでの設定例です。
 <C-J>でtutcodepを有効にし、<C-L>でtutcodepを無効にする設定の例です。
@@ -790,7 +827,7 @@ function! TcvimeCustomKeymap()
 endfunction
 
 ==============================================================================
-7. 問題点					*tcvime-problem*
+8. 問題点					*tcvime-problem*
 
 - Insert modeの交ぜ書き変換の際、ポップアップメニューが無効で表示できない場合、
   自動ヘルプの表示はできません。
