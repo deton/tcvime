@@ -11,7 +11,8 @@
 5. コマンド				|tcvime-command|
 6. 辞書ファイル				|tcvime-file|
 7. 設定例				|tcvime-setting|
-8. 問題点				|tcvime-problem|
+8. keymapのカスタマイズ			|tcvime-keymapcustom|
+9. 問題点				|tcvime-problem|
 
 {Vi does not have any of these features}
 
@@ -827,7 +828,85 @@ function! TcvimeCustomKeymap()
 endfunction
 
 ==============================================================================
-8. 問題点					*tcvime-problem*
+8. keymapのカスタマイズ				*tcvime-keymapcustom*
+
+* keymapファイルを変更する方法
+keymap/のtutcodep.vim等を変更してください。
+
+変更した場合は、autoload/tcvime/内の2ファイルの更新も必要です。
+  helptbl_tutcodep.vim    |'tcvime_use_helptbl'|用のヘルプ表
+  kanji2seq_tutcodep.vim  部首合成変換やヘルプ表示高速化のための漢字から
+			  入力シーケンスへの変換用Dictionary
+
+それぞれのファイル作成補助用に、以下のファイルを用意しています。
+  mkhelptbl.vim
+  kanji2seq.vim
+
+keymap/の既存ファイルを同名のまま変更すると、
+変更前のtcvime側のファイルで上書きしてローカルの変更を無くしてしまうことがある
+ので、ファイル名を変えておいた方が良いです。
+
+* ~/.vimrcで一部のlmapを変更する方法
+~/.vimrcで|TcvimeCustomKeymap()|を定義して、そこでlmapを追加してください。
+
+function! TcvimeCustomKeymap()
+  lnoremap a:	a
+  lnoremap b:	b
+  ...
+  lnoremap t1	ぱ
+  lnoremap t3	ぴ
+  lnoremap t4	ぷ
+  lnoremap t5	ぺ
+  lnoremap t2	ぽ
+endfunction
+
+ただし、既存のkeymapファイル内で定義済のlmapに関しては、
+この方法では意図に反して新しいバッファを開いた時に上書き前のlmapが
+使われてしいます。これを回避するには以下の方法を使ってください。
+
+(keymapの上書きは、<buffer>を付けないと上書きされないので、
+別バッファを開くたびに上書きが必要。
+手でlmapオンにする操作を行う場合は、
+OnTcvimeEnableKeymap()で上書き処理を呼び出せばいいが、
+lmapオンの状態で新しいバッファを開いた時に自動でlmapオンになるので、
+その場合向けの対策が必要)
+
+- 一部lmapの上書き方法1
+" InsertEnter autocmdを登録。
+" (BufEnterやBufWinEnter時にはlmap未ロードなので上書きできない)
+augroup TcvimeOverwriteKeymap
+  autocmd!
+  autocmd InsertEnter * call TcvimeOverwriteKeymap()
+augroup END
+
+- 一部lmapの上書き方法2
+" 手でlmapオンにする操作を強制するためBufAddでiminsert=0しておいて、
+" OnTcvimeEnableKeymap()からTcvimeOverwriteKeymap()を呼ぶ。
+augroup TcvimeOverwriteKeymap
+  autocmd!
+  autocmd BufAdd * set iminsert=0
+augroup END
+
+function! OnTcvimeEnableKeymap()
+  call TcvimeOverwriteKeymap()
+endfunction
+
+- 一部lmapの上書き方法1と2に共通する関数
+function! TcvimeOverwriteKeymap()
+  if get(b:, 'loaded_tcvime_overwrite_keymap', 0)
+    return
+  endif
+  let b:loaded_tcvime_overwrite_keymap = 1
+  lnoremap <buffer> w<Space>	〜
+  lnoremap <buffer> s<Space>	―
+  lnoremap <buffer> k<Space>	〈
+  lnoremap <buffer> l<Space>	〉
+  lnoremap <buffer> x<Space>	■
+  lnoremap <buffer> v<Space>	●
+endfunction
+
+==============================================================================
+9. 問題点					*tcvime-problem*
 
 - Insert modeの交ぜ書き変換の際、ポップアップメニューが無効で表示できない場合、
   自動ヘルプの表示はできません。
