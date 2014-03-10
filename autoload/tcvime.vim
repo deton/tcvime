@@ -1482,10 +1482,8 @@ function! s:ShowHelpBushuDic(ch)
   let lnum = line('.')
   if lnum == 1
     let lnum = 0
-  else
-    " バッファ頭でなければ区切りの空行挿入。直前が複数行の部首辞書内容の時必要
-    call add(lines, '')
   endif
+  call add(lines, '') " 区切りの空行追加。複数行の部首辞書内容の時必要
   let failed = append(lnum, lines)
   if failed
     return -2
