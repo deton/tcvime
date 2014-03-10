@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-03-02
+" Last Change: 2014-03-10
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1318,6 +1318,7 @@ endfunction
 
 " 指定された文字配列のヘルプ表を表示する
 function! s:ShowHelp(ar, forcebushu)
+  let save_hls = &hlsearch
   let curbuf = bufnr('')
   call s:OpenHelpBuffer()
   let winwidth = winwidth(0)
@@ -1359,17 +1360,20 @@ function! s:ShowHelp(ar, forcebushu)
     endif
     let ln = line('.')
     .,$-1g/^/s//　/
+    call histdel('/', -1)
     call cursor(ln, 1)
     let save_reg = @@
     silent! execute "normal! \<C-V>Gk$x" . lastfrom . "G$p"
     let @@ = save_reg
     let lastcol = col('$')
     silent! execute ln . ',$-1g/^$/d _'
+    call histdel('/', -1)
   endfor
   if numch == 0
     call tcvime#CloseHelpBuffer()
   else
     silent! $g/^$/d _ " 末尾の余分な空行を削除
+    call histdel('/', -1)
     normal 1G
     " wincmd p
     execute bufwinnr(curbuf) . 'wincmd w'
@@ -1378,6 +1382,7 @@ function! s:ShowHelp(ar, forcebushu)
     redraw
     echo '文字ヘルプで表示できる情報がありません: <' . join(skipchars, ',') . '>'
   endif
+  let &hlsearch = save_hls
 endfunction
 
 " 指定された文字のヘルプ表を表示する
@@ -2027,6 +2032,7 @@ function! s:Candwin_SetCands(candlist)
   endwhile
   call append(0, items)
   silent! $g/^$/d _
+  call histdel('/', -1)
   setlocal nomodifiable
   call cursor(1, 1)
   wincmd p
