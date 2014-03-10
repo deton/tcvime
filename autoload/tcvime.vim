@@ -1543,7 +1543,12 @@ endfunction
 function! s:SelectWindowByName(name)
   let num = bufwinnr(a:name)
   if num > 0 && num != winnr()
-    execute num . 'wincmd w'
+    try
+      execute num . 'wincmd w'
+    catch /^Vim\%((\a\+)\)\=:E523/
+      " command lineからヘルプウィンドウを閉じようとした場合などに発生
+      return 0
+    endtry
   endif
   return num
 endfunction
