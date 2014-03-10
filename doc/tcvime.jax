@@ -830,7 +830,9 @@ endfunction
 ==============================================================================
 8. keymapのカスタマイズ				*tcvime-keymapcustom*
 
-* keymapファイルを変更する方法
+keymapファイルを変更する方法
+----------------------------
+
 keymap/のtutcodep.vim等を変更してください。
 
 変更した場合は、autoload/tcvime/内の2ファイルの更新も必要です。
@@ -846,7 +848,9 @@ keymap/の既存ファイルを同名のまま変更すると、
 変更前のtcvime側のファイルで上書きしてローカルの変更を無くしてしまうことがある
 ので、ファイル名を変えておいた方が良いです。
 
-* ~/.vimrcで一部のlmapを変更する方法
+~/.vimrcで一部のlmapを変更する方法
+----------------------------------
+
 ~/.vimrcで|TcvimeCustomKeymap()|を定義して、そこでlmapを追加してください。
 
 function! TcvimeCustomKeymap()
@@ -861,8 +865,8 @@ function! TcvimeCustomKeymap()
 endfunction
 
 ただし、既存のkeymapファイル内で定義済のlmapに関しては、
-この方法では意図に反して新しいバッファを開いた時に上書き前のlmapが
-使われてしいます。これを回避するには以下の方法を使ってください。
+この方法では新しいバッファを開いた時に上書き前のlmapが使われてしいます。
+これを回避するには以下の方法を使ってください。
 
 (keymapの上書きは、<buffer>を付けないと上書きされないので、
 別バッファを開くたびに上書きが必要。
@@ -872,14 +876,6 @@ lmapオンの状態で新しいバッファを開いた時に自動でlmapオン
 その場合向けの対策が必要)
 
 - 一部lmapの上書き方法1
-" InsertEnter autocmdを登録。
-" (BufEnterやBufWinEnter時にはlmap未ロードなので上書きできない)
-augroup TcvimeOverwriteKeymap
-  autocmd!
-  autocmd InsertEnter * call TcvimeOverwriteKeymap()
-augroup END
-
-- 一部lmapの上書き方法2
 " 手でlmapオンにする操作を強制するためBufAddでiminsert=0しておいて、
 " OnTcvimeEnableKeymap()からTcvimeOverwriteKeymap()を呼ぶ。
 augroup TcvimeOverwriteKeymap
@@ -890,6 +886,14 @@ augroup END
 function! OnTcvimeEnableKeymap()
   call TcvimeOverwriteKeymap()
 endfunction
+
+- 一部lmapの上書き方法2
+" InsertEnter autocmdを登録。
+" (BufEnterやBufWinEnter時にはlmap未ロードなので上書きできない)
+augroup TcvimeOverwriteKeymap
+  autocmd!
+  autocmd InsertEnter * call TcvimeOverwriteKeymap()
+augroup END
 
 - 一部lmapの上書き方法1と2に共通する関数
 function! TcvimeOverwriteKeymap()
