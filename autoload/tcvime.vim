@@ -75,11 +75,6 @@ function! tcvime#Activate(active)
   else
     call tcvime#DisableKeymap()
   endif
-  if a:active == 2
-    set imsearch=1
-  else
-    set imsearch=0
-  endif
 endfunction
 
 " lmapをオンにする
