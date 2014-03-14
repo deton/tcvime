@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-03-10
+" Last Change: 2014-03-15
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -398,8 +398,8 @@ function! s:Seq2KanjiFeedkeys(str)
   if a:str == ''
     return
   endif
-  call tcvime#EnableKeymap()
-  call feedkeys('gvc' . a:str . "\<ESC>", 't')
+  let imonseq = tcvime#EnableKeymap()
+  call feedkeys('gvc' . imonseq . a:str . "\<ESC>", 't')
 endfunction
 
 " 漢字文字列を入力シーケンスに変換する。
