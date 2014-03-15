@@ -81,47 +81,53 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
 
 更新履歴
   - 1.5.0 (2014-03-XXX)
-   - 文字ヘルプ表示時に、第1打鍵以外の打ち方が共通する文字のテーブル(文字表)を
-     表示する機能を追加。デフォルトで有効化。'tcvime_use_helptbl'オプション。
-     (ある漢字の打ち方を忘れて変換で入力した際は、ついでに近くの漢字の打ち方の
-     復習をすることも多いので)
-     例:
-        桟頃 篇猿析|$△・・・・
-        尉軟 辰祖彫| ・・・・・
-        砦闇^鍵渓抄< ・・・・・
-     例(従来):
-        ・・・・  3 ・・・・
-        ・・・・    ・・・・
-        ・・1 2     ・・・・
-            鍵
-   - Insert mode用にコントロールキーを伴わないモード切り替え用関数追加。
-   - Insert mode用後置型英字変換(SKK abbrev変換)関数追加。
-   - 前置型英字変換機能追加。<Plug>TcvimeIAsciiStart。
-     カタカナ入力が面倒で、英字変換する方が楽な場合があるので。
-   - ひらがな変換機能追加: 後置型(文字数指定、連続カタカナ)、Visual mode、
-     Normal mode、opfunc
-   - ひらがなとして残す文字数を指定する後置型カタカナ変換では、
-     Insert mode開始位置以降のみを対象にする機能は無効化するようにした。
-     バッファ表示内容を見て残す文字数を数える使い方なので。
-   - <Plug>TcvimeVSeq2Kanjiにおいて、入力シーケンス中で後置型カタカナ変換等を
-     使っていると、"<C-R>=tcvime#InputConvertKatakana(3)"等がそのまま入る問題
-     を修正。
-   - 部首合成変換やヘルプ表示高速化のため、漢字から入力シーケンスへの変換用
-     Dictionaryをautoload化。(毎回keymapファイルから生成するかわり。
-     ただしkeymap変更時は手でautoload/tcvime/kanji2seq_tutcode.vim等の変更要)
-   - 部首合成変換高速化のため、bushu.revをautoload/tcvime/bushudic.vimに変更。
-   - keymap/tutcodep.vimに、Touch16+やTUT98.COMの拗音等の短縮ストロークを追加。
-   - 'tcvime_keymap_for_help'を'tcvime_keymap'に変更
-   - シーケンス最初の文字のみが大文字のカタカナ定義(例:Wi	ミ)を
-     tutcodep.vimから削除。これらの定義はめったに使わない一方で'WiFi'等を
-     そのまま入力したいので。シーケンス最初が大文字のカタカナ定義を生成する
-     関数をtcvime#lmapcust#mkcapitalkatalist()として追加。
-   - キーマッピングの登録・解除を行う:TcvimeOnと:TcvimeOffコマンドを削除し、
-     デフォルトでキーマッピングが登録されるように変更。
-     デフォルトのキーマッピングを使わず、自分で他のキーにmapしたい場合用に、
-     'tcvime_no_default_key_mappings'オプションを追加。
-     (従来、plugin/tcvime.vimで:TcvimeOnしておりautoload/tcvime.vimが常に読み
-     込まれて、必要な時のみ読み込むようにautoload化した意味がなかったので)
+   - 機能追加
+     - 文字ヘルプ表示時に、第1打鍵以外の打ち方が共通する文字のテーブル(文字表)を
+       表示する機能を追加。デフォルトで有効化。'tcvime_use_helptbl'オプション。
+       (ある漢字の打ち方を忘れて変換で入力した際は、ついでに近くの漢字の打ち方の
+       復習をすることも多いので)
+       例:
+	  桟頃 篇猿析|$△・・・・
+	  尉軟 辰祖彫| ・・・・・
+	  砦闇^鍵渓抄< ・・・・・
+       例(従来):
+	  ・・・・  3 ・・・・
+	  ・・・・    ・・・・
+	  ・・1 2     ・・・・
+	      鍵
+     - Insert mode用にコントロールキーを伴わないモード切り替え用関数追加。
+     - Insert mode用後置型英字変換(SKK abbrev変換)関数追加。
+     - 前置型英字変換機能追加。<Plug>TcvimeIAsciiStart。
+       カタカナ入力が面倒で、英字変換する方が楽な場合があるので。
+     - ひらがな変換機能追加: 後置型(文字数指定、連続カタカナ)、Visual mode、
+       Normal mode、opfunc
+   - 変更点(動作)
+     - ひらがなとして残す文字数を指定する後置型カタカナ変換では、
+       Insert mode開始位置以降のみを対象にする機能は無効化するようにした。
+       バッファ表示内容を見て残す文字数を数える使い方なので。
+     - 'tcvime_keymap_for_help'を'tcvime_keymap'に変更
+     - 検索履歴(/)を汚さないようにした
+     - キーマッピングの登録・解除を行う:TcvimeOnと:TcvimeOffコマンドを削除し、
+       デフォルトでキーマッピングが登録されるように変更。
+       デフォルトのキーマッピングを使わず、自分で他のキーにmapしたい場合用に、
+       'tcvime_no_default_key_mappings'オプションを追加。
+       (従来、plugin/tcvime.vimで:TcvimeOnしておりautoload/tcvime.vimが常に読み
+       込まれて、必要な時のみ読み込むようにautoload化した意味がなかったので)
+   - 変更点(高速化)
+     - 部首合成変換やヘルプ表示高速化のため、漢字から入力シーケンスへの変換用
+       Dictionaryをautoload化。(毎回keymapファイルから生成するかわり。
+       ただしkeymap変更時は手でautoload/tcvime/kanji2seq_tutcode.vim等の変更要)
+     - 部首合成変換高速化のため、bushu.revをautoload/tcvime/bushudic.vimに変更。
+   - 変更点(keymap/tutcodep.vim)
+     - keymap/tutcodep.vimに、Touch16+やTUT98.COMの拗音等の短縮ストロークを追加
+     - シーケンス最初の文字のみが大文字のカタカナ定義(例:Wi	ミ)を
+       tutcodep.vimから削除。これらの定義はめったに使わない一方で'WiFi'等を
+       そのまま入力したいので。シーケンス最初が大文字のカタカナ定義を生成する
+       関数をtcvime#lmapcust#mkcapitalkatalist()として追加。
+   - バグ修正
+     - <Plug>TcvimeVSeq2Kanjiにおいて、入力シーケンス中で後置型カタカナ変換等を
+       使っていると、"<C-R>=tcvime#InputConvertKatakana(3)"等がそのまま入る問題
+       を修正。
 
   - 1.4.0 (2013-10-12)
    - スクリプトファイルや辞書ファイルの文字コードをUTF-8に変更。
