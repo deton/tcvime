@@ -1380,7 +1380,7 @@ function! s:ShowHelp(ar, forcebushu)
   endif
   if len(skipchars) > 0
     redraw
-    echo '文字ヘルプで表示できる情報がありません: <' . join(skipchars, ',') . '>'
+    echo 'ヘルプ情報無し: <' . join(skipchars, ',') . '>'
   endif
   let &hlsearch = save_hls
 endfunction
