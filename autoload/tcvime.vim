@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-03-15
+" Last Change: 2014-03-23
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -896,7 +896,7 @@ function! tcvime#InputConvertSelectCand(idx)
   endif
   let s:last_candidate = s:last_candidate_list[a:idx]
   let bs = substitute(s:completeyomi, '.', "\<BS>", 'g')
-  return "\<C-E>" . bs . s:last_candidate . tcvime#EnableKeymap()
+  return "\<C-E>" . bs . s:last_candidate
 endfunction
 
 " 候補を確定して、確定した文字列を返す
