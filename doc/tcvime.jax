@@ -878,9 +878,11 @@ lmapオンの状態で新しいバッファを開いた時に自動でlmapオン
 - 一部lmapの上書き方法1
 " 手でlmapオンにする操作を強制するためBufAddでiminsert=0しておいて、
 " OnTcvimeEnableKeymap()からTcvimeOverwriteKeymap()を呼ぶ。
+" XXX: 交ぜ書き変換で初回にmazegaki.dicが開かれた時にもオフになる問題あり
+"      (特にInsert modeでの初回交ぜ書き変換時)
 augroup TcvimeOverwriteKeymap
   autocmd!
-  autocmd BufAdd * set iminsert=0
+  autocmd BufAdd * setl iminsert=0
 augroup END
 
 function! OnTcvimeEnableKeymap()
