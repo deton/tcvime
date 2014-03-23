@@ -1406,7 +1406,7 @@ endfunction
 function! s:ShowHelpSequence(ch, keyseq)
   let from = line('$')
   call append(line('.') - 1, split(g:tcvime_keyboard, "\<CR>"))
-  let to = line('$')
+  let to = line('$') - 1 " 最終行は区切り用の空行なのでそれより前まで
   let range = from . ',' . to
   let keys = split(a:keyseq, '\zs')
   let i = 0
@@ -1426,7 +1426,7 @@ function! s:ShowHelpSequence(ch, keyseq)
     silent! execute range . 'd _'
     return -1
   endif
-  call append(to - 1, '    ' . a:ch)
+  call append(to, '    ' . a:ch)
   call cursor(from, 1)
   return 1
 endfunction
