@@ -896,7 +896,18 @@ function! tcvime#InputConvertSelectCand(idx)
   endif
   let s:last_candidate = s:last_candidate_list[a:idx]
   let bs = substitute(s:completeyomi, '.', "\<BS>", 'g')
-  return "\<C-E>" . bs . s:last_candidate
+
+  " tcvime#InputAsciiStart()によるASCII読み入力後の変換確定時は、
+  " EnableKeymapしたい。EnableKeymap()内でInputReset()されるが、
+  " そうするとOnCursorMovedI()でのヘルプ表示ができないので、一時保存して再設定
+  let save_status_line = s:status_line
+  let save_status_column = s:status_column
+  let save_status_colend = s:status_colend
+  let enableseq = tcvime#EnableKeymap()
+  let s:status_line = save_status_line
+  let s:status_column = save_status_column
+  let s:status_colend = save_status_colend
+  return "\<C-E>" . bs . s:last_candidate . enableseq
 endfunction
 
 " 候補を確定して、確定した文字列を返す
