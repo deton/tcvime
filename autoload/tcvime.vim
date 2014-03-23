@@ -1359,7 +1359,7 @@ function! s:ShowHelp(ar, forcebushu)
       continue
     endif
     let ln = line('.')
-    .,$-1g/^/s//　/
+    silent .,$-1g/^/s//　/
     call histdel('/', -1)
     call cursor(ln, 1)
     let save_reg = @@
