@@ -1567,24 +1567,26 @@ function! s:Candidate_FileOpen(foredit)
   if s:SelectWindowByName(s:candidate_file) > 0
     if a:foredit
       set noreadonly
-      set buflisted
+      if a:foredit == 2
+	set buflisted
+      endif
     endif
     return 1
   endif
   if filereadable(s:candidate_file) != 1
     return 0
   endif
-  let cmd = 'sv '
-  if a:foredit
-    let cmd = 'sp '
+  if a:foredit == 1
+    let cmd = 'sp +se\ nobuflisted'
+  elseif a:foredit == 2
+    let cmd = 'sp'
+  else
+    let cmd = 'sv +se\ nobuflisted'
   endif
-  silent execute cmd . s:candidate_file
+  silent execute cmd s:candidate_file
   nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>MazegakiDic_CandSelect()<CR>
   " 候補無し時、自動開始された辞書編集をキャンセルしたい場合用。
   nnoremap <buffer> <silent> <C-E> :<C-U>call <SID>MazegakiDic_Cancel()<CR>
-  if !a:foredit
-    set nobuflisted
-  endif
   return 1
 endfunction
 
@@ -1645,7 +1647,7 @@ function! s:CandidateSearchSub(keyword, finish)
       let b:altbufnr = altbufnr
     " else 交ぜ書き辞書編集中にさらに交ぜ書き変換した場合はそのまま
     endif
-    call tcvime#MazegakiDic_Edit(1)
+    call tcvime#MazegakiDic_Edit(0)
   elseif !&modified
     quit
   endif
@@ -1685,9 +1687,14 @@ function! s:MazegakiDic_CandSelect()
 endfunction
 
 " 交ぜ書き辞書を編集用に開いて、直前に変換した読みを検索する
-function! tcvime#MazegakiDic_Edit(addnew)
+function! tcvime#MazegakiDic_Edit(autoupdate)
   let altbufnr = bufnr('')
-  if !s:Candidate_FileOpen(1)
+  if a:autoupdate
+    let foredit = 1
+  else
+    let foredit = 2
+  endif
+  if !s:Candidate_FileOpen(foredit)
     return -2
   endif
   " :TcvimeEditMazegakiコマンド実行時用
@@ -1705,7 +1712,7 @@ function! tcvime#MazegakiDic_Edit(addnew)
     return ret
   endif
   " 読みが無ければ新たに挿入
-  if a:addnew
+  if !a:autoupdate
     execute 'normal! ggO' . s:last_keyword . ' /' . s:last_keyword . "/\<ESC>"
   endif
   return 0
@@ -1724,7 +1731,7 @@ endfunction
 " 交ぜ書き変換で確定した候補を学習して、候補リスト内位置を移動して、辞書保存
 function! s:LearnCand(str)
   let origpos = getpos('.')
-  let ret = tcvime#MazegakiDic_Edit(0)
+  let ret = tcvime#MazegakiDic_Edit(1)
   if ret == -2
     return
   elseif ret <= 0
