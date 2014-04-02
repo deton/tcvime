@@ -148,7 +148,7 @@ imap <silent> <unique> , <C-G>u<C-R>=tcvime#EnableKeymapOrInsertChar(',',1)<CR>
 
 コントロールキー無しでlmapオフにするには、以下のようなlmapを登録してください。
 
-function! TcvimeCustomKeymap()
+function TcvimeCustomKeymap()
   " lmapオフ
   lmap <silent> a9 <C-G>u<Plug>TcvimeIDisableKeymap
   " ...
@@ -172,7 +172,7 @@ endfunction
   後置型変換を使う場合は、
     TcvimeCustomKeymap()関数を定義して、
     後置型変換に使うシーケンスのlmapを記述した上で、
-      function! TcvimeCustomKeymap()
+      function TcvimeCustomKeymap()
 	lmap <silent> ala <C-G>u<Plug>TcvimeIBushu
 	" ...
       endfunction
@@ -749,14 +749,14 @@ if has('keymap')
 endif
 
 " <Plug>TcvimeIEnableKeymap実行時にコールバックされる関数。
-function! OnTcvimeEnableKeymap()
+function OnTcvimeEnableKeymap()
   " <Space>で前置型交ぜ書き変換を開始するか、読みが無ければ' 'を挿入。
   " (lmapにすると、lmap有効時にfやtやrの後の<Space>が使用不可。(<C-R>=なので))
   imap <silent> <Space> <C-G>u<Plug>TcvimeIConvOrSpace
 endfunction
 
 " <Plug>TcvimeIDisableKeymap()実行時にコールバックされる関数。
-function! OnTcvimeDisableKeymap()
+function OnTcvimeDisableKeymap()
   silent! iunmap <Space>
   TcvimeCloseHelp
 endfunction
@@ -765,7 +765,7 @@ endfunction
 " <Plug>TcvimeEnableKeymap実行中にtcvime#SetKeymap()からコールバックされる。
 " (lmapのロード時に1回のみ実行されるようにするため、
 " OnTcvimeEnableKeymap()と別関数)
-function! TcvimeCustomKeymap()
+function TcvimeCustomKeymap()
   " (TUT-Code用の例)
   " 後置型部首合成変換
   lmap <silent> ala <C-G>u<Plug>TcvimeIBushu
@@ -853,7 +853,7 @@ keymap/の既存ファイルを同名のまま変更すると、
 
 ~/.vimrcで|TcvimeCustomKeymap()|を定義して、そこでlmapを追加してください。
 
-function! TcvimeCustomKeymap()
+function TcvimeCustomKeymap()
   lnoremap a:	a
   lnoremap b:	b
   ...
@@ -885,7 +885,7 @@ augroup TcvimeOverwriteKeymap
   autocmd BufAdd * setl iminsert=0
 augroup END
 
-function! OnTcvimeEnableKeymap()
+function OnTcvimeEnableKeymap()
   call TcvimeOverwriteKeymap()
 endfunction
 
@@ -898,7 +898,7 @@ augroup TcvimeOverwriteKeymap
 augroup END
 
 - 一部lmapの上書き方法1と2に共通する関数
-function! TcvimeOverwriteKeymap()
+function TcvimeOverwriteKeymap()
   if get(b:, 'loaded_tcvime_overwrite_keymap', 0)
     return
   endif
