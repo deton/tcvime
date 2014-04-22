@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-03-23
+" Last Change: 2014-04-22
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -310,6 +310,11 @@ function! tcvime#InputConvertSeq2Kanji(n)
   if chars == ''
     return ''
   endif
+  " "dlk<Esc>gaz0"で"だ"に変換された後で、"あ"を入力後、文字数指定無しの
+  " カタカナ変換や交ぜ書き変換ができない問題を回避するため、insert_colを更新。
+  " 元のinsert_colだと文字の途中のバイトでstrpart()されて壊れるのが原因。
+  " "tltk<Esc>gaz0rkrik0"だと元のinsert_col以降が対象になって"ぱあイ"になる。
+  let s:insert_col -= strlen(chars)
   call feedkeys(chars, 't')
   return substitute(chars, '.', "\<BS>", 'g')
 endfunction
