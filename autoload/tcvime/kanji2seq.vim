@@ -18,6 +18,9 @@ function! tcvime#kanji2seq#get(ch)
   catch /^Vim\%((\a\+)\)\=:E121/ " E121: Undefined variable
     let s:kanji2seqdict = tcvime#kanji2seq#keymap2revdict(keymap)
   endtry
+  if exists('*OnTcvimeLoadKanji2SeqDict')
+    call OnTcvimeLoadKanji2SeqDict(s:kanji2seqdict)
+  endif
   return get(s:kanji2seqdict, a:ch, '')
 endfunction
 

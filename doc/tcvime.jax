@@ -439,6 +439,13 @@ TcvimeCustomKeymap()                            *TcvimeCustomKeymap()*
   OnTcvimeEnableKeymap()と別関数)
   設定例は|tcvime-setting|参照。
 
+OnTcvimeLoadKanji2SeqDict()			*OnTcvimeLoadKanji2SeqDict()*
+  漢字→入力シーケンス変換や、ヘルプ表示で使用されるDictionaryのロード後に
+  コールバックされる関数。
+  |TcvimeCustomKeymap()|やTcvimeOverwriteKeymap()での入力シーケンス→漢字定義の
+  一部カスタマイズを、逆変換用Dictionaryに対しても行えるようにするための関数。
+  設定例は|tcvime-keymapcustom-vimrc|参照。
+
 'g:tcvime#selectkeys'				*'g:tcvime#selectkeys'*
   交ぜ書き変換候補選択用キーのList。
   候補を選ぶ際に、CTRL-Nを何回か押した後CTRL-Yで確定するかわりに、
@@ -830,15 +837,15 @@ endfunction
 ==============================================================================
 8. keymapのカスタマイズ				*tcvime-keymapcustom*
 
-keymapファイルを変更する方法
+keymapファイルを変更する方法			*tcvime-keymapcustom-file*
 ----------------------------
 
 keymap/のtutcodep.vim等を変更してください。
 
 変更した場合は、autoload/tcvime/内の2ファイルの更新も必要です。
   helptbl_tutcodep.vim    |'tcvime_use_helptbl'|用のヘルプ表
-  kanji2seq_tutcodep.vim  部首合成変換やヘルプ表示高速化のための漢字から
-			  入力シーケンスへの変換用Dictionary
+  kanji2seq_tutcodep.vim  漢字→入力シーケンス変換やヘルプ表示高速化のための、
+                          漢字から入力シーケンスへの変換用Dictionary
 
 それぞれのファイル作成補助用に、以下のファイルを用意しています。
   mkhelptbl.vim
@@ -848,7 +855,7 @@ keymap/の既存ファイルを同名のまま変更すると、
 変更前のtcvime側のファイルで上書きしてローカルの変更を無くしてしまうことがある
 ので、ファイル名を変えておいた方が良いです。
 
-~/.vimrcで一部のlmapを変更する方法
+~/.vimrcで一部のlmapを変更する方法		*tcvime-keymapcustom-vimrc*
 ----------------------------------
 
 ~/.vimrcで|TcvimeCustomKeymap()|を定義して、そこでlmapを追加してください。
@@ -909,6 +916,22 @@ function TcvimeOverwriteKeymap()
   lnoremap <buffer> l<Space>	〉
   lnoremap <buffer> x<Space>	■
   lnoremap <buffer> v<Space>	●
+endfunction
+
+- 漢字→入力シーケンス変換や、ヘルプ表示で使用されるDictionaryへの変更も必要
+
+" TcvimeCustomKeymap()やTcvimeOverwriteKeymap()での入力シーケンス→漢字定義の
+" 一部カスタマイズを、逆変換用Dictionaryに対しても行う。
+" 漢字→入力シーケンス変換や、ヘルプ表示で使用されるDictのロード後に呼ばれる。
+" TODO: ばらばらの関数でなく一括してカスタマイズする機能を追加する
+" @param dict ロードされたkanji2seq Dictionary
+function OnTcvimeLoadKanji2SeqDict(dict)
+  let a:dict['〜'] = 'w '
+  let a:dict['―'] = 's '
+  let a:dict['〈'] = 'k '
+  let a:dict['〉'] = 'l '
+  let a:dict['■'] = 'x '
+  let a:dict['●'] = 'v '
 endfunction
 
 ==============================================================================
