@@ -1472,12 +1472,13 @@ function! s:ShowHelpTable(ch, keyseq)
     return -1
   endif
   let line = line('.')
-  let col = col('.')
+  let col = virtcol('.')
   " 桁合わせ用' 'を入れる
-  silent! execute from . ',' . to . 's/\%' . col . 'c/ /'
+  let col -= 1
+  silent! execute from . ',' . to . 's/\%' . col . 'v/ /'
   let col += 1
   " 第1打鍵を示す'^'を入れる
-  silent! execute line . 's/ \%' . col . 'c/^/'
+  silent! execute line . 's/ \%' . col . 'v/^/'
   " $のための桁合わせ用に既に' 'が入ってたら元に戻す
   silent! execute from . ',' . to . 's/  / /'
   silent! execute from . ',' . to . 's/ \^/^/'
