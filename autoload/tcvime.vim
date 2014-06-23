@@ -1474,7 +1474,7 @@ function! s:ShowHelpTable(ch, keyseq)
   let line = line('.')
   let col = virtcol('.')
   " 桁合わせ用' 'を入れる
-  let col -= 1
+  let col -= strdisplaywidth(a:ch) - 1
   silent! execute from . ',' . to . 's/\%' . col . 'v/ /'
   let col += 1
   " 第1打鍵を示す'^'を入れる
