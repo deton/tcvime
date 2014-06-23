@@ -910,7 +910,7 @@ function TcvimeOverwriteKeymap()
     return
   endif
   let b:loaded_tcvime_overwrite_keymap = 1
-  lnoremap <buffer> w<Space>	〜
+  lnoremap <buffer> w<Space>	～
   lnoremap <buffer> s<Space>	―
   lnoremap <buffer> k<Space>	〈
   lnoremap <buffer> l<Space>	〉
@@ -926,7 +926,7 @@ endfunction
 " TODO: ばらばらの関数でなく一括してカスタマイズする機能を追加する
 " @param dict ロードされたkanji2seq Dictionary
 function OnTcvimeLoadKanji2SeqDict(dict)
-  let a:dict['〜'] = 'w '
+  let a:dict['～'] = 'w '
   let a:dict['―'] = 's '
   let a:dict['〈'] = 'k '
   let a:dict['〉'] = 'l '
