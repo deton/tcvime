@@ -1813,13 +1813,26 @@ function! s:BushuHelp_FileOpen()
   return 1
 endfunction
 
+" 直前の部首合成変換のキャッシュ
+let s:last_bushu1 = ''
+let s:last_bushu2 = ''
+let s:last_bushures = ''
+
 " 部首合成変換
 function! s:BushuConvert(char1, char2)
+  if a:char1 == s:last_bushu1 && a:char2 == s:last_bushu2 && s:last_bushures != ''
+    return s:last_bushures
+  endif
+  let s:last_bushu1 = a:char1
+  let s:last_bushu2 = a:char2
   let retchar = s:BushuHelpSearch(a:char1, a:char2)
   if s:BushuCharOK(retchar, a:char1, a:char2)
+    let s:last_bushures = retchar
     return retchar
   endif
-  return s:BushuSearch(a:char1, a:char2)
+  let retchar = s:BushuSearch(a:char1, a:char2)
+  let s:last_bushures = retchar
+  return retchar
 endfunction
 
 " 部首ヘルプファイルを検索して部首合成変換
