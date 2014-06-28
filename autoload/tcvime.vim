@@ -1284,11 +1284,11 @@ call s:StatusReset()
 " ヘルプ表示
 
 " ヘルプ用バッファを開く
-function! s:OpenHelpBuffer()
+function! s:OpenHelpBuffer(ar, forcebushu)
   if s:SelectWindowByName(s:helpbufname) < 0
     silent execute 'sp ' . s:helpbufname
     set buftype=nofile
-    set bufhidden=delete
+    set bufhidden=hide
     set noswapfile
     set winfixheight
     set nobuflisted
@@ -1300,14 +1300,21 @@ function! s:OpenHelpBuffer()
     endif
     nnoremap <buffer> <silent> q :<C-U>quit<CR>
   endif
-  silent! %d _
   5wincmd _
+  if exists('b:forcebushu') && b:forcebushu == a:forcebushu && b:ar == a:ar
+    " 直前と同じヘルプ表示の場合は、内容の残っているウィンドウを開くだけ
+    return 1
+  endif
+  silent! %d _
+  let b:ar = a:ar
+  let b:forcebushu = a:forcebushu
+  return 0
 endfunction
 
 " ヘルプ用バッファを閉じる
 function! tcvime#CloseHelpBuffer()
   if s:SelectWindowByName(s:helpbufname) > 0
-    bwipeout!
+    hide
   endif
 endfunction
 
@@ -1349,7 +1356,15 @@ endfunction
 function! s:ShowHelp(ar, forcebushu)
   let save_hls = &hlsearch
   let curbuf = bufnr('')
-  call s:OpenHelpBuffer()
+  if s:OpenHelpBuffer(a:ar, a:forcebushu) == 1
+    " 直前と同じヘルプ表示の場合は、内容の残っているウィンドウを開くだけ
+    if b:numch == 0
+      call tcvime#CloseHelpBuffer()
+    else
+      execute bufwinnr(curbuf) . 'wincmd w'
+    endif
+    return
+  endif
   let winwidth = winwidth(0)
   let lastcol = 0
   let lastfrom = 1
@@ -1398,6 +1413,7 @@ function! s:ShowHelp(ar, forcebushu)
     silent! execute ln . ',$-1g/^$/d _'
     call histdel('/', -1)
   endfor
+  let b:numch = numch
   if numch == 0
     call tcvime#CloseHelpBuffer()
   else
