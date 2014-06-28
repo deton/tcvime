@@ -1672,7 +1672,7 @@ function! s:CandidateSearchSub(keyword, finish)
   call setpos('.', origpos)
   if ret > 0
     if !&modified
-      quit
+      hide
     endif
     return ret
   endif
@@ -1686,7 +1686,7 @@ function! s:CandidateSearchSub(keyword, finish)
     endif
     call tcvime#MazegakiDic_Edit(0)
   elseif !&modified
-    quit
+    hide
   endif
   return ret
 endfunction
@@ -1702,7 +1702,8 @@ function! s:MazegakiDic_CandSelect()
   let s:last_candidate = chars
   let s:last_keyword = matchstr(getline('.'), '^[^ ]*')
   let bufnr = b:altbufnr
-  xit
+  update
+  hide
 
   execute bufwinnr(bufnr) . 'wincmd w'
   let s:status_line = line('.')
@@ -1762,7 +1763,7 @@ function! s:MazegakiDic_Cancel()
   if &modified
     undo
   endif
-  quit
+  hide
 endfunction
 
 " 交ぜ書き変換で確定した候補を学習して、候補リスト内位置を移動して、辞書保存
@@ -1772,7 +1773,7 @@ function! s:LearnCand(str)
   if ret == -2
     return
   elseif ret <= 0
-    quit
+    hide
     return
   endif
   let editing = &modified " 辞書編集中の交ぜ書き変換の確定かどうか
@@ -1783,7 +1784,7 @@ function! s:LearnCand(str)
   let moveto = g:tcvime_movecandto + 1
   if i <= moveto " 学習対象外の位置にあるか、既に学習済みの位置の場合は変更不要
     if !editing
-      quit
+      hide
     else
       call setpos('.', origpos)
     endif
@@ -1793,7 +1794,8 @@ function! s:LearnCand(str)
   call insert(candlist, a:str, moveto)
   call setline('.', s:last_keyword . ' ' . join(candlist, '/'))
   if !editing
-    wq
+    update
+    hide
   else
     call setpos('.', origpos)
   endif
