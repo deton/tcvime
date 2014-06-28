@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-04-22
+" Last Change: 2014-06-28
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -414,6 +414,15 @@ endfunction
 function! tcvime#InputConvertKanji2Seq(n)
   " "undo "→"趣・"、"code "→"演各 "
   let chars = s:AcquireYomi(' \=[^ ]\+ \=', col('.'), a:n)
+  let seq = s:Kanji2Seq(chars, 1)
+  let s:commit_str = seq
+  return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
+endfunction
+
+" 漢字文字列を入力シーケンスに変換する。
+" 対象文字列は、Insert mode開始位置もしくは大文字以降。
+function! tcvime#InputConvertKanji2SeqCapital()
+  let chars = s:AcquireYomi('\u[^A-Z ]\+ \=', col('.'), 0)
   let seq = s:Kanji2Seq(chars, 1)
   let s:commit_str = seq
   return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
@@ -1474,6 +1483,8 @@ function! s:ShowHelpTable(ch, keyseq)
   let line = line('.')
   let col = virtcol('.')
   " 桁合わせ用' 'を入れる
+  " (文字幅が2の場合、colは2カラム目の値になるが、そこに' 'を挿入しようとしても
+  " 文字の中間なのでエラー。colを1カラム目の値にする)
   let col -= strdisplaywidth(a:ch) - 1
   silent! execute from . ',' . to . 's/\%' . col . 'v/ /'
   let col += 1
