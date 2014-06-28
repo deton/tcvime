@@ -1298,7 +1298,7 @@ function! s:OpenHelpBuffer(ar, forcebushu)
 	setlocal conceallevel=2 concealcursor=nc
       endif
     endif
-    nnoremap <buffer> <silent> q :<C-U>quit<CR>
+    nnoremap <buffer> <silent> q :<C-U>hide<CR>
   endif
   5wincmd _
   if exists('b:forcebushu') && b:forcebushu == a:forcebushu && b:ar == a:ar
@@ -1562,7 +1562,7 @@ function! s:SearchBushuHelp(ch)
       call add(lines, getline('.'))
     endwhile
   endif
-  quit!
+  hide
   return lines
 endfunction
 
@@ -1758,7 +1758,7 @@ endfunction
 
 " 候補無し時、自動開始された辞書編集をキャンセルしたい場合用。
 function! s:MazegakiDic_Cancel()
-  " (新エントリ用の行挿入をundoしてquit。
+  " (新エントリ用の行挿入をundoしてhide。
   " :quit!だと、辞書を本当に編集中の場合に、誤って<C-E>を押すと作業が失われる)
   if &modified
     undo
@@ -1835,7 +1835,7 @@ function! s:BushuHelpSearch(char1, char2)
   else
     let retchar = ''
   endif
-  quit!
+  hide
   return retchar
 endfunction
 
@@ -2035,7 +2035,7 @@ function! tcvime#KanjiTable_FileOpen()
     silent execute 'sv '.s:kanjitable_file
   endif
   nnoremap <buffer> <silent> <CR> :<C-U>call <SID>KanjiTable_CopyChar()<CR>
-  nnoremap <buffer> <silent> q :<C-U>quit<CR>
+  nnoremap <buffer> <silent> q :<C-U>hide<CR>
 endfunction
 
 " 漢字テーブルバッファから直近のバッファに漢字をコピーする
