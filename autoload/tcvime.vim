@@ -421,9 +421,13 @@ endfunction
 
 " 漢字文字列を入力シーケンスに変換する。
 " 対象文字列は、Insert mode開始位置もしくは大文字以降。
-function! tcvime#InputConvertKanji2SeqCapital()
+" @param lower 1の場合は最初の文字を小文字化する。区切り用に大文字入力した場合
+function! tcvime#InputConvertKanji2SeqCapital(lower)
   let chars = s:AcquireYomi('\u[^A-Z ]\+ \=', col('.'), 0)
   let seq = s:Kanji2Seq(chars, 1)
+  if a:lower
+    let seq = tolower(seq)
+  endif
   let s:commit_str = seq
   return substitute(chars, '.', "\<BS>", 'g') . s:commit_str
 endfunction
