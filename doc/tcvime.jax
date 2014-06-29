@@ -121,12 +121,21 @@ keymap有効のままで英単語を入力して、後置型で英字に変換�
   例:" code "と打鍵すると" 演各 "と表示され、開始キーで、"code"に変換。
 あるいは、読みの始まりをマークしておくと、それ以降を対象に英字に変換。
 
+区切り用スペースの入力が面倒な場合、
+英単語の最初の文字を大文字で入力しておくと、大文字以降の文字を英字に変換。
+  例:"Code "と打鍵すると"C六ー"と表示され、開始キーで、"Code"に変換。
+     もしくは、小文字化入力シーケンスに変換すると、"code"に変換。
+
 Insert mode用には、lmap用の後置型漢字→入力シーケンス変換関数を用意しています。
 |tcvime-setting|
 例:
   " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
   lmap <silent> ;0 <C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
-  " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
+  " 後置型漢字→入力シーケンス変換(大文字まで。小文字化)
+  lmap <silent> ;7 <C-R>=tcvime#InputConvertKanji2SeqCapital(1)<CR>
+  " 後置型漢字→入力シーケンス変換(大文字まで)
+  lmap <silent> ;8 <C-R>=tcvime#InputConvertKanji2SeqCapital(0)<CR>
+  " 後置型漢字→入力シーケンス変換(Insert mode開始位置または行頭まで)
   lmap <silent> ;9 <C-R>=tcvime#InputConvertKanji2SeqAll()<CR>
 
 なお、シーケンスがずれて意味不明な漢字文字列になったものを修復するには、
@@ -819,7 +828,11 @@ function TcvimeCustomKeymap()
   lmap <silent> z0 <C-G>u<C-R>=tcvime#InputConvertSeq2Kanji(0)<CR>
   " 後置型漢字→入力シーケンス変換(現位置からスペースまで)
   lmap <silent> ;0 <C-G>u<C-R>=tcvime#InputConvertKanji2Seq(0)<CR>
-  " 後置型漢字→入力シーケンス変換(現位置からInsert mode開始位置または行頭まで)
+  " 後置型漢字→入力シーケンス変換(大文字まで。小文字化)
+  lmap <silent> ;7 <C-G>u<C-R>=tcvime#InputConvertKanji2SeqCapital(1)<CR>
+  " 後置型漢字→入力シーケンス変換(大文字まで)
+  lmap <silent> ;8 <C-G>u<C-R>=tcvime#InputConvertKanji2SeqCapital(0)<CR>
+  " 後置型漢字→入力シーケンス変換(Insert mode開始位置または行頭まで)
   lmap <silent> ;9 <C-G>u<C-R>=tcvime#InputConvertKanji2SeqAll()<CR><Plug>TcvimeIDisableKeymap
   " tc2同様の後置型交ぜ書き変換を行うための設定:
   " " 活用しない語
