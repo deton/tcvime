@@ -413,6 +413,16 @@ Visual modeでの交ぜ書き変換(活用する語)		*tcvime-visual-mazegaki-ka
   設定例:
     let tcvime_hide_helptbl_mark = 1
 
+'tcvime#autohelp_ignore_pat'			*'tcvime#autohelp_ignore_pat'*
+  変換確定時の自動ヘルプを表示しない文字のパターン。
+  交ぜ書き変換を短縮入力に使っていて、ひらがなやカタカナ等、
+  確実に覚えている文字の自動ヘルプ表示が邪魔な場合用。
+  なお、自動ヘルプでは表示されなくなりますが、|<Plug>TcvimeNHelp|や
+  |<Plug>TcvimeVHelp|、|:TcvimeHelp|等によるヘルプ表示は可能。
+  省略値: ""
+  設定例:
+    let tcvime#autohelp_ignore_pat = "[ー]"
+
 'tcvime_movecandto'				*'tcvime_movecandto'*
    交ぜ書き変換で確定した候補の、
    候補リスト内の移動先位置(先頭は0。移動させない場合は-1)。

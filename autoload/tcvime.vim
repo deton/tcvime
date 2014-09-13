@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-06-28
+" Last Change: 2014-09-13
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -20,6 +20,13 @@ if !exists("tcvime_use_helptbl")
 endif
 if !exists("tcvime_hide_helptbl_mark")
   let tcvime_hide_helptbl_mark = 0
+endif
+
+" 自動ヘルプを表示しない文字のパターン。
+" 交ぜ書き変換を短縮入力に使っていて、ひらがなやカタカナ等、
+" 確実に覚えている文字のヘルプ表示が邪魔な場合用。
+if !exists("g:tcvime#autohelp_ignore_pat")
+  let g:tcvime#autohelp_ignore_pat = ""
 endif
 
 if !exists("tcvime_keyboard")
@@ -1336,13 +1343,17 @@ endfunction
 function! s:ShowAutoHelp(yomi, str)
   let s:prev_str = a:yomi
   let s:commit_str = a:str
-  if matchstr(a:yomi, '[^\x00-\x7f]') == '' " ASCII変換の場合はヘルプ表示しない
+  if match(a:yomi, '[^\x00-\x7f]') == -1 " ASCII変換の場合はヘルプ表示しない
     return
   endif
   let yomichars = split(a:yomi, '\zs')
   let chars = split(a:str, '\zs')
   " 読みで入力した漢字はヘルプ表示不要なので取り除く
   call filter(chars, 'index(yomichars, v:val) == -1')
+  call filter(chars, 'match(g:tcvime#autohelp_ignore_pat, v:val) == -1')
+  if len(chars) == 0
+    return
+  endif
   call s:ShowHelp(chars, 0)
 endfunction
 
