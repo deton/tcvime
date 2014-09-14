@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-09-13
+" Last Change: 2014-09-14
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -184,25 +184,39 @@ endfunction
 let s:prev_str = ''
 let s:commit_str = ''
 
-" 直前の後置型カタカナ変換を縮める
+" 後置型でカタカナを縮める
 function! tcvime#InputConvertKatakanaShrink(n)
+  " 基本は、直前の後置型カタカナ変換を縮める。
+  " 例:「キーとばりゅー」→「キートバリュー」→1文字縮め→「キーとバリュー」
+  if s:prev_str != ''
+    " カーソル位置前が、直前に変換したカタカナ文字列でない場合、
+    " バッファ上のカタカナを縮める。
+    " (カタカナ変換後に別の文字を入力した後で間違ってこの関数が呼ばれて、
+    " 古いカタカナ変換の内容をもとに上書きしないように)
+    let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
+    let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
+    if chars != s:commit_str
+      let s:prev_str = ''
+    else
+      let str = s:prev_str
+    endif
+  endif
+  " 直前が後置型カタカナ変換でなかった場合、バッファ上のカタカナを縮める
   if s:prev_str == ''
-    return ''
+    let line = getline('.')
+    let col = col('.')
+    let pat = '\([ァ-ヶー]*\)\%' . col . 'c' " 現位置以前の連続するカタカナ
+    let m = matchlist(line, pat)
+    if empty(m)
+      return ''
+    endif
+    let str = m[1]
   endif
-  " カーソル位置前が、直前に変換したカタカナ文字列でない場合は、何もしない。
-  " カタカナ変換後に別の文字を入力した後で間違ってこの関数が呼ばれて、
-  " 古いカタカナ変換の内容をもとに上書きすると困るので。
-  let cnt = strlen(substitute(s:commit_str, '.', 'x', 'g'))
-  let chars = matchstr(getline('.'), '.\{,' . cnt . '}\%' . col('.') . 'c')
-  if chars != s:commit_str
-    let s:prev_str = ''
-    return ''
-  endif
+
   let cnt = a:n
   if cnt == 0
     let cnt = 1
   endif
-  let str = s:prev_str
   let strlist = matchlist(str, '\(.\{,' . cnt . '}\)\(.*\)')
   let kata = tcvime#hira2kata(strlist[2])
   let newstr = tcvime#kata2hira(strlist[1]) . kata

@@ -82,7 +82,7 @@ Insert mode用には、lmap用の後置型カタカナ変換関数を用意し�
   lmap <silent> k1 <C-R>=tcvime#InputConvertKatakana(1)<CR>
   " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
   lmap <silent> j1 <C-R>=tcvime#InputConvertKatakana(-1)<CR>
-  " 直前のカタカナ変換を縮める
+  " 直前のカタカナ変換を縮める。もしくは後置型でカタカナ文字列を縮める。
   lmap <silent> l1 <C-R>=tcvime#InputConvertKatakanaShrink(1)<CR>
   " 後置型でカタカナ文字列を伸ばす
   lmap <silent> h1 <C-R>=tcvime#InputConvertKatakanaExtend(1)<CR>
@@ -815,7 +815,7 @@ function TcvimeCustomKeymap()
     execute 'lmap <silent> k' . i "\<C-G>u\<C-R>=tcvime#InputConvertKatakana(" . i . ")\<CR>"
     " 後置型カタカナ変換: 指定文字数のひらがなを残してカタカナ変換
     execute 'lmap <silent> j' . i "\<C-G>u\<C-R>=tcvime#InputConvertKatakana(-" . i . ")\<CR>"
-    " 直前のカタカナ変換を縮める
+    " 直前のカタカナ変換を縮める。もしくは後置型でカタカナ文字列を縮める。
     execute 'lmap <silent> l' . i "\<C-G>u\<C-R>=tcvime#InputConvertKatakanaShrink(" . i . ")\<CR>"
     " 後置型でカタカナ文字列を伸ばす: 文字数指定
     execute 'lmap <silent> h' . i "\<C-G>u\<C-R>=tcvime#InputConvertKatakanaExtend(" . i . ")\<CR>"
