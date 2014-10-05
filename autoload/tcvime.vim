@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-09-14
+" Last Change: 2014-10-05
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1626,29 +1626,29 @@ endfunction
 
 " 交ぜ書き変換辞書データファイルをオープン
 function! s:Candidate_FileOpen(foredit)
-  if s:SelectWindowByName(s:candidate_file) > 0
-    if a:foredit
-      set noreadonly
-      if a:foredit == 2
-	set buflisted
-      endif
+  if s:SelectWindowByName(s:candidate_file) <= 0
+    if filereadable(s:candidate_file) != 1
+      return 0
     endif
-    return 1
+    if a:foredit == 1
+      " LearnCand()からの呼出時ここを通るが、spしてもroのまま。下で明示的にnoro
+      let cmd = 'sp +se\ nobuflisted'
+    elseif a:foredit == 2
+      let cmd = 'sp'
+    else
+      let cmd = 'sv +se\ nobuflisted'
+    endif
+    silent execute cmd s:candidate_file
+    nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>MazegakiDic_CandSelect()<CR>
+    " 候補無し時、自動開始された辞書編集をキャンセルしたい場合用。
+    nnoremap <buffer> <silent> <C-E> :<C-U>call <SID>MazegakiDic_Cancel()<CR>
   endif
-  if filereadable(s:candidate_file) != 1
-    return 0
+  if a:foredit
+    set noreadonly
+    if a:foredit == 2
+      set buflisted
+    endif
   endif
-  if a:foredit == 1
-    let cmd = 'sp +se\ nobuflisted'
-  elseif a:foredit == 2
-    let cmd = 'sp'
-  else
-    let cmd = 'sv +se\ nobuflisted'
-  endif
-  silent execute cmd s:candidate_file
-  nnoremap <buffer> <silent> <C-Y> :<C-U>call <SID>MazegakiDic_CandSelect()<CR>
-  " 候補無し時、自動開始された辞書編集をキャンセルしたい場合用。
-  nnoremap <buffer> <silent> <C-E> :<C-U>call <SID>MazegakiDic_Cancel()<CR>
   return 1
 endfunction
 
