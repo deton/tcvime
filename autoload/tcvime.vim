@@ -499,10 +499,20 @@ function! s:Kanji2SeqChar(ch)
   return seq
 endfunction
 
+" &runtimepath にある指定fnameのファイルパスを返す
+function! s:file_from_runtimepath(fname)
+  let lst = globpath($VIM.','.&runtimepath, a:fname, 0, 1)
+  if len(lst) < 1
+    return ''
+  endif
+  " &runtimepath 内の複数の場所に指定fnameのファイルがある場合、最初のみ返す
+  return lst[0]
+endfunction
+
 " 設定
-let s:candidate_file = globpath($VIM.','.&runtimepath, 'mazegaki.dic')
-let s:bushuhelp_file = globpath($VIM.','.&runtimepath, 'bushu.help')
-let s:kanjitable_file = globpath($VIM.','.&runtimepath, 'kanjitable.txt')
+let s:candidate_file = s:file_from_runtimepath('mazegaki.dic')
+let s:bushuhelp_file = s:file_from_runtimepath('bushu.help')
+let s:kanjitable_file = s:file_from_runtimepath('kanjitable.txt')
 let s:helpbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeHelp__'
 let s:helpbufname = substitute(s:helpbufname, '\\', '/', 'g')
 let s:candbufname = fnamemodify(tempname(), ':p:h') . '/__TcvimeCand__'
