@@ -81,7 +81,8 @@ tcvime - 漢字直接入力補助機能プラグインスクリプト
 
 更新履歴
   - 1.6.3 (2020-11-XXX)
-   - imactivatemap.vimによるmapでのIMEオフでヘルプを閉じる際のE565エラーを修正
+   - imactivatemap.vimによるmapでのIMオフでヘルプを閉じる際のE565エラーを修正
+   - ヘルプ表示中の△を＄に変更。&ambiwidth=single環境でのずれ回避
 
   - 1.6.2 (2019-12-28)
    - mazegaki.dicが&runtimepath内に複数あると読込失敗するバグ修正(#9)
