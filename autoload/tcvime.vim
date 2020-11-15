@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2014-10-05
+" Last Change: 2020-11-12
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1624,12 +1624,13 @@ endfunction
 function! s:SelectWindowByName(name)
   let num = bufwinnr(a:name)
   if num > 0 && num != winnr()
-    try
-      execute num . 'wincmd w'
-    catch /^Vim\%((\a\+)\)\=:E523/
-      " command lineからヘルプウィンドウを閉じようとした場合などに発生
+    let v:errmsg = ''
+    silent! execute num . 'wincmd w'
+    if v:errmsg != ''
       return 0
-    endtry
+      " E523: command lineからヘルプウィンドウを閉じようとした場合などに発生
+      " E565: imactivatemap.vimによるmapでのIMEオフ時に発生
+    endif
   endif
   return num
 endfunction
