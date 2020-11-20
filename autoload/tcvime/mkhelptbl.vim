@@ -189,7 +189,7 @@ function! s:addlastmark(tbl, key3)
   for y in range(len(a:tbl))
     if y == y3
       if a:tbl[y][x3] == '・' || a:tbl[y][x3] == '＿'
-	let a:tbl[y][x3] = '$△'
+	let a:tbl[y][x3] = '$＄'
       else
 	let a:tbl[y][x3] = '$' . a:tbl[y][x3]
       endif
