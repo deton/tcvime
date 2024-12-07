@@ -1390,13 +1390,13 @@ endfunction
 " 指定された文字配列のヘルプ表を表示する
 function! s:ShowHelp(ar, forcebushu)
   let save_hls = &hlsearch
-  let curbuf = bufnr('')
+  let curwin = win_getid()
   if s:OpenHelpBuffer(a:ar, a:forcebushu) == 1
     " 直前と同じヘルプ表示の場合は、内容の残っているウィンドウを開くだけ
     if b:numch == 0
       call tcvime#CloseHelpBuffer()
     else
-      execute bufwinnr(curbuf) . 'wincmd w'
+      call win_gotoid(curwin)
     endif
     return
   endif
@@ -1455,8 +1455,7 @@ function! s:ShowHelp(ar, forcebushu)
     silent! $g/^$/d _ " 末尾の余分な空行を削除
     call histdel('/', -1)
     normal 1G
-    " wincmd p
-    execute bufwinnr(curbuf) . 'wincmd w'
+    call win_gotoid(curwin)
   endif
   if len(skipchars) > 0
     redraw
