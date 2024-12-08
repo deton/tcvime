@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2020-11-12
+" Last Change: 2024-12-08
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1740,7 +1740,9 @@ function! s:MazegakiDic_CandSelect()
   update
   hide
 
-  call win_gotoid(winid)
+  if !win_gotoid(winid)
+    return
+  endif
   let s:status_line = line('.')
   execute "normal! a\<ESC>"
   let s:status_colend = col("'^.")
