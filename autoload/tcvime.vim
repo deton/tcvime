@@ -4,7 +4,7 @@ scriptencoding utf-8
 " autoload/tcvime.vim - utility functions for tcvime.
 "
 " Maintainer: KIHARA Hideto <deton@m1.interq.or.jp>
-" Last Change: 2020-11-12
+" Last Change: 2024-12-08
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1390,13 +1390,13 @@ endfunction
 " 指定された文字配列のヘルプ表を表示する
 function! s:ShowHelp(ar, forcebushu)
   let save_hls = &hlsearch
-  let curbuf = bufnr('')
+  let curwin = win_getid()
   if s:OpenHelpBuffer(a:ar, a:forcebushu) == 1
     " 直前と同じヘルプ表示の場合は、内容の残っているウィンドウを開くだけ
     if b:numch == 0
       call tcvime#CloseHelpBuffer()
     else
-      execute bufwinnr(curbuf) . 'wincmd w'
+      call win_gotoid(curwin)
     endif
     return
   endif
@@ -1455,8 +1455,7 @@ function! s:ShowHelp(ar, forcebushu)
     silent! $g/^$/d _ " 末尾の余分な空行を削除
     call histdel('/', -1)
     normal 1G
-    " wincmd p
-    execute bufwinnr(curbuf) . 'wincmd w'
+    call win_gotoid(curwin)
   endif
   if len(skipchars) > 0
     redraw
@@ -1686,7 +1685,7 @@ endfunction
 function! s:CandidateSearchSub(keyword, finish)
   let s:last_keyword = a:keyword
   let s:last_candidate = ''
-  let altbufnr = bufnr('')
+  let altwinid = win_getid()
   if !s:Candidate_FileOpen(0)
     return -1
   endif
@@ -1715,9 +1714,9 @@ function! s:CandidateSearchSub(keyword, finish)
   " 候補無し
   " 交ぜ書き変換辞書編集を自動開始
   if a:finish && g:tcvime_mazegaki_edit_nocand
-    if bufnr('') != altbufnr
-      " 確定操作で元のバッファに戻れるように、直前にいたバッファ番号を取っておく
-      let b:altbufnr = altbufnr
+    if win_getid() != altwinid
+      " 確定操作で元のwindowに戻れるように、直前にいたwindow-IDを取っておく
+      let b:altwinid = altwinid
     " else 交ぜ書き辞書編集中にさらに交ぜ書き変換した場合はそのまま
     endif
     call tcvime#MazegakiDic_Edit(0)
@@ -1737,11 +1736,13 @@ function! s:MazegakiDic_CandSelect()
   let chars = matchstr(getline('.'), '\%' . beg . 'c' . '.*\%' . end . 'c')
   let s:last_candidate = chars
   let s:last_keyword = matchstr(getline('.'), '^[^ ]*')
-  let bufnr = b:altbufnr
+  let winid = b:altwinid
   update
   hide
 
-  execute bufwinnr(bufnr) . 'wincmd w'
+  if !win_gotoid(winid)
+    return
+  endif
   let s:status_line = line('.')
   execute "normal! a\<ESC>"
   let s:status_colend = col("'^.")
@@ -1762,7 +1763,7 @@ endfunction
 
 " 交ぜ書き辞書を編集用に開いて、直前に変換した読みを検索する
 function! tcvime#MazegakiDic_Edit(autoupdate)
-  let altbufnr = bufnr('')
+  let altwinid = win_getid()
   if a:autoupdate
     let foredit = 1
   else
@@ -1772,8 +1773,8 @@ function! tcvime#MazegakiDic_Edit(autoupdate)
     return -2
   endif
   " :TcvimeEditMazegakiコマンド実行時用
-  if !exists('b:altbufnr')
-    let b:altbufnr = altbufnr
+  if !exists('b:altwinid')
+    let b:altwinid = altwinid
   endif
   " 直前が交ぜ書き変換でない場合も、辞書ファイルは開く
   if s:last_keyword == ''
